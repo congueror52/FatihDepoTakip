@@ -11,7 +11,6 @@ export const ammunitionDailyUsageFormSchema = z.object({
   used_5_56x45mm: z.coerce.number().int().min(0, { message: "Kullanılan miktar 0 veya daha büyük olmalıdır." }).default(0),
   used_7_62x39mm: z.coerce.number().int().min(0, { message: "Kullanılan miktar 0 veya daha büyük olmalıdır." }).default(0),
   used_7_62x51mm: z.coerce.number().int().min(0, { message: "Kullanılan miktar 0 veya daha büyük olmalıdır." }).default(0),
-  "used_12 Kalibre": z.coerce.number().int().min(0, { message: "Kullanılan miktar 0 veya daha büyük olmalıdır." }).default(0), // New caliber
   notes: z.string().max(500, "Notlar en fazla 500 karakter olabilir.").optional(),
 });
 

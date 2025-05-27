@@ -16,7 +16,6 @@ export default async function AmmunitionDailyUsagePage() {
     '5.56x45mm': allLogs.reduce((sum, log) => sum + log.used_5_56x45mm, 0),
     '7.62x39mm': allLogs.reduce((sum, log) => sum + log.used_7_62x39mm, 0),
     '7.62x51mm': allLogs.reduce((sum, log) => sum + log.used_7_62x51mm, 0),
-    '12 Kalibre': allLogs.reduce((sum, log) => sum + (log["used_12 Kalibre"] || 0), 0),
   };
 
 
@@ -43,7 +42,7 @@ export default async function AmmunitionDailyUsagePage() {
           <CardDescription suppressHydrationWarning>Kaydedilen tüm günlük kullanımlara dayalı özet bilgiler.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <Card>
                     <CardHeader className="pb-2"><CardTitle className="text-sm font-medium" suppressHydrationWarning>Toplam 9x19mm</CardTitle></CardHeader>
                     <CardContent><p className="text-2xl font-bold">{totalUsage['9x19mm'].toLocaleString()}</p></CardContent>
@@ -59,10 +58,6 @@ export default async function AmmunitionDailyUsagePage() {
                  <Card>
                     <CardHeader className="pb-2"><CardTitle className="text-sm font-medium" suppressHydrationWarning>Toplam 7.62x51mm</CardTitle></CardHeader>
                     <CardContent><p className="text-2xl font-bold">{totalUsage['7.62x51mm'].toLocaleString()}</p></CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="pb-2"><CardTitle className="text-sm font-medium" suppressHydrationWarning>Toplam 12 Kalibre</CardTitle></CardHeader>
-                    <CardContent><p className="text-2xl font-bold">{totalUsage['12 Kalibre'].toLocaleString()}</p></CardContent>
                 </Card>
             </div>
             <Card className="bg-amber-50 border border-amber-200 dark:bg-amber-900/30 dark:border-amber-700">

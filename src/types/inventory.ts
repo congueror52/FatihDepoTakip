@@ -118,7 +118,7 @@ export interface AmmunitionDailyUsageLog {
 }
 
 // Supported calibers for various forms and definitions
-export const SUPPORTED_CALIBERS = ["9x19mm", "5.56x45mm", "7.62x39mm", "7.62x51mm", "12 Kalibre"] as const;
+export const SUPPORTED_CALIBERS = ["9x19mm", "5.56x45mm", "7.62x39mm", "7.62x51mm"] as const;
 export type SupportedCaliber = typeof SUPPORTED_CALIBERS[number];
 
 

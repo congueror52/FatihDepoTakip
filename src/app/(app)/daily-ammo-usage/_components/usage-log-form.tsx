@@ -60,7 +60,6 @@ export function AmmunitionDailyUsageForm({ usageScenarios }: AmmunitionDailyUsag
     used_5_56x45mm: 0,
     used_7_62x39mm: 0,
     used_7_62x51mm: 0,
-    "used_12 Kalibre": 0,
     notes: "",
   };
   
@@ -110,7 +109,6 @@ export function AmmunitionDailyUsageForm({ usageScenarios }: AmmunitionDailyUsag
         case "5.56x45mm": formFieldName = "used_5_56x45mm"; break;
         case "7.62x39mm": formFieldName = "used_7_62x39mm"; break;
         case "7.62x51mm": formFieldName = "used_7_62x51mm"; break;
-        case "12 Kalibre": formFieldName = "used_12 Kalibre"; break;
         default: return;
       }
 
@@ -146,7 +144,6 @@ export function AmmunitionDailyUsageForm({ usageScenarios }: AmmunitionDailyUsag
     { name: "used_5_56x45mm", label: "5.56x45mm (Adet)", caliberKey: "5.56x45mm" },
     { name: "used_7_62x39mm", label: "7.62x39mm (Adet)", caliberKey: "7.62x39mm" },
     { name: "used_7_62x51mm", label: "7.62x51mm (Adet)", caliberKey: "7.62x51mm" },
-    { name: "used_12 Kalibre", label: "12 Kalibre (Adet)", caliberKey: "12 Kalibre" },
   ];
 
   return (
