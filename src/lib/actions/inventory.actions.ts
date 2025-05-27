@@ -248,6 +248,11 @@ export async function getAmmunitionDailyUsageLogs(): Promise<AmmunitionDailyUsag
   return logs.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // Sort by newest first
 }
 
+export async function getAmmunitionDailyUsageLogById(id: string): Promise<AmmunitionDailyUsageLog | undefined> {
+  const logs = await getAmmunitionDailyUsageLogs();
+  return logs.find(log => log.id === id);
+}
+
 export async function addAmmunitionDailyUsageLogAction(data: Omit<AmmunitionDailyUsageLog, 'id'>) {
   const validatedData = ammunitionDailyUsageFormSchema.safeParse(data);
   if (!validatedData.success) {
@@ -266,6 +271,40 @@ export async function addAmmunitionDailyUsageLogAction(data: Omit<AmmunitionDail
   revalidatePath('/daily-ammo-usage');
   revalidatePath('/dashboard'); // If dashboard shows usage summaries
   return newLog;
+}
+
+export async function updateAmmunitionDailyUsageLogAction(logToUpdate: AmmunitionDailyUsageLog) {
+  const validatedData = ammunitionDailyUsageFormSchema.safeParse(logToUpdate);
+  if (!validatedData.success) {
+    console.error("Doğrulama hataları:", validatedData.error.format());
+    throw new Error('Güncelleme için geçersiz günlük fişek kullanımı verisi.');
+  }
+
+  let logs = await getAmmunitionDailyUsageLogs();
+  const index = logs.findIndex(l => l.id === logToUpdate.id);
+  if (index === -1) {
+    throw new Error('Güncellenecek günlük fişek kullanım kaydı bulunamadı.');
+  }
+
+  logs[index] = {
+    ...logs[index], // Preserve original ID
+    ...validatedData.data, // Apply validated updates
+    date: new Date(validatedData.data.date).toISOString(), // Ensure ISO format
+  };
+
+  await writeData('ammunition_daily_usage.json', logs);
+  revalidatePath('/daily-ammo-usage');
+  revalidatePath(`/daily-ammo-usage/${logToUpdate.id}/edit`);
+  revalidatePath('/dashboard');
+  return logs[index];
+}
+
+export async function deleteAmmunitionDailyUsageLogAction(id: string): Promise<void> {
+  let logs = await getAmmunitionDailyUsageLogs();
+  logs = logs.filter(log => log.id !== id);
+  await writeData('ammunition_daily_usage.json', logs);
+  revalidatePath('/daily-ammo-usage');
+  revalidatePath('/dashboard');
 }
 
 
@@ -440,8 +479,3 @@ export async function getHistoricalUsageForAI(): Promise<HistoricalUsageSnapshot
     ammunitionUsage: usageLogs.map(log => ({ ammunitionId: log.ammunitionId, quantityUsed: log.quantityUsed, date: log.date, depotId: log.depotId})),
   };
 }
-
-// This function is no longer needed as consumption rates are part of UsageScenario
-// export async function getConsumptionRatesForForm(): Promise<Record<SupportedCaliberForConsumption, number>> {
-//   // ...
-// }
