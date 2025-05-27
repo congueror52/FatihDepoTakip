@@ -2,13 +2,15 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import type { Firearm, Magazine, Ammunition, Shipment, AmmunitionUsageLog, DepotInventorySnapshot, HistoricalUsageSnapshot, UpcomingRequirementsSnapshot, FirearmDefinition, AmmunitionDailyUsageLog, UsageScenario, ScenarioCaliberConsumption, SupportedCaliber } from '@/types/inventory';
+import type { Firearm, Magazine, Ammunition, Shipment, AmmunitionUsageLog, DepotInventorySnapshot, HistoricalUsageSnapshot, UpcomingRequirementsSnapshot, FirearmDefinition, AmmunitionDailyUsageLog, UsageScenario, ScenarioCaliberConsumption, SupportedCaliber, MagazineStatus, AmmunitionStatus } from '@/types/inventory';
 import { readData, writeData, generateId } from '@/lib/data-utils';
 import { firearmFormSchema } from '@/app/(app)/inventory/firearms/_components/firearm-form-schema';
 import { firearmDefinitionFormSchema } from '@/app/(app)/admin/firearms-definitions/_components/firearm-definition-form-schema';
 import { ammunitionDailyUsageFormSchema } from '@/app/(app)/daily-ammo-usage/_components/usage-log-form-schema';
 import { usageScenarioFormSchema } from '@/app/(app)/admin/usage-scenarios/_components/usage-scenario-form-schema';
 import { suggestRebalancing as suggestRebalancingAI } from '@/ai/flows/suggest-rebalancing';
+import { magazineFormSchema } from '@/app/(app)/inventory/magazines/_components/magazine-form-schema'; // Added
+import { ammunitionFormSchema } from '@/app/(app)/inventory/ammunition/_components/ammunition-form-schema'; // Added
 
 // Firearm Definitions
 export async function getFirearmDefinitions(): Promise<FirearmDefinition[]> {
@@ -115,10 +117,8 @@ export async function addFirearmAction(data: Omit<Firearm, 'id' | 'lastUpdated' 
 }
 
 export async function updateFirearmAction(firearm: Firearm) {
-   // For update, we assume definitionId, name, model, manufacturer, caliber are not changed via this form
-   // Only instance-specific fields are updated.
   const validatedData = firearmFormSchema.safeParse({
-    definitionId: firearm.definitionId, // Keep existing
+    definitionId: firearm.definitionId,
     serialNumber: firearm.serialNumber,
     depotId: firearm.depotId,
     status: firearm.status,
@@ -139,8 +139,8 @@ export async function updateFirearmAction(firearm: Firearm) {
   
   const currentFirearm = firearms[index];
   const updatedFirearm: Firearm = {
-    ...currentFirearm, // Keep existing fields like id, itemType, name, model, manufacturer, caliber, maintenanceHistory
-    ...validatedData.data, // Apply validated updates for instance-specific fields
+    ...currentFirearm, 
+    ...validatedData.data, 
     lastUpdated: new Date().toISOString(),
   };
 
@@ -148,6 +148,7 @@ export async function updateFirearmAction(firearm: Firearm) {
   await writeData('firearms.json', firearms);
   revalidatePath('/inventory/firearms');
   revalidatePath(`/inventory/firearms/${firearm.id}`);
+  revalidatePath(`/inventory/firearms/${firearm.id}/edit`);
   revalidatePath('/dashboard');
   return updatedFirearm;
 }
@@ -160,15 +161,25 @@ export async function deleteFirearmAction(id: string): Promise<void> {
   revalidatePath('/dashboard');
 }
 
-// Magazines (Stubs - implement similarly to Firearms)
+// Magazines
 export async function getMagazines(): Promise<Magazine[]> {
   return readData<Magazine>('magazines.json');
 }
-export async function addMagazineAction(data: Omit<Magazine, 'id' | 'lastUpdated' | 'itemType' | 'maintenanceHistory'>): Promise<Magazine> {
-  // Basic implementation, add validation later
+
+export async function getMagazineById(id: string): Promise<Magazine | undefined> {
+  const magazines = await getMagazines();
+  return magazines.find(m => m.id === id);
+}
+
+export async function addMagazineAction(data: Omit<Magazine, 'id' | 'lastUpdated' | 'itemType' | 'maintenanceHistory'>) {
+  const validatedData = magazineFormSchema.safeParse(data);
+  if (!validatedData.success) {
+    throw new Error('Geçersiz şarjör verisi: ' + JSON.stringify(validatedData.error.format()));
+  }
+  
   const magazines = await getMagazines();
   const newMagazine: Magazine = {
-    ...(data as any), // Add proper type assertion or mapping
+    ...validatedData.data,
     id: await generateId(),
     itemType: 'magazine',
     lastUpdated: new Date().toISOString(),
@@ -181,25 +192,103 @@ export async function addMagazineAction(data: Omit<Magazine, 'id' | 'lastUpdated
   return newMagazine;
 }
 
-// Ammunition (Stubs - implement similarly)
+export async function updateMagazineAction(magazine: Magazine) {
+   const validatedData = magazineFormSchema.safeParse(magazine);
+   if (!validatedData.success) {
+    throw new Error('Güncelleme için geçersiz şarjör verisi: ' + JSON.stringify(validatedData.error.format()));
+  }
+
+  let magazines = await getMagazines();
+  const index = magazines.findIndex(m => m.id === magazine.id);
+  if (index === -1) {
+    throw new Error('Güncellenecek şarjör bulunamadı.');
+  }
+  
+  magazines[index] = {
+    ...magazines[index], // Preserve other fields like itemType, maintenanceHistory
+    ...validatedData.data,
+    lastUpdated: new Date().toISOString(),
+  };
+  await writeData('magazines.json', magazines);
+  revalidatePath('/inventory/magazines');
+  revalidatePath(`/inventory/magazines/${magazine.id}`);
+  revalidatePath(`/inventory/magazines/${magazine.id}/edit`);
+  revalidatePath('/dashboard');
+  return magazines[index];
+}
+
+export async function deleteMagazineAction(id: string): Promise<void> {
+  let magazines = await getMagazines();
+  magazines = magazines.filter(m => m.id !== id);
+  await writeData('magazines.json', magazines);
+  revalidatePath('/inventory/magazines');
+  revalidatePath('/dashboard');
+}
+
+
+// Ammunition
 export async function getAmmunition(): Promise<Ammunition[]> {
   return readData<Ammunition>('ammunition.json');
 }
-export async function addAmmunitionAction(data: Omit<Ammunition, 'id' | 'lastUpdated' | 'itemType'>): Promise<Ammunition> {
-  // Basic implementation, add validation later
+
+export async function getAmmunitionById(id: string): Promise<Ammunition | undefined> {
   const ammunition = await getAmmunition();
+  return ammunition.find(a => a.id === id);
+}
+
+export async function addAmmunitionAction(data: Omit<Ammunition, 'id' | 'lastUpdated' | 'itemType'>) {
+  const validatedData = ammunitionFormSchema.safeParse(data);
+  if (!validatedData.success) {
+    throw new Error('Geçersiz mühimmat verisi: ' + JSON.stringify(validatedData.error.format()));
+  }
+
+  const allAmmunition = await getAmmunition();
   const newAmmunition: Ammunition = {
-    ...(data as any), // Add proper type assertion or mapping
+    ...validatedData.data,
     id: await generateId(),
     itemType: 'ammunition',
     lastUpdated: new Date().toISOString(),
   };
-  ammunition.push(newAmmunition);
-  await writeData('ammunition.json', ammunition);
+  allAmmunition.push(newAmmunition);
+  await writeData('ammunition.json', allAmmunition);
   revalidatePath('/inventory/ammunition');
   revalidatePath('/dashboard');
   return newAmmunition;
 }
+
+export async function updateAmmunitionAction(ammunition: Ammunition) {
+  const validatedData = ammunitionFormSchema.safeParse(ammunition);
+  if (!validatedData.success) {
+    throw new Error('Güncelleme için geçersiz mühimmat verisi: ' + JSON.stringify(validatedData.error.format()));
+  }
+
+  let allAmmunition = await getAmmunition();
+  const index = allAmmunition.findIndex(a => a.id === ammunition.id);
+  if (index === -1) {
+    throw new Error('Güncellenecek mühimmat bulunamadı.');
+  }
+  
+  allAmmunition[index] = {
+     ...allAmmunition[index], // Preserve other fields like itemType
+    ...validatedData.data,
+    lastUpdated: new Date().toISOString(),
+  };
+  await writeData('ammunition.json', allAmmunition);
+  revalidatePath('/inventory/ammunition');
+  revalidatePath(`/inventory/ammunition/${ammunition.id}`);
+  revalidatePath(`/inventory/ammunition/${ammunition.id}/edit`);
+  revalidatePath('/dashboard');
+  return allAmmunition[index];
+}
+
+export async function deleteAmmunitionAction(id: string): Promise<void> {
+  let allAmmunition = await getAmmunition();
+  allAmmunition = allAmmunition.filter(a => a.id !== id);
+  await writeData('ammunition.json', allAmmunition);
+  revalidatePath('/inventory/ammunition');
+  revalidatePath('/dashboard');
+}
+
 
 // Shipments (Stubs)
 export async function getShipments(): Promise<Shipment[]> {
@@ -389,7 +478,6 @@ export async function addUsageScenarioAction(data: Omit<UsageScenario, 'id' | 'l
 }
 
 export async function updateUsageScenarioAction(scenario: UsageScenario) {
-  // Make sure to parse scenario.consumptionRatesPerCaliber if it might contain string numbers
    const parsedRates = scenario.consumptionRatesPerCaliber.map(rate => ({
     ...rate,
     roundsPerPerson: typeof rate.roundsPerPerson === 'string' ? parseInt(rate.roundsPerPerson, 10) : rate.roundsPerPerson,
@@ -413,7 +501,7 @@ export async function updateUsageScenarioAction(scenario: UsageScenario) {
   }
   
   const updatedScenario = {
-    ...scenarios[index], // Persist ID and other non-form fields
+    ...scenarios[index], 
     ...validatedData.data,
     lastUpdated: new Date().toISOString(),
   };
@@ -473,9 +561,9 @@ export async function getCurrentDepotInventoriesForAI(): Promise<{ depotA: Depot
 }
 
 export async function getHistoricalUsageForAI(): Promise<HistoricalUsageSnapshot> {
-  const usageLogs = await getAmmunitionUsageLogs(); // This uses the general log, might need to switch to daily logs or combine
-  // Potentially filter or aggregate data if it's too large
+  const usageLogs = await getAmmunitionUsageLogs(); 
   return {
     ammunitionUsage: usageLogs.map(log => ({ ammunitionId: log.ammunitionId, quantityUsed: log.quantityUsed, date: log.date, depotId: log.depotId})),
   };
 }
+

@@ -1,22 +1,12 @@
-
 [
   {
     "id": "fd_1",
-    "name": "Piyade Tüfeği - Alpha",
-    "model": "MPT-76",
-    "manufacturer": "MKE",
-    "caliber": "7.62x51mm",
-    "description": "Standart piyade tüfeği, uzun menzilli.",
-    "lastUpdated": "2024-01-15T10:00:00.000Z"
-  },
-  {
-    "id": "fd_2",
-    "name": "Tabanca - Bravo",
-    "model": "SAR9",
+    "name": "Sar 223 P",
+    "model": "Sar 223 P",
     "manufacturer": "Sarsılmaz",
-    "caliber": "9x19mm",
-    "description": "Standart hizmet tabancası.",
-    "lastUpdated": "2024-01-15T10:05:00.000Z"
+    "caliber": "5.56x45mm",
+    "description": "Standart piyade tüfeği, uzun menzilli.",
+    "lastUpdated": "2025-05-27T20:00:24.164Z"
   },
   {
     "id": "fd_3",

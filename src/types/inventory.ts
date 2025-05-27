@@ -7,18 +7,18 @@ export const DEPOT_LOCATIONS: { id: DepotId; name: string }[] = [
 ];
 
 export type FirearmStatus = 'Hizmette' | 'Bakımda' | 'Arızalı' | 'Onarım Bekliyor' | 'Onarıldı' | 'Hizmet Dışı';
-export type MagazineStatus = 'Hizmette' | 'Bakımda' | 'Arızalı' | 'Onarım Bekliyor' | 'Onarıldı' | 'Hizmet Dışı';
-export type AmmunitionStatus = 'Mevcut' | 'Düşük Stok' | 'Rezerve Edilmiş';
+export type MagazineStatus = 'Hizmette' | 'Bakımda' | 'Arızalı' | 'Kayıp' | 'Hizmet Dışı';
+export type AmmunitionStatus = 'Mevcut' | 'Düşük Stok' | 'Kritik Stok' | 'Tükenmek Üzere';
 
 
 export interface BaseItem {
   id: string;
-  name: string; // For instances, this will be copied from definition
+  name: string; 
   depotId: DepotId;
   notes?: string;
   lastUpdated: string; // ISO date string
   purchaseDate?: string; // ISO date string
-  manufacturer?: string; // For instances, this will be copied from definition
+  manufacturer?: string; 
 }
 
 // Master definition for a firearm type
@@ -48,6 +48,7 @@ export interface Magazine extends BaseItem {
   capacity: number;
   status: MagazineStatus;
   compatibleWith?: string[]; // e.g., specific firearm models
+  serialNumber?: string; // Optional serial for magazines
   maintenanceHistory?: MaintenanceLog[];
 }
 
@@ -57,7 +58,7 @@ export interface Ammunition extends BaseItem {
   quantity: number;
   bulletType?: string; // e.g., FMJ, HP
   lotNumber?: string;
-  status: AmmunitionStatus; // Primarily for alerts, actual status is mostly 'Available'
+  status: AmmunitionStatus; 
 }
 
 export type InventoryItem = Firearm | Magazine | Ammunition;
@@ -162,3 +163,4 @@ export type AmmunitionUsageDb = AmmunitionUsageLog[];
 export type FirearmDefinitionsDb = FirearmDefinition[];
 export type AmmunitionDailyUsageDb = AmmunitionDailyUsageLog[];
 export type UsageScenariosDb = UsageScenario[];
+
