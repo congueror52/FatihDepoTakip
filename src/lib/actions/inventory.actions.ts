@@ -2,13 +2,12 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import type { Firearm, Magazine, Ammunition, Shipment, AmmunitionUsageLog, DepotInventorySnapshot, HistoricalUsageSnapshot, UpcomingRequirementsSnapshot, FirearmDefinition, AmmunitionDailyUsageLog, AmmunitionStandardConsumptionRate, SupportedCaliberForConsumption, UsageScenario } from '@/types/inventory';
+import type { Firearm, Magazine, Ammunition, Shipment, AmmunitionUsageLog, DepotInventorySnapshot, HistoricalUsageSnapshot, UpcomingRequirementsSnapshot, FirearmDefinition, AmmunitionDailyUsageLog, UsageScenario, ScenarioCaliberConsumption, SupportedCaliber } from '@/types/inventory';
 import { readData, writeData, generateId } from '@/lib/data-utils';
 import { firearmFormSchema } from '@/app/(app)/inventory/firearms/_components/firearm-form-schema';
 import { firearmDefinitionFormSchema } from '@/app/(app)/admin/firearms-definitions/_components/firearm-definition-form-schema';
 import { ammunitionDailyUsageFormSchema } from '@/app/(app)/daily-ammo-usage/_components/usage-log-form-schema';
-import { ammunitionStandardConsumptionRateFormSchema } from '@/app/(app)/admin/consumption-rates/_components/consumption-rate-form-schema';
-import { usageScenarioFormSchema } from '@/app/(app)/admin/usage-scenarios/_components/usage-scenario-form-schema'; // New import
+import { usageScenarioFormSchema } from '@/app/(app)/admin/usage-scenarios/_components/usage-scenario-form-schema';
 import { suggestRebalancing as suggestRebalancingAI } from '@/ai/flows/suggest-rebalancing';
 
 // Firearm Definitions
@@ -269,79 +268,6 @@ export async function addAmmunitionDailyUsageLogAction(data: Omit<AmmunitionDail
   return newLog;
 }
 
-// Ammunition Standard Consumption Rates
-export async function getAmmunitionStandardConsumptionRates(): Promise<AmmunitionStandardConsumptionRate[]> {
-  return readData<AmmunitionStandardConsumptionRate>('ammunition_standard_consumption_rates.json');
-}
-
-export async function getAmmunitionStandardConsumptionRateById(id: string): Promise<AmmunitionStandardConsumptionRate | undefined> {
-  const rates = await getAmmunitionStandardConsumptionRates();
-  return rates.find(r => r.id === id);
-}
-
-export async function addAmmunitionStandardConsumptionRateAction(data: Omit<AmmunitionStandardConsumptionRate, 'id' | 'lastUpdated'>) {
-  const validatedData = ammunitionStandardConsumptionRateFormSchema.safeParse(data);
-  if (!validatedData.success) {
-    throw new Error('Geçersiz sarfiyat oranı verisi: ' + JSON.stringify(validatedData.error.format()));
-  }
-  
-  const rates = await getAmmunitionStandardConsumptionRates();
-  const existingRate = rates.find(r => r.caliber === validatedData.data.caliber);
-  if (existingRate) {
-    throw new Error(`Bu kalibre (${validatedData.data.caliber}) için zaten bir sarfiyat oranı tanımlanmış. Mevcut olanı güncelleyin.`);
-  }
-
-  const newRate: AmmunitionStandardConsumptionRate = {
-    ...validatedData.data,
-    id: await generateId(),
-    lastUpdated: new Date().toISOString(),
-  };
-  rates.push(newRate);
-  await writeData('ammunition_standard_consumption_rates.json', rates);
-  revalidatePath('/admin/consumption-rates');
-  return newRate;
-}
-
-export async function updateAmmunitionStandardConsumptionRateAction(rate: AmmunitionStandardConsumptionRate) {
-  const validatedData = ammunitionStandardConsumptionRateFormSchema.safeParse(rate);
-   if (!validatedData.success) {
-    console.error("Doğrulama hataları:", validatedData.error.format());
-    throw new Error('Güncelleme için geçersiz sarfiyat oranı verisi.');
-  }
-
-  let rates = await getAmmunitionStandardConsumptionRates();
-  const index = rates.findIndex(r => r.id === rate.id);
-  if (index === -1) {
-    throw new Error('Güncellenecek sarfiyat oranı bulunamadı.');
-  }
-
-  if (validatedData.data.caliber !== rates[index].caliber) {
-    const conflictingRate = rates.find(r => r.caliber === validatedData.data.caliber && r.id !== rate.id);
-    if (conflictingRate) {
-      throw new Error(`Bu kalibre (${validatedData.data.caliber}) için zaten başka bir sarfiyat oranı tanımlanmış.`);
-    }
-  }
-  
-  const updatedRate = {
-    ...rates[index],
-    ...validatedData.data,
-    lastUpdated: new Date().toISOString(),
-  };
-
-  rates[index] = updatedRate;
-  await writeData('ammunition_standard_consumption_rates.json', rates);
-  revalidatePath('/admin/consumption-rates');
-  revalidatePath(`/admin/consumption-rates/${rate.id}/edit`);
-  return updatedRate;
-}
-
-export async function deleteAmmunitionStandardConsumptionRateAction(id: string): Promise<void> {
-  let rates = await getAmmunitionStandardConsumptionRates();
-  rates = rates.filter(r => r.id !== id);
-  await writeData('ammunition_standard_consumption_rates.json', rates);
-  revalidatePath('/admin/consumption-rates');
-}
-
 // Usage Scenarios
 export async function getUsageScenarios(): Promise<UsageScenario[]> {
   return readData<UsageScenario>('usage_scenarios.json');
@@ -372,11 +298,18 @@ export async function addUsageScenarioAction(data: Omit<UsageScenario, 'id' | 'l
 }
 
 export async function updateUsageScenarioAction(scenario: UsageScenario) {
+  // Make sure to parse scenario.consumptionRatesPerCaliber if it might contain string numbers
+   const parsedRates = scenario.consumptionRatesPerCaliber.map(rate => ({
+    ...rate,
+    roundsPerPerson: typeof rate.roundsPerPerson === 'string' ? parseInt(rate.roundsPerPerson, 10) : rate.roundsPerPerson,
+  }));
+
   const validatedData = usageScenarioFormSchema.safeParse({
     name: scenario.name,
     description: scenario.description,
-    preselectedCalibers: scenario.preselectedCalibers,
+    consumptionRatesPerCaliber: parsedRates,
   });
+
    if (!validatedData.success) {
     console.error("Doğrulama hataları:", validatedData.error.format());
     throw new Error('Güncelleme için geçersiz kullanım senaryosu verisi.');
@@ -389,7 +322,7 @@ export async function updateUsageScenarioAction(scenario: UsageScenario) {
   }
   
   const updatedScenario = {
-    ...scenarios[index],
+    ...scenarios[index], // Persist ID and other non-form fields
     ...validatedData.data,
     lastUpdated: new Date().toISOString(),
   };
@@ -456,19 +389,8 @@ export async function getHistoricalUsageForAI(): Promise<HistoricalUsageSnapshot
   };
 }
 
-// Helper for daily usage form to get consumption rates
-export async function getConsumptionRatesForForm(): Promise<Record<SupportedCaliberForConsumption, number>> {
-  const rates = await getAmmunitionStandardConsumptionRates();
-  const rateMap: Record<SupportedCaliberForConsumption, number> = {
-    "9x19mm": 0,
-    "5.56x45mm": 0,
-    "7.62x39mm": 0,
-    "7.62x51mm": 0,
-  };
-  rates.forEach(rate => {
-    if (rateMap.hasOwnProperty(rate.caliber)) { // Type guard
-      rateMap[rate.caliber] = rate.roundsPerPerson;
-    }
-  });
-  return rateMap;
-}
+// This function is no longer needed as consumption rates are part of UsageScenario
+// export async function getConsumptionRatesForForm(): Promise<Record<SupportedCaliberForConsumption, number>> {
+//   // ...
+// }
+

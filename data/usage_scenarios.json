@@ -1,2 +1,51 @@
 
-[]
+[
+  {
+    "id": "scenario_1",
+    "name": "Kadro Atışı - Tabanca",
+    "description": "Personelin tabanca atış becerilerini geliştirme.",
+    "consumptionRatesPerCaliber": [
+      {
+        "caliber": "9x19mm",
+        "roundsPerPerson": 50
+      }
+    ],
+    "lastUpdated": "2025-05-28T10:00:00.000Z"
+  },
+  {
+    "id": "scenario_2",
+    "name": "Kadro Atışı - Piyade Tüfeği",
+    "description": "Personelin piyade tüfeği atış becerilerini geliştirme.",
+    "consumptionRatesPerCaliber": [
+      {
+        "caliber": "5.56x45mm",
+        "roundsPerPerson": 75
+      },
+      {
+        "caliber": "7.62x51mm",
+        "roundsPerPerson": 60
+      }
+    ],
+    "lastUpdated": "2025-05-28T10:05:00.000Z"
+  },
+  {
+    "id": "scenario_3",
+    "name": "ACM Eğitimi",
+    "description": "Acil durum müdahale ve çatışma yönetimi eğitimi.",
+    "consumptionRatesPerCaliber": [
+      {
+        "caliber": "9x19mm",
+        "roundsPerPerson": 30
+      },
+      {
+        "caliber": "5.56x45mm",
+        "roundsPerPerson": 120
+      },
+      {
+        "caliber": "7.62x39mm",
+        "roundsPerPerson": 90
+      }
+    ],
+    "lastUpdated": "2025-05-28T10:10:00.000Z"
+  }
+]

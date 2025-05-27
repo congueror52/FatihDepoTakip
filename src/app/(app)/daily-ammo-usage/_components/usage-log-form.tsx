@@ -28,27 +28,27 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { useEffect, useState } from "react";
-import type { SupportedCaliberForConsumption, UsageScenario } from "@/types/inventory";
-import { SUPPORTED_CALIBERS_FOR_CONSUMPTION } from "@/types/inventory";
+import type { SupportedCaliber, UsageScenario } from "@/types/inventory";
+import { SUPPORTED_CALIBERS } from "@/types/inventory";
 
 interface AmmunitionDailyUsageFormProps {
-  consumptionRates: Record<SupportedCaliberForConsumption, number>;
   usageScenarios: UsageScenario[];
 }
 
-type CaliberCheckboxState = Record<SupportedCaliberForConsumption, boolean>;
+type CaliberCheckboxState = Record<SupportedCaliber, boolean>;
+type ScenarioConsumptionRates = Record<SupportedCaliber, number>;
 
-export function AmmunitionDailyUsageForm({ consumptionRates, usageScenarios }: AmmunitionDailyUsageFormProps) {
+export function AmmunitionDailyUsageForm({ usageScenarios }: AmmunitionDailyUsageFormProps) {
   const { toast } = useToast();
   const router = useRouter();
 
-  const initialCheckboxState: CaliberCheckboxState = {
-    "9x19mm": true,
-    "5.56x45mm": true,
-    "7.62x39mm": true,
-    "7.62x51mm": true,
-  };
+  const initialCheckboxState = SUPPORTED_CALIBERS.reduce((acc, caliber) => {
+    acc[caliber] = false; // Default to unchecked
+    return acc;
+  }, {} as CaliberCheckboxState);
+
   const [checkedCalibers, setCheckedCalibers] = useState<CaliberCheckboxState>(initialCheckboxState);
+  const [currentScenarioRates, setCurrentScenarioRates] = useState<ScenarioConsumptionRates | null>(null);
 
   const defaultValues: Partial<AmmunitionDailyUsageFormValues> = {
     date: format(new Date(), 'yyyy-MM-dd'),
@@ -58,6 +58,8 @@ export function AmmunitionDailyUsageForm({ consumptionRates, usageScenarios }: A
     used_5_56x45mm: 0,
     used_7_62x39mm: 0,
     used_7_62x51mm: 0,
+    // Add other calibers if SUPPORTED_CALIBERS is extended
+    "used_12 Kalibre": 0,
     notes: "",
   };
   
@@ -74,53 +76,58 @@ export function AmmunitionDailyUsageForm({ consumptionRates, usageScenarios }: A
     if (selectedScenarioId) {
       const scenario = usageScenarios.find(s => s.id === selectedScenarioId);
       if (scenario) {
-        const newCheckedState = { ...initialCheckboxState }; // Start with all true or false based on preference
-        SUPPORTED_CALIBERS_FOR_CONSUMPTION.forEach(caliber => {
-          newCheckedState[caliber] = scenario.preselectedCalibers.includes(caliber);
+        const newCheckedState = { ...initialCheckboxState };
+        const scenarioRates: ScenarioConsumptionRates = {} as ScenarioConsumptionRates;
+
+        scenario.consumptionRatesPerCaliber.forEach(rate => {
+          if (SUPPORTED_CALIBERS.includes(rate.caliber)) {
+            newCheckedState[rate.caliber] = true;
+            scenarioRates[rate.caliber] = rate.roundsPerPerson;
+          }
         });
         setCheckedCalibers(newCheckedState);
+        setCurrentScenarioRates(scenarioRates);
       }
     } else {
-      // If no scenario is selected, or cleared, reset to default or last manual state.
-      // For simplicity, let's allow manual override to persist unless a new scenario is chosen.
-      // Or reset to initial state if desired: setCheckedCalibers(initialCheckboxState);
+      // No scenario selected, clear scenario-specific rates and uncheck all
+      setCurrentScenarioRates(null);
+      setCheckedCalibers(initialCheckboxState);
     }
-  }, [selectedScenarioId, usageScenarios]);
+  }, [selectedScenarioId, usageScenarios, initialCheckboxState]);
 
-  const handleCheckboxChange = (caliber: SupportedCaliberForConsumption, isChecked: boolean) => {
-    // When a checkbox is manually changed, we might want to clear the selected scenario
-    // to indicate that the user is now in manual mode.
-    // form.setValue("usageScenarioId", undefined, { shouldValidate: true }); // Optional: clear scenario on manual check
-    
+  const handleCheckboxChange = (caliber: SupportedCaliber, isChecked: boolean) => {
     setCheckedCalibers(prevState => ({ ...prevState, [caliber]: isChecked }));
-    
-    // No need to re-trigger calculation here, it's handled by the personnelCount useEffect
   };
 
   useEffect(() => {
-    if (personnelCount > 0 && consumptionRates) {
-      (SUPPORTED_CALIBERS_FOR_CONSUMPTION as readonly SupportedCaliberForConsumption[]).forEach(caliber => {
-        let formFieldName: keyof AmmunitionDailyUsageFormValues;
-        switch (caliber) {
-          case "9x19mm": formFieldName = "used_9x19mm"; break;
-          case "5.56x45mm": formFieldName = "used_5_56x45mm"; break;
-          case "7.62x39mm": formFieldName = "used_7_62x39mm"; break;
-          case "7.62x51mm": formFieldName = "used_7_62x51mm"; break;
-          default: return;
-        }
-        if (checkedCalibers[caliber]) {
-          form.setValue(formFieldName, Math.round(personnelCount * (consumptionRates[caliber] || 0)));
-        } else {
-          form.setValue(formFieldName, 0);
-        }
-      });
-    } else if (personnelCount === 0) {
-        form.setValue("used_9x19mm", 0);
-        form.setValue("used_5_56x45mm", 0);
-        form.setValue("used_7_62x39mm", 0);
-        form.setValue("used_7_62x51mm", 0);
-    }
-  }, [personnelCount, consumptionRates, form, checkedCalibers]);
+    const count = personnelCount > 0 ? personnelCount : 0;
+
+    SUPPORTED_CALIBERS.forEach(caliber => {
+      let formFieldName: keyof AmmunitionDailyUsageFormValues;
+      switch (caliber) {
+        case "9x19mm": formFieldName = "used_9x19mm"; break;
+        case "5.56x45mm": formFieldName = "used_5_56x45mm"; break;
+        case "7.62x39mm": formFieldName = "used_7_62x39mm"; break;
+        case "7.62x51mm": formFieldName = "used_7_62x51mm"; break;
+        case "12 Kalibre": formFieldName = "used_12 Kalibre"; break;
+        default: return;
+      }
+
+      if (checkedCalibers[caliber] && currentScenarioRates && currentScenarioRates[caliber] !== undefined) {
+        form.setValue(formFieldName, Math.round(count * currentScenarioRates[caliber]));
+      } else if (checkedCalibers[caliber] && !currentScenarioRates) {
+        // Caliber checked, but no scenario or rate in scenario: keep manual input or default to 0.
+        // For now, if no scenario, assume manual entry or 0.
+         if (form.getValues(formFieldName) === 0 && count > 0) { // Only overwrite if it was 0, to allow manual override
+           // Potentially prompt user or have a default "manual mode" rate if desired
+         }
+      }
+      else {
+        form.setValue(formFieldName, 0);
+      }
+    });
+
+  }, [personnelCount, currentScenarioRates, form, checkedCalibers]);
 
 
   async function onSubmit(data: AmmunitionDailyUsageFormValues) {
@@ -135,11 +142,12 @@ export function AmmunitionDailyUsageForm({ consumptionRates, usageScenarios }: A
     }
   }
 
-  const caliberFields: {name: keyof AmmunitionDailyUsageFormValues, label: string, caliberKey: SupportedCaliberForConsumption }[] = [
+  const caliberFields: {name: keyof AmmunitionDailyUsageFormValues, label: string, caliberKey: SupportedCaliber }[] = [
     { name: "used_9x19mm", label: "9x19mm (Adet)", caliberKey: "9x19mm" },
     { name: "used_5_56x45mm", label: "5.56x45mm (Adet)", caliberKey: "5.56x45mm" },
     { name: "used_7_62x39mm", label: "7.62x39mm (Adet)", caliberKey: "7.62x39mm" },
     { name: "used_7_62x51mm", label: "7.62x51mm (Adet)", caliberKey: "7.62x51mm" },
+    { name: "used_12 Kalibre", label: "12 Kalibre (Adet)", caliberKey: "12 Kalibre" },
   ];
 
   return (
@@ -193,9 +201,9 @@ export function AmmunitionDailyUsageForm({ consumptionRates, usageScenarios }: A
               <FormItem>
                 <FormLabel><span suppressHydrationWarning>Kişi Sayısı</span></FormLabel>
                 <FormControl>
-                  <Input type="number" placeholder="0" {...field} />
+                  <Input type="number" placeholder="0" {...field} onChange={e => field.onChange(parseInt(e.target.value,10) || 0)} />
                 </FormControl>
-                <FormDescription><span suppressHydrationWarning>Fişek miktarları seçili kalibreler için otomatik hesaplanacaktır.</span></FormDescription>
+                <FormDescription><span suppressHydrationWarning>Fişek miktarları seçili senaryo ve kalibreler için otomatik hesaplanacaktır.</span></FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -209,8 +217,14 @@ export function AmmunitionDailyUsageForm({ consumptionRates, usageScenarios }: A
             <FormItem>
               <FormLabel><span suppressHydrationWarning>Kullanım Senaryosu (İsteğe Bağlı)</span></FormLabel>
               <Select 
-                onValueChange={field.onChange} 
-                defaultValue={field.value}
+                onValueChange={(value) => {
+                  if (value === "clear_scenario_selection") {
+                    field.onChange(undefined);
+                  } else {
+                    field.onChange(value);
+                  }
+                }} 
+                value={field.value || ""}
               >
                 <FormControl>
                   <SelectTrigger>
@@ -218,7 +232,7 @@ export function AmmunitionDailyUsageForm({ consumptionRates, usageScenarios }: A
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="clear_scenario_selection" disabled={!field.value} onClick={() => form.setValue('usageScenarioId', undefined)}>
+                  <SelectItem value="clear_scenario_selection" disabled={!field.value}>
                     <span suppressHydrationWarning>Senaryo Seçimini Temizle</span>
                   </SelectItem>
                   {usageScenarios.map(scenario => (
@@ -228,7 +242,7 @@ export function AmmunitionDailyUsageForm({ consumptionRates, usageScenarios }: A
                   ))}
                 </SelectContent>
               </Select>
-              <FormDescription><span suppressHydrationWarning>Bir senaryo seçmek ilgili fişek kalibrelerini otomatik olarak işaretleyecektir.</span></FormDescription>
+              <FormDescription><span suppressHydrationWarning>Bir senaryo seçmek ilgili fişek kalibrelerini ve oranlarını otomatik olarak yükleyecektir.</span></FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -241,7 +255,7 @@ export function AmmunitionDailyUsageForm({ consumptionRates, usageScenarios }: A
               key={item.name}
               control={form.control}
               name={item.name} // This field still holds the calculated or manual value
-              render={({ field: valueField }) => ( // Renamed field to avoid conflict
+              render={({ field: valueField }) => ( 
                 <FormItem>
                   <div className="flex items-center space-x-3">
                     <Checkbox
@@ -256,7 +270,7 @@ export function AmmunitionDailyUsageForm({ consumptionRates, usageScenarios }: A
                     </FormLabel>
                   </div>
                   <FormControl>
-                    <Input type="number" placeholder="0" {...valueField} />
+                    <Input type="number" placeholder="0" {...valueField} onChange={e => valueField.onChange(parseInt(e.target.value, 10) || 0)} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

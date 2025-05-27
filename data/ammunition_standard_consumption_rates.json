@@ -1,26 +1,2 @@
-[
-  {
-    "caliber": "9x19mm",
-    "roundsPerPerson": 75,
-    "id": "b9fc8d87-23cf-469d-ba59-e08f0131d081",
-    "lastUpdated": "2025-05-27T17:26:45.032Z"
-  },
-  {
-    "caliber": "5.56x45mm",
-    "roundsPerPerson": 25,
-    "id": "eb60aacb-48fe-4380-a38e-c18f76ca18ae",
-    "lastUpdated": "2025-05-27T17:26:55.466Z"
-  },
-  {
-    "caliber": "7.62x39mm",
-    "roundsPerPerson": 25,
-    "id": "fe3bc839-90b6-4de7-95b6-f19d48dd4a40",
-    "lastUpdated": "2025-05-27T17:27:07.993Z"
-  },
-  {
-    "caliber": "7.62x51mm",
-    "roundsPerPerson": 30,
-    "id": "2f02bdc6-d9e3-4d28-a1fd-f4062dd3d84a",
-    "lastUpdated": "2025-05-27T17:27:23.279Z"
-  }
-]
+
+[]

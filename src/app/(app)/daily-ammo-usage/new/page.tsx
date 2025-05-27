@@ -3,10 +3,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { AmmunitionDailyUsageForm } from "../_components/usage-log-form";
 import { ClipboardList, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { getConsumptionRatesForForm, getUsageScenarios } from "@/lib/actions/inventory.actions";
+import { getUsageScenarios } from "@/lib/actions/inventory.actions";
 
 export default async function NewAmmunitionDailyUsagePage() {
-  const consumptionRates = await getConsumptionRatesForForm();
   const usageScenarios = await getUsageScenarios();
 
   return (
@@ -25,7 +24,7 @@ export default async function NewAmmunitionDailyUsagePage() {
           <CardDescription suppressHydrationWarning>Günlük fişek kullanım bilgilerini girin. Kişi sayısı girildiğinde ve senaryo seçildiğinde fişek miktarları otomatik olarak hesaplanacaktır.</CardDescription>
         </CardHeader>
         <CardContent>
-          <AmmunitionDailyUsageForm consumptionRates={consumptionRates} usageScenarios={usageScenarios} />
+          <AmmunitionDailyUsageForm usageScenarios={usageScenarios} />
         </CardContent>
       </Card>
     </div>

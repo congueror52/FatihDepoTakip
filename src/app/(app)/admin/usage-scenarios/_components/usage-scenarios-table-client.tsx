@@ -64,7 +64,7 @@ export function UsageScenariosTableClient({ scenarios: initialScenarios }: Usage
         <TableHeader>
           <TableRow>
             <TableHead><span suppressHydrationWarning>Senaryo Adı</span></TableHead>
-            <TableHead><span suppressHydrationWarning>Önceden Seçili Kalibreler</span></TableHead>
+            <TableHead><span suppressHydrationWarning>Tanımlı Kalibreler ve Kişi Başı Sarfiyatları</span></TableHead>
             <TableHead><span suppressHydrationWarning>Son Güncelleme</span></TableHead>
             <TableHead className="text-right"><span suppressHydrationWarning>Eylemler</span></TableHead>
           </TableRow>
@@ -79,10 +79,16 @@ export function UsageScenariosTableClient({ scenarios: initialScenarios }: Usage
               <TableRow key={scenario.id}>
                 <TableCell className="font-medium">{scenario.name}</TableCell>
                 <TableCell>
-                  <div className="flex flex-wrap gap-1">
-                    {scenario.preselectedCalibers.map(caliber => (
-                      <Badge key={caliber} variant="secondary" className="text-xs">{caliber}</Badge>
-                    ))}
+                  <div className="flex flex-col gap-1">
+                    {scenario.consumptionRatesPerCaliber.length > 0 ? (
+                      scenario.consumptionRatesPerCaliber.map(rate => (
+                        <Badge key={rate.caliber} variant="secondary" className="text-xs">
+                          {rate.caliber}: {rate.roundsPerPerson} <span suppressHydrationWarning>adet/kişi</span>
+                        </Badge>
+                      ))
+                    ) : (
+                      <span className="text-xs text-muted-foreground" suppressHydrationWarning>Sarfiyat oranı tanımlanmamış</span>
+                    )}
                   </div>
                 </TableCell>
                 <TableCell>{new Date(scenario.lastUpdated).toLocaleDateString('tr-TR')}</TableCell>

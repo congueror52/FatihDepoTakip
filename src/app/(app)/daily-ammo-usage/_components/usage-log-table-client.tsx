@@ -10,9 +10,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Trash2, Pencil } from "lucide-react"; // Pencil for Edit
+// import { Button } from "@/components/ui/button";
+// import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+// import { MoreHorizontal, Trash2, Pencil } from "lucide-react"; // Pencil for Edit
 import { useState } from "react";
 // import { useToast } from "@/hooks/use-toast";
 // import { deleteAmmunitionDailyUsageLogAction } from "@/lib/actions/inventory.actions"; // Implement if needed
@@ -60,6 +60,7 @@ export function AmmunitionDailyUsageTableClient({ logs: initialLogs }: Ammunitio
             <TableHead><span suppressHydrationWarning>5.56x45mm</span></TableHead>
             <TableHead><span suppressHydrationWarning>7.62x39mm</span></TableHead>
             <TableHead><span suppressHydrationWarning>7.62x51mm</span></TableHead>
+            <TableHead><span suppressHydrationWarning>12 Kalibre</span></TableHead>
             <TableHead><span suppressHydrationWarning>Notlar</span></TableHead>
             {/* <TableHead className="text-right"><span suppressHydrationWarning>Eylemler</span></TableHead> */}
           </TableRow>
@@ -67,7 +68,7 @@ export function AmmunitionDailyUsageTableClient({ logs: initialLogs }: Ammunitio
         <TableBody>
           {logs.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={8} className="text-center" suppressHydrationWarning>Günlük fişek kullanım kaydı bulunamadı.</TableCell>
+              <TableCell colSpan={9} className="text-center" suppressHydrationWarning>Günlük fişek kullanım kaydı bulunamadı.</TableCell>
             </TableRow>
           ) : (
             logs.map((log, index) => (
@@ -79,6 +80,7 @@ export function AmmunitionDailyUsageTableClient({ logs: initialLogs }: Ammunitio
                 <TableCell>{log.used_5_56x45mm > 0 ? log.used_5_56x45mm : '-'}</TableCell>
                 <TableCell>{log.used_7_62x39mm > 0 ? log.used_7_62x39mm : '-'}</TableCell>
                 <TableCell>{log.used_7_62x51mm > 0 ? log.used_7_62x51mm : '-'}</TableCell>
+                <TableCell>{log["used_12 Kalibre"] > 0 ? log["used_12 Kalibre"] : '-'}</TableCell>
                 <TableCell className="max-w-[200px] truncate">{log.notes || '-'}</TableCell>
                 {/* <TableCell className="text-right">
                   <DropdownMenu>

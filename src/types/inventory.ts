@@ -26,7 +26,7 @@ export interface FirearmDefinition {
   id: string;
   name: string; // e.g., "Piyade Tüfeği", "Tabanca"
   model: string; // e.g., MPT-76, SAR9
-  manufacturer?: string; // e.g., MKE, Sarsılmaz
+  manufacturer?: string; // e.g., Sarsılmaz
   caliber: string; // e.g., 7.62x51mm, 9x19mm
   description?: string;
   lastUpdated: string;
@@ -117,23 +117,21 @@ export interface AmmunitionDailyUsageLog {
   notes?: string;
 }
 
-// Admin-configurable standard consumption rates
-export const SUPPORTED_CALIBERS_FOR_CONSUMPTION = ["9x19mm", "5.56x45mm", "7.62x39mm", "7.62x51mm"] as const;
-export type SupportedCaliberForConsumption = typeof SUPPORTED_CALIBERS_FOR_CONSUMPTION[number];
+// Supported calibers for various forms and definitions
+export const SUPPORTED_CALIBERS = ["9x19mm", "5.56x45mm", "7.62x39mm", "7.62x51mm", "12 Kalibre"] as const;
+export type SupportedCaliber = typeof SUPPORTED_CALIBERS[number];
 
-export interface AmmunitionStandardConsumptionRate {
-  id: string;
-  caliber: SupportedCaliberForConsumption;
+
+// Admin-configurable usage scenarios with embedded consumption rates
+export interface ScenarioCaliberConsumption {
+  caliber: SupportedCaliber;
   roundsPerPerson: number;
-  lastUpdated: string;
 }
-
-// Admin-configurable usage scenarios
 export interface UsageScenario {
   id: string;
   name: string;
   description?: string;
-  preselectedCalibers: SupportedCaliberForConsumption[];
+  consumptionRatesPerCaliber: ScenarioCaliberConsumption[];
   lastUpdated: string;
 }
 
@@ -163,5 +161,4 @@ export type ShipmentsDb = Shipment[];
 export type AmmunitionUsageDb = AmmunitionUsageLog[];
 export type FirearmDefinitionsDb = FirearmDefinition[];
 export type AmmunitionDailyUsageDb = AmmunitionDailyUsageLog[];
-export type AmmunitionStandardConsumptionRatesDb = AmmunitionStandardConsumptionRate[];
-export type UsageScenariosDb = UsageScenario[]; // New DB type
+export type UsageScenariosDb = UsageScenario[];
