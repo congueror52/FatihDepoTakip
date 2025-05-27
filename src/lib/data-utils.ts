@@ -46,6 +46,6 @@ export async function writeData<T>(fileName: string, data: T[]): Promise<void> {
   }
 }
 
-export function generateId(): string {
+export async function generateId(): Promise<string> {
   return uuidv4();
 }

@@ -25,7 +25,7 @@ export async function addFirearmAction(data: Omit<Firearm, 'id' | 'lastUpdated' 
   const firearms = await getFirearms();
   const newFirearm: Firearm = {
     ...validatedData.data,
-    id: generateId(),
+    id: await generateId(),
     itemType: 'firearm',
     lastUpdated: new Date().toISOString(),
     maintenanceHistory: []
@@ -83,7 +83,7 @@ export async function addMagazineAction(data: Omit<Magazine, 'id' | 'lastUpdated
   const magazines = await getMagazines();
   const newMagazine: Magazine = {
     ...(data as any), // Add proper type assertion or mapping
-    id: generateId(),
+    id: await generateId(),
     itemType: 'magazine',
     lastUpdated: new Date().toISOString(),
     maintenanceHistory: [],
@@ -103,7 +103,7 @@ export async function addAmmunitionAction(data: Omit<Ammunition, 'id' | 'lastUpd
   const ammunition = await getAmmunition();
   const newAmmunition: Ammunition = {
     ...(data as any), // Add proper type assertion or mapping
-    id: generateId(),
+    id: await generateId(),
     itemType: 'ammunition',
     lastUpdated: new Date().toISOString(),
   };
@@ -121,7 +121,7 @@ export async function addShipmentAction(data: Omit<Shipment, 'id'>): Promise<Shi
   const shipments = await getShipments();
   const newShipment: Shipment = {
     ...data,
-    id: generateId(),
+    id: await generateId(),
   };
   shipments.push(newShipment);
   await writeData('shipments.json', shipments);
@@ -143,7 +143,7 @@ export async function logAmmunitionUsageAction(data: Omit<AmmunitionUsageLog, 'i
   const logs = await getAmmunitionUsageLogs();
   const newLog: AmmunitionUsageLog = {
     ...data,
-    id: generateId(),
+    id: await generateId(),
   };
   // TODO: Update actual ammunition quantity
   logs.push(newLog);
