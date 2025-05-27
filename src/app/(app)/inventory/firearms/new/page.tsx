@@ -1,8 +1,12 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FirearmForm } from "../_components/firearm-form";
 import { Target } from "lucide-react";
+import { getFirearmDefinitions } from "@/lib/actions/inventory.actions";
 
-export default function NewFirearmPage() {
+export default async function NewFirearmPage() {
+  const firearmDefinitions = await getFirearmDefinitions();
+
   return (
     <div className="max-w-2xl mx-auto">
       <div className="flex items-center gap-2 mb-6">
@@ -12,10 +16,10 @@ export default function NewFirearmPage() {
       <Card>
         <CardHeader>
           <CardTitle suppressHydrationWarning>Ateşli Silah Detayları</CardTitle>
-          <CardDescription suppressHydrationWarning>Yeni ateşli silah için bilgileri girin.</CardDescription>
+          <CardDescription suppressHydrationWarning>Yeni ateşli silah için bir tür seçin ve bilgileri girin.</CardDescription>
         </CardHeader>
         <CardContent>
-          <FirearmForm />
+          <FirearmForm firearmDefinitions={firearmDefinitions} />
         </CardContent>
       </Card>
     </div>

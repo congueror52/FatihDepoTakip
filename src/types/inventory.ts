@@ -13,19 +13,31 @@ export type AmmunitionStatus = 'Mevcut' | 'Düşük Stok' | 'Rezerve Edilmiş';
 
 export interface BaseItem {
   id: string;
-  name: string;
+  name: string; // For instances, this will be copied from definition
   depotId: DepotId;
   notes?: string;
   lastUpdated: string; // ISO date string
   purchaseDate?: string; // ISO date string
-  manufacturer?: string;
+  manufacturer?: string; // For instances, this will be copied from definition
+}
+
+// Master definition for a firearm type
+export interface FirearmDefinition {
+  id: string;
+  name: string; // e.g., "Piyade Tüfeği", "Tabanca"
+  model: string; // e.g., MPT-76, SAR9
+  manufacturer?: string; // e.g., MKE, Sarsılmaz
+  caliber: string; // e.g., 7.62x51mm, 9x19mm
+  description?: string;
+  lastUpdated: string;
 }
 
 export interface Firearm extends BaseItem {
   itemType: 'firearm';
+  definitionId: string; // Links to FirearmDefinition
   serialNumber: string;
-  model: string;
-  caliber: string;
+  model: string; // Copied from definition
+  caliber: string; // Copied from definition
   status: FirearmStatus;
   maintenanceHistory?: MaintenanceLog[];
 }
@@ -116,3 +128,4 @@ export type MagazinesDb = Magazine[];
 export type AmmunitionDb = Ammunition[];
 export type ShipmentsDb = Shipment[];
 export type AmmunitionUsageDb = AmmunitionUsageLog[];
+export type FirearmDefinitionsDb = FirearmDefinition[]; // New DB type

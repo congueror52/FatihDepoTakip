@@ -1,0 +1,30 @@
+
+[
+  {
+    "id": "fd_1",
+    "name": "Piyade Tüfeği - Alpha",
+    "model": "MPT-76",
+    "manufacturer": "MKE",
+    "caliber": "7.62x51mm",
+    "description": "Standart piyade tüfeği, uzun menzilli.",
+    "lastUpdated": "2024-01-15T10:00:00.000Z"
+  },
+  {
+    "id": "fd_2",
+    "name": "Tabanca - Bravo",
+    "model": "SAR9",
+    "manufacturer": "Sarsılmaz",
+    "caliber": "9x19mm",
+    "description": "Standart hizmet tabancası.",
+    "lastUpdated": "2024-01-15T10:05:00.000Z"
+  },
+  {
+    "id": "fd_3",
+    "name": "Hafif Makineli Tüfek - Charlie",
+    "model": "KMG556",
+    "manufacturer": "KaleKalıp",
+    "caliber": "5.56x45mm",
+    "description": "Manga destek silahı.",
+    "lastUpdated": "2024-01-16T11:00:00.000Z"
+  }
+]

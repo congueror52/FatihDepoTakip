@@ -1,12 +1,78 @@
+
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import type { Firearm, Magazine, Ammunition, Shipment, AmmunitionUsageLog, DepotInventorySnapshot, HistoricalUsageSnapshot, UpcomingRequirementsSnapshot } from '@/types/inventory';
+import type { Firearm, Magazine, Ammunition, Shipment, AmmunitionUsageLog, DepotInventorySnapshot, HistoricalUsageSnapshot, UpcomingRequirementsSnapshot, FirearmDefinition } from '@/types/inventory';
 import { readData, writeData, generateId } from '@/lib/data-utils';
 import { firearmFormSchema } from '@/app/(app)/inventory/firearms/_components/firearm-form-schema';
+import { firearmDefinitionFormSchema } from '@/app/(app)/admin/firearms-definitions/_components/firearm-definition-form-schema';
 import { suggestRebalancing as suggestRebalancingAI } from '@/ai/flows/suggest-rebalancing';
 
-// Firearms
+// Firearm Definitions
+export async function getFirearmDefinitions(): Promise<FirearmDefinition[]> {
+  return readData<FirearmDefinition>('firearm_definitions.json');
+}
+
+export async function getFirearmDefinitionById(id: string): Promise<FirearmDefinition | undefined> {
+  const definitions = await getFirearmDefinitions();
+  return definitions.find(d => d.id === id);
+}
+
+export async function addFirearmDefinitionAction(data: Omit<FirearmDefinition, 'id' | 'lastUpdated'>) {
+  const validatedData = firearmDefinitionFormSchema.safeParse(data);
+  if (!validatedData.success) {
+    throw new Error('Geçersiz silah tanımı verisi: ' + JSON.stringify(validatedData.error.format()));
+  }
+  
+  const definitions = await getFirearmDefinitions();
+  const newDefinition: FirearmDefinition = {
+    ...validatedData.data,
+    id: await generateId(),
+    lastUpdated: new Date().toISOString(),
+  };
+  definitions.push(newDefinition);
+  await writeData('firearm_definitions.json', definitions);
+  revalidatePath('/admin/firearms-definitions');
+  return newDefinition;
+}
+
+export async function updateFirearmDefinitionAction(definition: FirearmDefinition) {
+  const validatedData = firearmDefinitionFormSchema.safeParse(definition);
+   if (!validatedData.success) {
+    console.error("Doğrulama hataları:", validatedData.error.format());
+    throw new Error('Güncelleme için geçersiz silah tanımı verisi.');
+  }
+
+  let definitions = await getFirearmDefinitions();
+  const index = definitions.findIndex(d => d.id === definition.id);
+  if (index === -1) {
+    throw new Error('Güncellenecek silah tanımı bulunamadı.');
+  }
+  
+  const updatedDefinition = {
+    ...definitions[index],
+    ...validatedData.data,
+    lastUpdated: new Date().toISOString(),
+  };
+
+  definitions[index] = updatedDefinition;
+  await writeData('firearm_definitions.json', definitions);
+  revalidatePath('/admin/firearms-definitions');
+  revalidatePath(`/admin/firearms-definitions/${definition.id}/edit`);
+  return updatedDefinition;
+}
+
+export async function deleteFirearmDefinitionAction(id: string): Promise<void> {
+  let definitions = await getFirearmDefinitions();
+  // TODO: Check if any firearm instance uses this definition before deleting.
+  // For now, direct deletion.
+  definitions = definitions.filter(d => d.id !== id);
+  await writeData('firearm_definitions.json', definitions);
+  revalidatePath('/admin/firearms-definitions');
+}
+
+
+// Firearms (Instances)
 export async function getFirearms(): Promise<Firearm[]> {
   return readData<Firearm>('firearms.json');
 }
@@ -16,10 +82,15 @@ export async function getFirearmById(id: string): Promise<Firearm | undefined> {
   return firearms.find(f => f.id === id);
 }
 
-export async function addFirearmAction(data: Omit<Firearm, 'id' | 'lastUpdated' | 'itemType' | 'maintenanceHistory'>) {
+export async function addFirearmAction(data: Omit<Firearm, 'id' | 'lastUpdated' | 'itemType' | 'maintenanceHistory' | 'name' | 'model' | 'manufacturer' | 'caliber'> & { definitionId: string }) {
   const validatedData = firearmFormSchema.safeParse(data);
   if (!validatedData.success) {
-    throw new Error('Invalid firearm data: ' + JSON.stringify(validatedData.error.format()));
+    throw new Error('Geçersiz ateşli silah verisi: ' + JSON.stringify(validatedData.error.format()));
+  }
+
+  const definition = await getFirearmDefinitionById(validatedData.data.definitionId);
+  if (!definition) {
+    throw new Error('Geçersiz silah tanım IDsi.');
   }
   
   const firearms = await getFirearms();
@@ -27,6 +98,10 @@ export async function addFirearmAction(data: Omit<Firearm, 'id' | 'lastUpdated' 
     ...validatedData.data,
     id: await generateId(),
     itemType: 'firearm',
+    name: definition.name, // Copied from definition
+    model: definition.model, // Copied from definition
+    manufacturer: definition.manufacturer, // Copied from definition
+    caliber: definition.caliber, // Copied from definition
     lastUpdated: new Date().toISOString(),
     maintenanceHistory: []
   };
@@ -38,23 +113,32 @@ export async function addFirearmAction(data: Omit<Firearm, 'id' | 'lastUpdated' 
 }
 
 export async function updateFirearmAction(firearm: Firearm) {
-  const validatedData = firearmFormSchema.safeParse(firearm);
-   if (!validatedData.success) {
-    // It's better to log specific errors or return them to the client.
-    // For now, logging to server console.
-    console.error("Validation errors:", validatedData.error.format());
-    throw new Error('Invalid firearm data for update.');
+   // For update, we assume definitionId, name, model, manufacturer, caliber are not changed via this form
+   // Only instance-specific fields are updated.
+  const validatedData = firearmFormSchema.safeParse({
+    definitionId: firearm.definitionId, // Keep existing
+    serialNumber: firearm.serialNumber,
+    depotId: firearm.depotId,
+    status: firearm.status,
+    purchaseDate: firearm.purchaseDate,
+    notes: firearm.notes,
+  });
+
+  if (!validatedData.success) {
+    console.error("Doğrulama hataları:", validatedData.error.format());
+    throw new Error('Güncelleme için geçersiz ateşli silah verisi.');
   }
 
   let firearms = await getFirearms();
   const index = firearms.findIndex(f => f.id === firearm.id);
   if (index === -1) {
-    throw new Error('Firearm not found for update.');
+    throw new Error('Güncellenecek ateşli silah bulunamadı.');
   }
   
-  const updatedFirearm = {
-    ...firearms[index], // Keep existing fields like maintenanceHistory
-    ...validatedData.data, // Apply validated updates
+  const currentFirearm = firearms[index];
+  const updatedFirearm: Firearm = {
+    ...currentFirearm, // Keep existing fields like id, itemType, name, model, manufacturer, caliber, maintenanceHistory
+    ...validatedData.data, // Apply validated updates for instance-specific fields
     lastUpdated: new Date().toISOString(),
   };
 
@@ -170,8 +254,8 @@ export async function suggestRebalancing(
     });
     return { success: true, data: result };
   } catch (error) {
-    console.error("AI Rebalancing Error:", error);
-    return { success: false, error: "Failed to get rebalancing suggestion." };
+    console.error("AI Yeniden Dengeleme Hatası:", error);
+    return { success: false, error: "Yeniden dengeleme önerisi alınamadı." };
   }
 }
 

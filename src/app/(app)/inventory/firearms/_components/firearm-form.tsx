@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,27 +22,30 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import type { Firearm } from "@/types/inventory";
+import type { Firearm, FirearmDefinition } from "@/types/inventory";
 import { DEPOT_LOCATIONS } from "@/types/inventory";
 import { firearmFormSchema, firearmStatuses, type FirearmFormValues } from "./firearm-form-schema";
-import { addFirearmAction, updateFirearmAction } from "@/lib/actions/inventory.actions";
+import { addFirearmAction, updateFirearmAction, getFirearmDefinitions } from "@/lib/actions/inventory.actions";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Loader2 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
-
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface FirearmFormProps {
   firearm?: Firearm; // Optional: for editing existing firearm
+  firearmDefinitions: FirearmDefinition[];
 }
 
-export function FirearmForm({ firearm }: FirearmFormProps) {
+export function FirearmForm({ firearm, firearmDefinitions }: FirearmFormProps) {
   const { toast } = useToast();
   const router = useRouter();
+  const [selectedDefinition, setSelectedDefinition] = useState<FirearmDefinition | null>(null);
 
   const defaultValues: Partial<FirearmFormValues> = firearm ? {
     ...firearm,
@@ -57,22 +61,75 @@ export function FirearmForm({ firearm }: FirearmFormProps) {
     mode: "onChange",
   });
 
+  useEffect(() => {
+    if (firearm && firearm.definitionId) {
+      const definition = firearmDefinitions.find(def => def.id === firearm.definitionId);
+      if (definition) {
+        setSelectedDefinition(definition);
+        // Set auto-filled fields in the form for display, they are not part of the submission data directly
+        form.setValue('name', definition.name);
+        form.setValue('model', definition.model);
+        form.setValue('manufacturer', definition.manufacturer);
+        form.setValue('caliber', definition.caliber);
+      }
+    }
+  }, [firearm, firearmDefinitions, form]);
+
+
+  const handleDefinitionChange = (definitionId: string) => {
+    const definition = firearmDefinitions.find(def => def.id === definitionId);
+    if (definition) {
+      setSelectedDefinition(definition);
+      form.setValue('definitionId', definition.id);
+      // Auto-fill display fields
+      form.setValue('name', definition.name);
+      form.setValue('model', definition.model);
+      form.setValue('manufacturer', definition.manufacturer);
+      form.setValue('caliber', definition.caliber);
+      form.clearErrors(['name', 'model', 'manufacturer', 'caliber']);
+    } else {
+      setSelectedDefinition(null);
+      form.setValue('name', '');
+      form.setValue('model', '');
+      form.setValue('manufacturer', '');
+      form.setValue('caliber', '');
+    }
+  };
+
   async function onSubmit(data: FirearmFormValues) {
     try {
-      const firearmData: Omit<Firearm, 'id' | 'lastUpdated' | 'itemType' | 'maintenanceHistory'> & { id?: string } = {
-        ...data,
-        purchaseDate: data.purchaseDate ? new Date(data.purchaseDate).toISOString() : undefined,
-      };
-
       if (firearm) {
-        await updateFirearmAction({ ...firearmData, id: firearm.id } as Firearm);
+        // For updates, we pass the full firearm object which includes definitionId and copied fields.
+        // The action will decide what to update.
+        const firearmToUpdate: Firearm = {
+          ...firearm, // existing firearm data (id, name, model etc.)
+          serialNumber: data.serialNumber,
+          depotId: data.depotId,
+          status: data.status,
+          purchaseDate: data.purchaseDate ? new Date(data.purchaseDate).toISOString() : undefined,
+          notes: data.notes,
+        };
+        await updateFirearmAction(firearmToUpdate);
         toast({ title: "Başarılı", description: "Ateşli silah başarıyla güncellendi." });
       } else {
-        await addFirearmAction(firearmData as Omit<Firearm, 'id' | 'lastUpdated' | 'itemType' | 'maintenanceHistory'>);
+        // For new firearms, we pass only definitionId and instance-specific fields.
+        // The action will copy name, model etc from definition.
+         if (!data.definitionId) {
+          toast({ variant: "destructive", title: "Hata", description: "Lütfen bir silah türü seçin." });
+          return;
+        }
+        await addFirearmAction({
+          definitionId: data.definitionId,
+          serialNumber: data.serialNumber,
+          depotId: data.depotId,
+          status: data.status,
+          purchaseDate: data.purchaseDate ? new Date(data.purchaseDate).toISOString() : undefined,
+          notes: data.notes,
+        });
         toast({ title: "Başarılı", description: "Ateşli silah başarıyla eklendi." });
       }
       router.push("/inventory/firearms");
-      router.refresh(); // To ensure the table data is up-to-date
+      router.refresh();
     } catch (error) {
       toast({ variant: "destructive", title: "Hata", description: `Ateşli silah ${firearm ? 'güncellenirken' : 'eklenirken'} hata oluştu.` });
       console.error("Form gönderme hatası:", error);
@@ -82,21 +139,53 @@ export function FirearmForm({ firearm }: FirearmFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel><span suppressHydrationWarning>Ateşli Silah Adı / Tanımlayıcı</span></FormLabel>
+        <FormField
+          control={form.control}
+          name="definitionId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel><span suppressHydrationWarning>Silah Türü</span></FormLabel>
+              <Select 
+                onValueChange={(value) => {
+                  field.onChange(value);
+                  handleDefinitionChange(value);
+                }} 
+                defaultValue={field.value}
+                disabled={!!firearm} // Disable if editing, definition shouldn't change
+              >
                 <FormControl>
-                  <Input placeholder="örn. Tüfek #123, Birincil Tabanca" {...field} />
+                  <SelectTrigger>
+                    <SelectValue placeholder="Bir silah türü seçin" />
+                  </SelectTrigger>
                 </FormControl>
-                <FormDescription><span suppressHydrationWarning>Kolay tanımlama için açıklayıcı bir ad.</span></FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                <SelectContent>
+                  {firearmDefinitions.length === 0 && <SelectItem value="loading" disabled><span suppressHydrationWarning>Yükleniyor...</span></SelectItem>}
+                  {firearmDefinitions.map(def => (
+                    <SelectItem key={def.id} value={def.id}><span suppressHydrationWarning>{def.name} ({def.model} - {def.caliber})</span></SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormDescription><span suppressHydrationWarning>Sisteme eklenecek silahın önceden tanımlanmış türünü seçin.</span></FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {selectedDefinition && (
+          <Card className="bg-muted/50">
+            <CardHeader className="pb-2 pt-4">
+              <CardTitle className="text-base"><span suppressHydrationWarning>Seçilen Silah Türü Bilgileri</span></CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 text-sm pb-4">
+              <div><strong><span suppressHydrationWarning>Ad:</span></strong> <span suppressHydrationWarning>{selectedDefinition.name}</span></div>
+              <div><strong><span suppressHydrationWarning>Model:</span></strong> <span suppressHydrationWarning>{selectedDefinition.model}</span></div>
+              <div><strong><span suppressHydrationWarning>Kalibre:</span></strong> <span suppressHydrationWarning>{selectedDefinition.caliber}</span></div>
+              {selectedDefinition.manufacturer && <div><strong><span suppressHydrationWarning>Üretici:</span></strong> <span suppressHydrationWarning>{selectedDefinition.manufacturer}</span></div>}
+            </CardContent>
+          </Card>
+        )}
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
             control={form.control}
             name="serialNumber"
@@ -105,45 +194,6 @@ export function FirearmForm({ firearm }: FirearmFormProps) {
                 <FormLabel><span suppressHydrationWarning>Seri Numarası</span></FormLabel>
                 <FormControl>
                   <Input placeholder="SN123456789" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="model"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel><span suppressHydrationWarning>Model</span></FormLabel>
-                <FormControl>
-                  <Input placeholder="örn. M4A1, Glock 19 Gen5" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="manufacturer"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel><span suppressHydrationWarning>Üretici (İsteğe Bağlı)</span></FormLabel>
-                <FormControl>
-                  <Input placeholder="örn. Colt, Glock" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="caliber"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel><span suppressHydrationWarning>Kalibre</span></FormLabel>
-                <FormControl>
-                  <Input placeholder="örn. 5.56x45mm, 9mm" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -254,6 +304,7 @@ export function FirearmForm({ firearm }: FirearmFormProps) {
           )}
         />
         <Button type="submit" disabled={form.formState.isSubmitting}>
+          {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {form.formState.isSubmitting ? <span suppressHydrationWarning>Kaydediliyor...</span> : (firearm ? <span suppressHydrationWarning>Ateşli Silahı Güncelle</span> : <span suppressHydrationWarning>Ateşli Silah Ekle</span>)}
         </Button>
       </form>
