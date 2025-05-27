@@ -65,7 +65,7 @@ export function MainNav() {
                   >
                     <div className="flex items-center gap-2">
                       <item.icon className="h-5 w-5" />
-                      <span>{item.label}</span>
+                      <span suppressHydrationWarning>{item.label}</span>
                     </div>
                     <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200 accordion-chevron" />
                   </SidebarMenuButton>
@@ -81,7 +81,7 @@ export function MainNav() {
                           className="pl-6"
                         >
                           <subItem.icon className="h-4 w-4 mr-2" />
-                          {subItem.label}
+                          <span suppressHydrationWarning>{subItem.label}</span>
                         </SidebarMenuSubButton>
                       </Link>
                     </SidebarMenuSubItem>
@@ -100,7 +100,7 @@ export function MainNav() {
             <Link href={item.href} legacyBehavior passHref>
               <SidebarMenuButton isActive={pathname.startsWith(item.href)}>
                 <item.icon className="h-5 w-5" />
-                <span>{item.label}</span>
+                <span suppressHydrationWarning>{item.label}</span>
               </SidebarMenuButton>
             </Link>
           </SidebarMenuItem>
