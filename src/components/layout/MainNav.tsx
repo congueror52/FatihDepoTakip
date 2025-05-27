@@ -30,15 +30,9 @@ import { cn } from '@/lib/utils';
 
 const menuItems = [
   { href: '/dashboard', label: 'Gösterge Paneli', icon: Gauge },
-  {
-    label: 'Envanter',
-    icon: Warehouse,
-    subItems: [
-      { href: '/inventory/firearms', label: 'Ateşli Silahlar', icon: Target },
-      { href: '/inventory/magazines', label: 'Şarjörler', icon: ListChecks },
-      { href: '/inventory/ammunition', label: 'Mühimmat', icon: Box },
-    ],
-  },
+  { href: '/inventory/firearms', label: 'Ateşli Silahlar', icon: Target },
+  { href: '/inventory/magazines', label: 'Şarjörler', icon: ListChecks },
+  { href: '/inventory/ammunition', label: 'Mühimmat', icon: Box },
   { href: '/shipments', label: 'Sevkiyatlar', icon: Truck },
   { href: '/maintenance', label: 'Bakım', icon: Wrench },
   { href: '/ai-balancing', label: 'Yapay Zeka Stok Dengeleme', icon: BrainCircuit },
@@ -51,7 +45,7 @@ export function MainNav() {
   return (
     <SidebarMenu className="p-4">
       {menuItems.map((item) =>
-        item.subItems ? (
+        item.subItems ? ( // This condition will no longer be met for the old 'Envanter' item
           <Accordion.Root type="single" collapsible key={item.label} className="w-full">
             <Accordion.Item value={item.label} className="border-none">
               <Accordion.Trigger asChild>
