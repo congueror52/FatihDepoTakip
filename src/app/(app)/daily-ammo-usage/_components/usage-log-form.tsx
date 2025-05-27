@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox"; // Eklendi
 import { ammunitionDailyUsageFormSchema, type AmmunitionDailyUsageFormValues } from "./usage-log-form-schema";
 import { addAmmunitionDailyUsageLogAction } from "@/lib/actions/inventory.actions";
 import { useToast } from "@/hooks/use-toast";
@@ -25,16 +26,27 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
-import { useEffect } from "react";
-import type { SupportedCaliberForConsumption } from "@/types/inventory";
+import { useEffect, useState } from "react"; // useState eklendi
+import type { SupportedCaliberForConsumption } from "@/types/inventory"; // Eklendi
+import { SUPPORTED_CALIBERS_FOR_CONSUMPTION } from "@/types/inventory"; // Eklendi
 
 interface AmmunitionDailyUsageFormProps {
   consumptionRates: Record<SupportedCaliberForConsumption, number>;
 }
 
+type CaliberCheckboxState = Record<SupportedCaliberForConsumption, boolean>;
+
 export function AmmunitionDailyUsageForm({ consumptionRates }: AmmunitionDailyUsageFormProps) {
   const { toast } = useToast();
   const router = useRouter();
+
+  const initialCheckboxState: CaliberCheckboxState = {
+    "9x19mm": true,
+    "5.56x45mm": true,
+    "7.62x39mm": true,
+    "7.62x51mm": true,
+  };
+  const [checkedCalibers, setCheckedCalibers] = useState<CaliberCheckboxState>(initialCheckboxState);
 
   const defaultValues: Partial<AmmunitionDailyUsageFormValues> = {
     date: format(new Date(), 'yyyy-MM-dd'),
@@ -54,19 +66,54 @@ export function AmmunitionDailyUsageForm({ consumptionRates }: AmmunitionDailyUs
 
   const personnelCount = form.watch("personnelCount");
 
+  const handleCheckboxChange = (caliber: SupportedCaliberForConsumption, isChecked: boolean) => {
+    setCheckedCalibers(prevState => ({ ...prevState, [caliber]: isChecked }));
+
+    const currentPersonnelCount = form.getValues("personnelCount");
+    const rate = consumptionRates[caliber] || 0;
+    
+    let formFieldName: keyof AmmunitionDailyUsageFormValues;
+    switch (caliber) {
+      case "9x19mm": formFieldName = "used_9x19mm"; break;
+      case "5.56x45mm": formFieldName = "used_5_56x45mm"; break;
+      case "7.62x39mm": formFieldName = "used_7_62x39mm"; break;
+      case "7.62x51mm": formFieldName = "used_7_62x51mm"; break;
+      default: return; 
+    }
+
+    if (!isChecked) {
+      form.setValue(formFieldName, 0);
+    } else if (currentPersonnelCount > 0 && consumptionRates) {
+      form.setValue(formFieldName, Math.round(currentPersonnelCount * rate));
+    } else if (currentPersonnelCount === 0) {
+      form.setValue(formFieldName, 0);
+    }
+  };
+
   useEffect(() => {
     if (personnelCount > 0 && consumptionRates) {
-      form.setValue("used_9x19mm", Math.round(personnelCount * (consumptionRates["9x19mm"] || 0)));
-      form.setValue("used_5_56x45mm", Math.round(personnelCount * (consumptionRates["5.56x45mm"] || 0)));
-      form.setValue("used_7_62x39mm", Math.round(personnelCount * (consumptionRates["7.62x39mm"] || 0)));
-      form.setValue("used_7_62x51mm", Math.round(personnelCount * (consumptionRates["7.62x51mm"] || 0)));
+      (SUPPORTED_CALIBERS_FOR_CONSUMPTION as readonly SupportedCaliberForConsumption[]).forEach(caliber => {
+        let formFieldName: keyof AmmunitionDailyUsageFormValues;
+        switch (caliber) {
+          case "9x19mm": formFieldName = "used_9x19mm"; break;
+          case "5.56x45mm": formFieldName = "used_5_56x45mm"; break;
+          case "7.62x39mm": formFieldName = "used_7_62x39mm"; break;
+          case "7.62x51mm": formFieldName = "used_7_62x51mm"; break;
+          default: return;
+        }
+        if (checkedCalibers[caliber]) {
+          form.setValue(formFieldName, Math.round(personnelCount * (consumptionRates[caliber] || 0)));
+        } else {
+          form.setValue(formFieldName, 0);
+        }
+      });
     } else if (personnelCount === 0) {
         form.setValue("used_9x19mm", 0);
         form.setValue("used_5_56x45mm", 0);
         form.setValue("used_7_62x39mm", 0);
         form.setValue("used_7_62x51mm", 0);
     }
-  }, [personnelCount, consumptionRates, form]);
+  }, [personnelCount, consumptionRates, form, checkedCalibers]);
 
 
   async function onSubmit(data: AmmunitionDailyUsageFormValues) {
@@ -75,11 +122,18 @@ export function AmmunitionDailyUsageForm({ consumptionRates }: AmmunitionDailyUs
       toast({ title: "Başarılı", description: "Günlük fişek kullanım kaydı başarıyla eklendi." });
       router.push("/daily-ammo-usage");
       router.refresh(); 
-    } catch (error) {
-      toast({ variant: "destructive", title: "Hata", description: "Kayıt eklenirken hata oluştu." });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Hata", description: error.message || "Kayıt eklenirken hata oluştu." });
       console.error("Form gönderme hatası:", error);
     }
   }
+
+  const caliberFields: {name: keyof AmmunitionDailyUsageFormValues, label: string, caliberKey: SupportedCaliberForConsumption }[] = [
+    { name: "used_9x19mm", label: "9x19mm (Adet)", caliberKey: "9x19mm" },
+    { name: "used_5_56x45mm", label: "5.56x45mm (Adet)", caliberKey: "5.56x45mm" },
+    { name: "used_7_62x39mm", label: "7.62x39mm (Adet)", caliberKey: "7.62x39mm" },
+    { name: "used_7_62x51mm", label: "7.62x51mm (Adet)", caliberKey: "7.62x51mm" },
+  ];
 
   return (
     <Form {...form}>
@@ -134,67 +188,42 @@ export function AmmunitionDailyUsageForm({ consumptionRates }: AmmunitionDailyUs
                 <FormControl>
                   <Input type="number" placeholder="0" {...field} />
                 </FormControl>
-                <FormDescription><span suppressHydrationWarning>Fişek miktarları otomatik hesaplanacaktır.</span></FormDescription>
+                <FormDescription><span suppressHydrationWarning>Fişek miktarları seçili kalibreler için otomatik hesaplanacaktır.</span></FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
         </div>
         
-        <h3 className="text-lg font-medium border-b pb-2" suppressHydrationWarning>Kullanılan Fişek Miktarları (Otomatik Hesaplandı)</h3>
+        <h3 className="text-lg font-medium border-b pb-2" suppressHydrationWarning>Kullanılan Fişek Miktarları</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-          <FormField
-            control={form.control}
-            name="used_9x19mm"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel><span suppressHydrationWarning>9x19mm (Adet)</span></FormLabel>
-                <FormControl>
-                  <Input type="number" placeholder="0" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="used_5_56x45mm"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel><span suppressHydrationWarning>5.56x45mm (Adet)</span></FormLabel>
-                <FormControl>
-                  <Input type="number" placeholder="0" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="used_7_62x39mm"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel><span suppressHydrationWarning>7.62x39mm (Adet)</span></FormLabel>
-                <FormControl>
-                  <Input type="number" placeholder="0" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="used_7_62x51mm"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel><span suppressHydrationWarning>7.62x51mm (Adet)</span></FormLabel>
-                <FormControl>
-                  <Input type="number" placeholder="0" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {caliberFields.map((item) => (
+            <FormField
+              key={item.name}
+              control={form.control}
+              name={item.name}
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center space-x-3">
+                    <Checkbox
+                      id={`checkbox_${item.caliberKey}`}
+                      checked={checkedCalibers[item.caliberKey]}
+                      onCheckedChange={(checked) => {
+                        handleCheckboxChange(item.caliberKey, !!checked);
+                      }}
+                    />
+                    <FormLabel htmlFor={`checkbox_${item.caliberKey}`} className="font-normal cursor-pointer">
+                      <span suppressHydrationWarning>{item.label}</span>
+                    </FormLabel>
+                  </div>
+                  <FormControl>
+                    <Input type="number" placeholder="0" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          ))}
         </div>
 
         <FormField
@@ -222,3 +251,4 @@ export function AmmunitionDailyUsageForm({ consumptionRates }: AmmunitionDailyUs
     </Form>
   );
 }
+
