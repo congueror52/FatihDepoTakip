@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'AmmoTrack - Depot Management System',
-  description: 'Track and manage firearms, magazines, and ammunition across depots.',
+  title: 'AmmoTrack - Depo Yönetim Sistemi',
+  description: 'Depolar arası ateşli silahları, şarjörleri ve mühimmatı takip edin ve yönetin.',
 };
 
 export default function RootLayout({
@@ -25,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="tr" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans`}>
         <Providers>
           {children}

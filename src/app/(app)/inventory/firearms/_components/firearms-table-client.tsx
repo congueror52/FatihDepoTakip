@@ -26,7 +26,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { deleteFirearmAction } from "@/lib/actions/inventory.actions"; // Assuming this action exists
+import { deleteFirearmAction } from "@/lib/actions/inventory.actions";
+import { DEPOT_LOCATIONS } from "@/types/inventory";
 
 interface FirearmsTableClientProps {
   firearms: Firearm[];
@@ -43,9 +44,9 @@ export function FirearmsTableClient({ firearms: initialFirearms }: FirearmsTable
     try {
       await deleteFirearmAction(selectedFirearmId);
       setFirearms(firearms.filter(f => f.id !== selectedFirearmId));
-      toast({ title: "Success", description: "Firearm deleted successfully." });
+      toast({ title: "Başarılı", description: "Ateşli silah başarıyla silindi." });
     } catch (error) {
-      toast({ variant: "destructive", title: "Error", description: "Failed to delete firearm." });
+      toast({ variant: "destructive", title: "Hata", description: "Ateşli silah silinemedi." });
     } finally {
       setIsDeleteDialogOpen(false);
       setSelectedFirearmId(null);
@@ -59,15 +60,20 @@ export function FirearmsTableClient({ firearms: initialFirearms }: FirearmsTable
   
   const getStatusColor = (status: Firearm['status']) => {
     switch (status) {
-      case 'In Service': return 'bg-green-500 hover:bg-green-600';
-      case 'Under Maintenance': return 'bg-yellow-500 hover:bg-yellow-600';
-      case 'Defective': return 'bg-red-500 hover:bg-red-600';
-      case 'Awaiting Repair': return 'bg-orange-500 hover:bg-orange-600';
-      case 'Repaired': return 'bg-blue-500 hover:bg-blue-600';
-      case 'Out of Service': return 'bg-gray-500 hover:bg-gray-600';
+      case 'Hizmette': return 'bg-green-500 hover:bg-green-600';
+      case 'Bakımda': return 'bg-yellow-500 hover:bg-yellow-600';
+      case 'Arızalı': return 'bg-red-500 hover:bg-red-600';
+      case 'Onarım Bekliyor': return 'bg-orange-500 hover:bg-orange-600';
+      case 'Onarıldı': return 'bg-blue-500 hover:bg-blue-600';
+      case 'Hizmet Dışı': return 'bg-gray-500 hover:bg-gray-600';
       default: return 'bg-primary';
     }
   };
+  
+  const getDepotName = (depotId: string) => {
+    const depot = DEPOT_LOCATIONS.find(d => d.id === depotId);
+    return depot ? depot.name : depotId;
+  }
 
 
   return (
@@ -75,19 +81,19 @@ export function FirearmsTableClient({ firearms: initialFirearms }: FirearmsTable
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Serial Number</TableHead>
-            <TableHead>Model</TableHead>
-            <TableHead>Caliber</TableHead>
-            <TableHead>Depot</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Last Updated</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead><span suppressHydrationWarning>Seri Numarası</span></TableHead>
+            <TableHead><span suppressHydrationWarning>Model</span></TableHead>
+            <TableHead><span suppressHydrationWarning>Kalibre</span></TableHead>
+            <TableHead><span suppressHydrationWarning>Depo</span></TableHead>
+            <TableHead><span suppressHydrationWarning>Durum</span></TableHead>
+            <TableHead><span suppressHydrationWarning>Son Güncelleme</span></TableHead>
+            <TableHead className="text-right"><span suppressHydrationWarning>Eylemler</span></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {firearms.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={7} className="text-center">No firearms found.</TableCell>
+              <TableCell colSpan={7} className="text-center" suppressHydrationWarning>Ateşli silah bulunamadı.</TableCell>
             </TableRow>
           ) : (
             firearms.map((firearm) => (
@@ -95,36 +101,36 @@ export function FirearmsTableClient({ firearms: initialFirearms }: FirearmsTable
                 <TableCell className="font-medium">{firearm.serialNumber}</TableCell>
                 <TableCell>{firearm.model}</TableCell>
                 <TableCell>{firearm.caliber}</TableCell>
-                <TableCell>{firearm.depotId === 'depotA' ? 'Depot Alpha' : 'Depot Bravo'}</TableCell>
+                <TableCell>{getDepotName(firearm.depotId)}</TableCell>
                 <TableCell>
                   <Badge variant="secondary" className={`${getStatusColor(firearm.status)} text-primary-foreground`}>
                     {firearm.status}
                   </Badge>
                 </TableCell>
-                <TableCell>{new Date(firearm.lastUpdated).toLocaleDateString()}</TableCell>
+                <TableCell>{new Date(firearm.lastUpdated).toLocaleDateString('tr-TR')}</TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" className="h-8 w-8 p-0">
-                        <span className="sr-only">Open menu</span>
+                        <span className="sr-only">Menüyü aç</span>
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                      <DropdownMenuLabel><span suppressHydrationWarning>Eylemler</span></DropdownMenuLabel>
                       <DropdownMenuItem asChild>
                         <Link href={`/inventory/firearms/${firearm.id}`} className="flex items-center">
-                          <Eye className="mr-2 h-4 w-4" /> View Details
+                          <Eye className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>Detayları Görüntüle</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
                          <Link href={`/inventory/firearms/${firearm.id}/edit`} className="flex items-center">
-                           <Edit className="mr-2 h-4 w-4" /> Edit
+                           <Edit className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>Düzenle</span>
                          </Link>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={() => openDeleteDialog(firearm.id)} className="text-destructive flex items-center">
-                        <Trash2 className="mr-2 h-4 w-4" /> Delete
+                        <Trash2 className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>Sil</span>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -137,16 +143,15 @@ export function FirearmsTableClient({ firearms: initialFirearms }: FirearmsTable
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle><span suppressHydrationWarning>Emin misiniz?</span></AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the firearm
-              and all related data.
+              <span suppressHydrationWarning>Bu işlem geri alınamaz. Bu, ateşli silahı ve ilgili tüm verileri kalıcı olarak silecektir.</span>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel><span suppressHydrationWarning>İptal</span></AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-destructive hover:bg-destructive/90">
-              Delete
+              <span suppressHydrationWarning>Sil</span>
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

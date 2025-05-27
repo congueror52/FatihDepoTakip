@@ -2,13 +2,13 @@
 export type DepotId = 'depotA' | 'depotB';
 
 export const DEPOT_LOCATIONS: { id: DepotId; name: string }[] = [
-  { id: 'depotA', name: 'Depot Alpha' },
-  { id: 'depotB', name: 'Depot Bravo' },
+  { id: 'depotA', name: 'Depo Alfa' },
+  { id: 'depotB', name: 'Depo Bravo' },
 ];
 
-export type FirearmStatus = 'In Service' | 'Under Maintenance' | 'Defective' | 'Awaiting Repair' | 'Repaired' | 'Out of Service';
-export type MagazineStatus = 'In Service' | 'Under Maintenance' | 'Defective' | 'Awaiting Repair' | 'Repaired' | 'Out of Service';
-export type AmmunitionStatus = 'Available' | 'Low Stock' | 'Reserved';
+export type FirearmStatus = 'Hizmette' | 'Bakımda' | 'Arızalı' | 'Onarım Bekliyor' | 'Onarıldı' | 'Hizmet Dışı';
+export type MagazineStatus = 'Hizmette' | 'Bakımda' | 'Arızalı' | 'Onarım Bekliyor' | 'Onarıldı' | 'Hizmet Dışı';
+export type AmmunitionStatus = 'Mevcut' | 'Düşük Stok' | 'Rezerve Edilmiş';
 
 
 export interface BaseItem {
@@ -53,7 +53,7 @@ export type InventoryItem = Firearm | Magazine | Ammunition;
 export interface Shipment {
   id: string;
   date: string; // ISO date string
-  type: 'Incoming' | 'Outgoing' | 'Transfer';
+  type: 'Gelen' | 'Giden' | 'Transfer';
   items: Array<{
     inventoryId?: string; // Link to existing inventory item if updating quantity
     name: string;
@@ -116,4 +116,3 @@ export type MagazinesDb = Magazine[];
 export type AmmunitionDb = Ammunition[];
 export type ShipmentsDb = Shipment[];
 export type AmmunitionUsageDb = AmmunitionUsageLog[];
-

@@ -32,6 +32,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { tr } from "date-fns/locale";
+
 
 interface FirearmFormProps {
   firearm?: Firearm; // Optional: for editing existing firearm
@@ -45,7 +47,7 @@ export function FirearmForm({ firearm }: FirearmFormProps) {
     ...firearm,
     purchaseDate: firearm.purchaseDate ? format(new Date(firearm.purchaseDate), 'yyyy-MM-dd') : undefined,
   } : {
-    status: 'In Service',
+    status: 'Hizmette',
     depotId: DEPOT_LOCATIONS[0].id,
   };
   
@@ -64,16 +66,16 @@ export function FirearmForm({ firearm }: FirearmFormProps) {
 
       if (firearm) {
         await updateFirearmAction({ ...firearmData, id: firearm.id } as Firearm);
-        toast({ title: "Success", description: "Firearm updated successfully." });
+        toast({ title: "Başarılı", description: "Ateşli silah başarıyla güncellendi." });
       } else {
         await addFirearmAction(firearmData as Omit<Firearm, 'id' | 'lastUpdated' | 'itemType' | 'maintenanceHistory'>);
-        toast({ title: "Success", description: "Firearm added successfully." });
+        toast({ title: "Başarılı", description: "Ateşli silah başarıyla eklendi." });
       }
       router.push("/inventory/firearms");
       router.refresh(); // To ensure the table data is up-to-date
     } catch (error) {
-      toast({ variant: "destructive", title: "Error", description: `Failed to ${firearm ? 'update' : 'add'} firearm.` });
-      console.error("Form submission error:", error);
+      toast({ variant: "destructive", title: "Hata", description: `Ateşli silah ${firearm ? 'güncellenirken' : 'eklenirken'} hata oluştu.` });
+      console.error("Form gönderme hatası:", error);
     }
   }
 
@@ -86,11 +88,11 @@ export function FirearmForm({ firearm }: FirearmFormProps) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Firearm Name / Identifier</FormLabel>
+                <FormLabel><span suppressHydrationWarning>Ateşli Silah Adı / Tanımlayıcı</span></FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g., Rifle #123, Primary Sidearm" {...field} />
+                  <Input placeholder="örn. Tüfek #123, Birincil Tabanca" {...field} />
                 </FormControl>
-                <FormDescription>A descriptive name for easy identification.</FormDescription>
+                <FormDescription><span suppressHydrationWarning>Kolay tanımlama için açıklayıcı bir ad.</span></FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -100,7 +102,7 @@ export function FirearmForm({ firearm }: FirearmFormProps) {
             name="serialNumber"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Serial Number</FormLabel>
+                <FormLabel><span suppressHydrationWarning>Seri Numarası</span></FormLabel>
                 <FormControl>
                   <Input placeholder="SN123456789" {...field} />
                 </FormControl>
@@ -113,9 +115,9 @@ export function FirearmForm({ firearm }: FirearmFormProps) {
             name="model"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Model</FormLabel>
+                <FormLabel><span suppressHydrationWarning>Model</span></FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g., M4A1, Glock 19 Gen5" {...field} />
+                  <Input placeholder="örn. M4A1, Glock 19 Gen5" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -126,9 +128,9 @@ export function FirearmForm({ firearm }: FirearmFormProps) {
             name="manufacturer"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Manufacturer (Optional)</FormLabel>
+                <FormLabel><span suppressHydrationWarning>Üretici (İsteğe Bağlı)</span></FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g., Colt, Glock" {...field} />
+                  <Input placeholder="örn. Colt, Glock" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -139,9 +141,9 @@ export function FirearmForm({ firearm }: FirearmFormProps) {
             name="caliber"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Caliber</FormLabel>
+                <FormLabel><span suppressHydrationWarning>Kalibre</span></FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g., 5.56x45mm, 9mm" {...field} />
+                  <Input placeholder="örn. 5.56x45mm, 9mm" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -152,16 +154,16 @@ export function FirearmForm({ firearm }: FirearmFormProps) {
             name="depotId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Depot Location</FormLabel>
+                <FormLabel><span suppressHydrationWarning>Depo Konumu</span></FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a depot" />
+                      <SelectValue placeholder="Bir depo seçin" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
                     {DEPOT_LOCATIONS.map(depot => (
-                      <SelectItem key={depot.id} value={depot.id}>{depot.name}</SelectItem>
+                      <SelectItem key={depot.id} value={depot.id}><span suppressHydrationWarning>{depot.name}</span></SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -174,16 +176,16 @@ export function FirearmForm({ firearm }: FirearmFormProps) {
             name="status"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Status</FormLabel>
+                <FormLabel><span suppressHydrationWarning>Durum</span></FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select status" />
+                      <SelectValue placeholder="Durum seçin" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
                     {firearmStatuses.map(status => (
-                      <SelectItem key={status} value={status}>{status}</SelectItem>
+                      <SelectItem key={status} value={status}><span suppressHydrationWarning>{status}</span></SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -196,7 +198,7 @@ export function FirearmForm({ firearm }: FirearmFormProps) {
             name="purchaseDate"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>Purchase Date (Optional)</FormLabel>
+                <FormLabel><span suppressHydrationWarning>Satın Alma Tarihi (İsteğe Bağlı)</span></FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -208,9 +210,9 @@ export function FirearmForm({ firearm }: FirearmFormProps) {
                         )}
                       >
                         {field.value ? (
-                          format(new Date(field.value), "PPP")
+                          format(new Date(field.value), "PPP", { locale: tr })
                         ) : (
-                          <span>Pick a date</span>
+                          <span suppressHydrationWarning>Bir tarih seçin</span>
                         )}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
@@ -225,6 +227,7 @@ export function FirearmForm({ firearm }: FirearmFormProps) {
                         date > new Date() || date < new Date("1900-01-01")
                       }
                       initialFocus
+                      locale={tr}
                     />
                   </PopoverContent>
                 </Popover>
@@ -238,10 +241,10 @@ export function FirearmForm({ firearm }: FirearmFormProps) {
           name="notes"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Notes (Optional)</FormLabel>
+              <FormLabel><span suppressHydrationWarning>Notlar (İsteğe Bağlı)</span></FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Any additional notes about the firearm..."
+                  placeholder="Ateşli silahla ilgili ek notlar..."
                   className="resize-none"
                   {...field}
                 />
@@ -251,7 +254,7 @@ export function FirearmForm({ firearm }: FirearmFormProps) {
           )}
         />
         <Button type="submit" disabled={form.formState.isSubmitting}>
-          {form.formState.isSubmitting ? "Saving..." : (firearm ? "Update Firearm" : "Add Firearm")}
+          {form.formState.isSubmitting ? <span suppressHydrationWarning>Kaydediliyor...</span> : (firearm ? <span suppressHydrationWarning>Ateşli Silahı Güncelle</span> : <span suppressHydrationWarning>Ateşli Silah Ekle</span>)}
         </Button>
       </form>
     </Form>

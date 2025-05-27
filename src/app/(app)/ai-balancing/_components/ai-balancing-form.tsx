@@ -27,6 +27,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { tr } from "date-fns/locale";
 
 
 interface AiBalancingFormProps {
@@ -42,7 +43,7 @@ export function AiBalancingForm({
 }: AiBalancingFormProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [aiSuggestion, setAiSuggestion] = useState<any | null>(null); // Adjust type based on actual AI output
+  const [aiSuggestion, setAiSuggestion] = useState<any | null>(null); 
   const [showUpcomingReqForm, setShowUpcomingReqForm] = useState(false);
 
   const form = useForm<AiBalancingFormValues>({
@@ -62,7 +63,7 @@ export function AiBalancingForm({
       requiredItems: [{ nameOrCaliber: "", quantity: 1, itemType: "ammunition" }],
       depotId: "any",
       startDate: format(new Date(), "yyyy-MM-dd"),
-      endDate: format(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), "yyyy-MM-dd"), // 7 days from now
+      endDate: format(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), "yyyy-MM-dd"), 
     },
   });
 
@@ -72,7 +73,6 @@ export function AiBalancingForm({
   });
 
   useEffect(() => {
-    // Pre-fill textareas when initial data changes
     form.setValue("depotAInventory", JSON.stringify(initialDepotAInventory, null, 2));
     form.setValue("depotBInventory", JSON.stringify(initialDepotBInventory, null, 2));
     form.setValue("historicalUsageData", JSON.stringify(initialHistoricalUsage, null, 2));
@@ -84,8 +84,8 @@ export function AiBalancingForm({
       ...data,
       startDate: new Date(data.startDate).toISOString(),
       endDate: new Date(data.endDate).toISOString(),
-    } as UpcomingRequirementsSnapshot); // Type assertion needed due to date string diff
-    toast({ title: "Success", description: "Upcoming requirements saved. Ready to submit for AI balancing." });
+    } as UpcomingRequirementsSnapshot); 
+    toast({ title: "Başarılı", description: "Yaklaşan gereksinimler kaydedildi. Yapay zeka dengelemesi için göndermeye hazır." });
     setShowUpcomingReqForm(false);
   }
 
@@ -97,33 +97,48 @@ export function AiBalancingForm({
         JSON.parse(data.depotAInventory) as DepotInventorySnapshot,
         JSON.parse(data.depotBInventory) as DepotInventorySnapshot,
         JSON.parse(data.historicalUsageData) as HistoricalUsageSnapshot,
-        data.upcomingRequirements as UpcomingRequirementsSnapshot // Already in correct type or undefined
+        data.upcomingRequirements as UpcomingRequirementsSnapshot 
       );
 
       if (result.success) {
         setAiSuggestion(result.data);
-        toast({ title: "AI Suggestion Received", description: "Review the rebalancing plan below." });
+        toast({ title: "Yapay Zeka Önerisi Alındı", description: "Aşağıdaki yeniden dengeleme planını inceleyin." });
       } else {
-        toast({ variant: "destructive", title: "Error", description: result.error });
+        toast({ variant: "destructive", title: "Hata", description: result.error });
       }
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Error", description: error.message || "An unexpected error occurred." });
+      toast({ variant: "destructive", title: "Hata", description: error.message || "Beklenmedik bir hata oluştu." });
     } finally {
       setIsLoading(false);
     }
   }
 
+  const itemTypeTranslations: { [key: string]: string } = {
+    ammunition: "Mühimmat",
+    firearm: "Ateşli Silah",
+    magazine: "Şarjör",
+  };
+
+  const depotTranslations: { [key: string]: string } = {
+    any: "Herhangi Bir Depo",
+    ...DEPOT_LOCATIONS.reduce((acc, depot) => {
+      acc[depot.id] = depot.name;
+      return acc;
+    }, {} as { [key: string]: string })
+  };
+
+
   return (
     <div className="space-y-6">
       {!showUpcomingReqForm ? (
          <Button type="button" variant="outline" onClick={() => setShowUpcomingReqForm(true)} className="mb-4">
-          Add/Edit Upcoming Requirements
+          <span suppressHydrationWarning>Yaklaşan Gereksinimleri Ekle/Düzenle</span>
         </Button>
       ) : (
         <Card>
           <CardHeader>
-            <CardTitle>Upcoming Requirements (Optional)</CardTitle>
-            <CardDescription>Specify any known future needs for more accurate suggestions.</CardDescription>
+            <CardTitle><span suppressHydrationWarning>Yaklaşan Gereksinimler (İsteğe Bağlı)</span></CardTitle>
+            <CardDescription><span suppressHydrationWarning>Daha doğru öneriler için bilinen gelecekteki ihtiyaçları belirtin.</span></CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...upcomingReqForm}>
@@ -133,8 +148,8 @@ export function AiBalancingForm({
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Description</FormLabel>
-                      <FormControl><Input placeholder="e.g., Large scale training exercise" {...field} /></FormControl>
+                      <FormLabel><span suppressHydrationWarning>Açıklama</span></FormLabel>
+                      <FormControl><Input placeholder="örn. Büyük ölçekli eğitim tatbikatı" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -145,18 +160,18 @@ export function AiBalancingForm({
                       name="startDate"
                       render={({ field }) => (
                         <FormItem className="flex flex-col">
-                          <FormLabel>Start Date</FormLabel>
+                          <FormLabel><span suppressHydrationWarning>Başlangıç Tarihi</span></FormLabel>
                            <Popover>
                             <PopoverTrigger asChild>
                               <FormControl>
                                 <Button variant={"outline"} className={cn(!field.value && "text-muted-foreground")}>
-                                  {field.value ? format(new Date(field.value), "PPP") : <span>Pick a date</span>}
+                                  {field.value ? format(new Date(field.value), "PPP", { locale: tr }) : <span suppressHydrationWarning>Bir tarih seçin</span>}
                                   <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                 </Button>
                               </FormControl>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0" align="start">
-                              <Calendar mode="single" selected={field.value ? new Date(field.value) : undefined} onSelect={(d) => field.onChange(d ? format(d, "yyyy-MM-dd") : undefined)} initialFocus />
+                              <Calendar mode="single" selected={field.value ? new Date(field.value) : undefined} onSelect={(d) => field.onChange(d ? format(d, "yyyy-MM-dd") : undefined)} initialFocus locale={tr} />
                             </PopoverContent>
                           </Popover>
                           <FormMessage />
@@ -168,18 +183,18 @@ export function AiBalancingForm({
                       name="endDate"
                       render={({ field }) => (
                         <FormItem className="flex flex-col">
-                          <FormLabel>End Date</FormLabel>
+                          <FormLabel><span suppressHydrationWarning>Bitiş Tarihi</span></FormLabel>
                           <Popover>
                             <PopoverTrigger asChild>
                               <FormControl>
                                 <Button variant={"outline"} className={cn(!field.value && "text-muted-foreground")}>
-                                  {field.value ? format(new Date(field.value), "PPP") : <span>Pick a date</span>}
+                                  {field.value ? format(new Date(field.value), "PPP", { locale: tr }) : <span suppressHydrationWarning>Bir tarih seçin</span>}
                                   <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                 </Button>
                               </FormControl>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0" align="start">
-                              <Calendar mode="single" selected={field.value ? new Date(field.value) : undefined} onSelect={(d) => field.onChange(d ? format(d, "yyyy-MM-dd") : undefined)} initialFocus />
+                              <Calendar mode="single" selected={field.value ? new Date(field.value) : undefined} onSelect={(d) => field.onChange(d ? format(d, "yyyy-MM-dd") : undefined)} initialFocus locale={tr} />
                             </PopoverContent>
                           </Popover>
                           <FormMessage />
@@ -191,12 +206,12 @@ export function AiBalancingForm({
                       name="depotId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Specific Depot (Optional)</FormLabel>
+                          <FormLabel><span suppressHydrationWarning>Belirli Depo (İsteğe Bağlı)</span></FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl><SelectTrigger><SelectValue placeholder="Select depot or any" /></SelectTrigger></FormControl>
+                            <FormControl><SelectTrigger><SelectValue placeholder="Depo seçin veya herhangi biri" /></SelectTrigger></FormControl>
                             <SelectContent>
-                              <SelectItem value="any">Any Depot</SelectItem>
-                              {DEPOT_LOCATIONS.map(d => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
+                              <SelectItem value="any"><span suppressHydrationWarning>{depotTranslations["any"]}</span></SelectItem>
+                              {DEPOT_LOCATIONS.map(d => <SelectItem key={d.id} value={d.id}><span suppressHydrationWarning>{depotTranslations[d.id]}</span></SelectItem>)}
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -206,7 +221,7 @@ export function AiBalancingForm({
                 </div>
 
                 <div>
-                  <FormLabel>Required Items</FormLabel>
+                  <FormLabel><span suppressHydrationWarning>Gerekli Öğeler</span></FormLabel>
                   {fields.map((item, index) => (
                     <div key={item.id} className="flex items-end gap-2 mt-2 p-2 border rounded-md">
                        <FormField
@@ -214,8 +229,8 @@ export function AiBalancingForm({
                         name={`requiredItems.${index}.nameOrCaliber`}
                         render={({ field }) => (
                           <FormItem className="flex-1">
-                            {index === 0 && <FormLabel className="text-xs">Name/Caliber</FormLabel>}
-                            <FormControl><Input placeholder="e.g., 5.56mm or M4 Rifle" {...field} /></FormControl>
+                            {index === 0 && <FormLabel className="text-xs"><span suppressHydrationWarning>Ad/Kalibre</span></FormLabel>}
+                            <FormControl><Input placeholder="örn. 5.56mm veya M4 Tüfek" {...field} /></FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -225,8 +240,8 @@ export function AiBalancingForm({
                         name={`requiredItems.${index}.quantity`}
                         render={({ field }) => (
                           <FormItem className="w-24">
-                            {index === 0 && <FormLabel className="text-xs">Quantity</FormLabel>}
-                            <FormControl><Input type="number" placeholder="Qty" {...field} onChange={e => field.onChange(parseInt(e.target.value,10) || 0)} /></FormControl>
+                            {index === 0 && <FormLabel className="text-xs"><span suppressHydrationWarning>Miktar</span></FormLabel>}
+                            <FormControl><Input type="number" placeholder="Miktar" {...field} onChange={e => field.onChange(parseInt(e.target.value,10) || 0)} /></FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -236,13 +251,13 @@ export function AiBalancingForm({
                         name={`requiredItems.${index}.itemType`}
                         render={({ field }) => (
                            <FormItem className="w-40">
-                            {index === 0 && <FormLabel className="text-xs">Item Type</FormLabel>}
+                            {index === 0 && <FormLabel className="text-xs"><span suppressHydrationWarning>Öğe Türü</span></FormLabel>}
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl><SelectTrigger><SelectValue placeholder="Type" /></SelectTrigger></FormControl>
+                              <FormControl><SelectTrigger><SelectValue placeholder="Tür" /></SelectTrigger></FormControl>
                               <SelectContent>
-                                <SelectItem value="ammunition">Ammunition</SelectItem>
-                                <SelectItem value="firearm">Firearm</SelectItem>
-                                <SelectItem value="magazine">Magazine</SelectItem>
+                                <SelectItem value="ammunition"><span suppressHydrationWarning>{itemTypeTranslations.ammunition}</span></SelectItem>
+                                <SelectItem value="firearm"><span suppressHydrationWarning>{itemTypeTranslations.firearm}</span></SelectItem>
+                                <SelectItem value="magazine"><span suppressHydrationWarning>{itemTypeTranslations.magazine}</span></SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />
@@ -255,12 +270,12 @@ export function AiBalancingForm({
                     </div>
                   ))}
                   <Button type="button" variant="outline" size="sm" onClick={() => append({ nameOrCaliber: "", quantity: 1, itemType: "ammunition"})} className="mt-2">
-                    <PlusCircle className="mr-2 h-4 w-4" /> Add Item
+                    <PlusCircle className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>Öğe Ekle</span>
                   </Button>
                 </div>
                 <div className="flex gap-2">
-                  <Button type="submit">Save Requirements</Button>
-                  <Button type="button" variant="ghost" onClick={() => setShowUpcomingReqForm(false)}>Cancel</Button>
+                  <Button type="submit"><span suppressHydrationWarning>Gereksinimleri Kaydet</span></Button>
+                  <Button type="button" variant="ghost" onClick={() => setShowUpcomingReqForm(false)}><span suppressHydrationWarning>İptal</span></Button>
                 </div>
               </form>
             </Form>
@@ -275,9 +290,9 @@ export function AiBalancingForm({
             name="depotAInventory"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Depot Alpha Inventory (JSON)</FormLabel>
+                <FormLabel><span suppressHydrationWarning>Depo Alfa Envanteri (JSON)</span></FormLabel>
                 <FormControl><Textarea rows={8} {...field} /></FormControl>
-                <FormDescription>Current inventory data for Depot Alpha in JSON format.</FormDescription>
+                <FormDescription><span suppressHydrationWarning>Depo Alfa için JSON formatında mevcut envanter verileri.</span></FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -287,9 +302,9 @@ export function AiBalancingForm({
             name="depotBInventory"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Depot Bravo Inventory (JSON)</FormLabel>
+                <FormLabel><span suppressHydrationWarning>Depo Bravo Envanteri (JSON)</span></FormLabel>
                 <FormControl><Textarea rows={8} {...field} /></FormControl>
-                <FormDescription>Current inventory data for Depot Bravo in JSON format.</FormDescription>
+                <FormDescription><span suppressHydrationWarning>Depo Bravo için JSON formatında mevcut envanter verileri.</span></FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -299,23 +314,23 @@ export function AiBalancingForm({
             name="historicalUsageData"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Historical Usage Data (JSON)</FormLabel>
+                <FormLabel><span suppressHydrationWarning>Geçmiş Kullanım Verileri (JSON)</span></FormLabel>
                 <FormControl><Textarea rows={8} {...field} /></FormControl>
-                <FormDescription>Historical usage data for both depots in JSON format.</FormDescription>
+                <FormDescription><span suppressHydrationWarning>Her iki depo için JSON formatında geçmiş kullanım verileri.</span></FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
            {form.watch("upcomingRequirements") && (
             <Card className="bg-secondary/50">
-              <CardHeader><CardTitle className="text-base">Upcoming Requirements Specified</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="text-base"><span suppressHydrationWarning>Yaklaşan Gereksinimler Belirtildi</span></CardTitle></CardHeader>
               <CardContent><pre className="text-xs whitespace-pre-wrap">{JSON.stringify(form.getValues("upcomingRequirements"), null, 2)}</pre></CardContent>
             </Card>
            )}
 
           <Button type="submit" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Get AI Suggestion
+            <span suppressHydrationWarning>Yapay Zeka Önerisi Al</span>
           </Button>
         </form>
       </Form>
@@ -323,15 +338,15 @@ export function AiBalancingForm({
       {aiSuggestion && (
         <Card className="mt-6">
           <CardHeader>
-            <CardTitle>AI Rebalancing Suggestion</CardTitle>
+            <CardTitle><span suppressHydrationWarning>Yapay Zeka Yeniden Dengeleme Önerisi</span></CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <h3 className="font-semibold mb-1">Reasoning:</h3>
+              <h3 className="font-semibold mb-1"><span suppressHydrationWarning>Gerekçe:</span></h3>
               <p className="text-sm text-muted-foreground p-3 bg-muted/50 rounded-md whitespace-pre-wrap">{aiSuggestion.reasoning}</p>
             </div>
             <div>
-              <h3 className="font-semibold mb-1">Rebalancing Plan:</h3>
+              <h3 className="font-semibold mb-1"><span suppressHydrationWarning>Yeniden Dengeleme Planı:</span></h3>
               <pre className="text-sm p-3 bg-muted/50 rounded-md whitespace-pre-wrap">
                 {typeof aiSuggestion.rebalancingSuggestion === 'string' ? JSON.stringify(JSON.parse(aiSuggestion.rebalancingSuggestion), null, 2) : JSON.stringify(aiSuggestion.rebalancingSuggestion, null, 2)}
               </pre>

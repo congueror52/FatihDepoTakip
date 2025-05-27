@@ -22,21 +22,21 @@ export function AppShell({ children }: { children: ReactNode }) {
         <SidebarHeader className="p-4">
           <Link href="/dashboard" className="flex items-center gap-2 text-lg font-semibold text-sidebar-foreground">
             <Package2 className="h-6 w-6 text-sidebar-primary" />
-            <span>AmmoTrack</span>
+            <span suppressHydrationWarning>AmmoTrack</span>
           </Link>
         </SidebarHeader>
         <SidebarContent>
           <MainNav />
         </SidebarContent>
         <SidebarFooter className="p-4">
-          {/* Footer content if any, e.g. settings button */}
+          {/* Altbilgi içeriği (varsa), ör. ayarlar düğmesi */}
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
         <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 sm:py-4">
           <SidebarTrigger className="sm:hidden" />
           <div className="ml-auto flex items-center space-x-4">
-            {/* Add search or other header items here if needed */}
+            {/* Gerekirse arama veya diğer başlık öğelerini buraya ekleyin */}
             <UserNav />
           </div>
         </header>

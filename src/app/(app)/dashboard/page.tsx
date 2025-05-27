@@ -6,62 +6,62 @@ import Image from 'next/image';
 // import { AlertsSummary } from '@/components/dashboard/AlertsSummary'; // Placeholder, implement later
 
 export default async function DashboardPage() {
-  // In a real app, fetch data here
+  // Gerçek bir uygulamada veriler burada çekilir
   const summaryData = {
     totalFirearms: 125,
     totalMagazines: 580,
     totalAmmunitionRounds: 150000,
     activeAlerts: 3,
     recentActivity: [
-      { id: 1, description: "Shipment of 5.56mm ammo received", time: "2 hours ago" },
-      { id: 2, description: "Firearm SN:XG5523 reported for maintenance", time: "5 hours ago" },
-      { id: 3, description: "Low stock alert for 9mm HP rounds", time: "1 day ago" },
+      { id: 1, description: "5.56mm mühimmat sevkiyatı alındı", time: "2 saat önce" },
+      { id: 2, description: "SN:XG5523 seri numaralı ateşli silah bakım için bildirildi", time: "5 saat önce" },
+      { id: 3, description: "9mm HP fişekler için düşük stok uyarısı", time: "1 gün önce" },
     ]
   };
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+      <h1 className="text-3xl font-bold tracking-tight" suppressHydrationWarning>Gösterge Paneli</h1>
       
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Firearms</CardTitle>
+            <CardTitle className="text-sm font-medium" suppressHydrationWarning>Toplam Ateşli Silah</CardTitle>
             <Briefcase className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{summaryData.totalFirearms}</div>
-            <p className="text-xs text-muted-foreground">+2 since last month</p>
+            <p className="text-xs text-muted-foreground" suppressHydrationWarning>geçen aydan beri +2</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Magazines</CardTitle>
+            <CardTitle className="text-sm font-medium" suppressHydrationWarning>Toplam Şarjör</CardTitle>
             <Boxes className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{summaryData.totalMagazines}</div>
-            <p className="text-xs text-muted-foreground">+15 since last month</p>
+            <p className="text-xs text-muted-foreground" suppressHydrationWarning>geçen aydan beri +15</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Ammunition Rounds</CardTitle>
+            <CardTitle className="text-sm font-medium" suppressHydrationWarning>Mühimmat Adedi</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{summaryData.totalAmmunitionRounds.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">+5,000 since last shipment</p>
+            <p className="text-xs text-muted-foreground" suppressHydrationWarning>son sevkiyattan beri +5,000</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Alerts</CardTitle>
+            <CardTitle className="text-sm font-medium" suppressHydrationWarning>Aktif Uyarılar</CardTitle>
             <ShieldAlert className="h-4 w-4 text-destructive" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-destructive">{summaryData.activeAlerts}</div>
-            <p className="text-xs text-muted-foreground">View details in Alerts page</p>
+            <p className="text-xs text-muted-foreground" suppressHydrationWarning>Detayları Uyarılar sayfasında görüntüleyin</p>
           </CardContent>
         </Card>
       </div>
@@ -69,21 +69,21 @@ export default async function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <Card className="lg:col-span-4">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><BarChart3 className="h-5 w-5" /> Ammunition Usage Overview</CardTitle>
-            <CardDescription>Monthly ammunition consumption trends.</CardDescription>
+            <CardTitle className="flex items-center gap-2"><BarChart3 className="h-5 w-5" /> <span suppressHydrationWarning>Mühimmat Kullanım Özeti</span></CardTitle>
+            <CardDescription suppressHydrationWarning>Aylık mühimmat tüketim eğilimleri.</CardDescription>
           </CardHeader>
           <CardContent className="pl-2">
             {/* <AmmoUsageChart /> */}
             <div className="h-[300px] flex items-center justify-center bg-muted/50 rounded-md">
-              <Image src="https://placehold.co/600x300.png?text=Ammo+Usage+Chart" alt="Ammo Usage Chart Placeholder" width={600} height={300} data-ai-hint="chart graph" />
+              <Image src="https://placehold.co/600x300.png?text=Mühimmat+Kullanım+Grafiği" alt="Mühimmat Kullanım Grafiği Yer Tutucusu" width={600} height={300} data-ai-hint="grafik çizelge" />
             </div>
-            <p className="text-xs text-muted-foreground mt-2">Placeholder for Ammunition Usage Chart.</p>
+            <p className="text-xs text-muted-foreground mt-2" suppressHydrationWarning>Mühimmat Kullanım Grafiği için yer tutucu.</p>
           </CardContent>
         </Card>
         <Card className="lg:col-span-3">
           <CardHeader>
-            <CardTitle  className="flex items-center gap-2"><Activity className="h-5 w-5" />Recent Activity</CardTitle>
-            <CardDescription>Latest updates and system events.</CardDescription>
+            <CardTitle  className="flex items-center gap-2"><Activity className="h-5 w-5" /><span suppressHydrationWarning>Son Aktiviteler</span></CardTitle>
+            <CardDescription suppressHydrationWarning>En son güncellemeler ve sistem olayları.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -95,8 +95,8 @@ export default async function DashboardPage() {
                     </span>
                   </div>
                   <div>
-                    <p className="text-sm font-medium">{activity.description}</p>
-                    <p className="text-xs text-muted-foreground">{activity.time}</p>
+                    <p className="text-sm font-medium" suppressHydrationWarning>{activity.description}</p>
+                    <p className="text-xs text-muted-foreground" suppressHydrationWarning>{activity.time}</p>
                   </div>
                 </div>
               ))}
@@ -105,7 +105,7 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
-      {/* Placeholder for StockLevels and AlertsSummary components */}
+      {/* StockLevels ve AlertsSummary bileşenleri için yer tutucu */}
       {/* <StockLevels /> */}
       {/* <AlertsSummary /> */}
     </div>

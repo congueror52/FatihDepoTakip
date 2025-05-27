@@ -14,16 +14,16 @@ import {
 import { User, Settings, LogOut } from 'lucide-react';
 
 export function UserNav() {
-  // In a real app, you'd get user data from context or auth state
-  const user = { name: 'Admin User', email: 'admin@ammotrack.com', avatarUrl: 'https://placehold.co/40x40.png' };
+  // Gerçek bir uygulamada, kullanıcı verilerini context veya auth durumundan alırsınız
+  const user = { name: 'Admin Kullanıcısı', email: 'admin@ammotrack.com', avatarUrl: 'https://placehold.co/40x40.png' };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={user.avatarUrl} alt={user.name} data-ai-hint="user avatar" />
-            <AvatarFallback>{user.name?.charAt(0) || 'U'}</AvatarFallback>
+            <AvatarImage src={user.avatarUrl} alt={user.name} data-ai-hint="kullanıcı avatarı" />
+            <AvatarFallback>{user.name?.charAt(0) || 'K'}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
@@ -40,19 +40,19 @@ export function UserNav() {
         <DropdownMenuGroup>
           <DropdownMenuItem>
             <User className="mr-2 h-4 w-4" />
-            <span>Profile</span>
+            <span suppressHydrationWarning>Profil</span>
             <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem>
             <Settings className="mr-2 h-4 w-4" />
-            <span>Settings</span>
+            <span suppressHydrationWarning>Ayarlar</span>
             <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           <LogOut className="mr-2 h-4 w-4" />
-          <span>Log out</span>
+          <span suppressHydrationWarning>Çıkış Yap</span>
           <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
         </DropdownMenuItem>
       </DropdownMenuContent>

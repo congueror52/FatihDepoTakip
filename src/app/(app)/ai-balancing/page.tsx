@@ -7,22 +7,22 @@ export default async function AiBalancingPage() {
   const { depotA, depotB } = await getCurrentDepotInventoriesForAI();
   const historicalUsage = await getHistoricalUsageForAI();
 
-  // For upcoming requirements, we'll use a placeholder or a simple form input in the client component
-  // as this data might be dynamic or manually entered by the user for a specific scenario.
+  // Yaklaşan gereksinimler için, istemci bileşeninde bir yer tutucu veya basit bir form girişi kullanacağız
+  // çünkü bu veriler dinamik olabilir veya kullanıcı tarafından belirli bir senaryo için manuel olarak girilebilir.
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-2">
         <BrainCircuit className="h-8 w-8" />
-        <h1 className="text-3xl font-bold tracking-tight">AI Stock Balancing</h1>
+        <h1 className="text-3xl font-bold tracking-tight" suppressHydrationWarning>Yapay Zeka Stok Dengeleme</h1>
       </div>
       
       <Card>
         <CardHeader>
-          <CardTitle>Rebalancing Suggestions</CardTitle>
-          <CardDescription>
-            Utilize AI to get optimal stock distribution recommendations between Depot Alpha and Depot Bravo. 
-            Provide current inventory snapshots, historical usage, and any upcoming requirements.
+          <CardTitle suppressHydrationWarning>Yeniden Dengeleme Önerileri</CardTitle>
+          <CardDescription suppressHydrationWarning>
+            Depo Alfa ve Depo Bravo arasında en uygun stok dağıtım önerilerini almak için yapay zekayı kullanın.
+            Mevcut envanter anlık görüntülerini, geçmiş kullanımı ve yaklaşan gereksinimleri sağlayın.
           </CardDescription>
         </CardHeader>
         <CardContent>
