@@ -2,10 +2,11 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import type { Firearm, Magazine, Ammunition, Shipment, AmmunitionUsageLog, DepotInventorySnapshot, HistoricalUsageSnapshot, UpcomingRequirementsSnapshot, FirearmDefinition } from '@/types/inventory';
+import type { Firearm, Magazine, Ammunition, Shipment, AmmunitionUsageLog, DepotInventorySnapshot, HistoricalUsageSnapshot, UpcomingRequirementsSnapshot, FirearmDefinition, AmmunitionDailyUsageLog } from '@/types/inventory';
 import { readData, writeData, generateId } from '@/lib/data-utils';
 import { firearmFormSchema } from '@/app/(app)/inventory/firearms/_components/firearm-form-schema';
 import { firearmDefinitionFormSchema } from '@/app/(app)/admin/firearms-definitions/_components/firearm-definition-form-schema';
+import { ammunitionDailyUsageFormSchema } from '@/app/(app)/daily-ammo-usage/_components/usage-log-form-schema';
 import { suggestRebalancing as suggestRebalancingAI } from '@/ai/flows/suggest-rebalancing';
 
 // Firearm Definitions
@@ -175,6 +176,7 @@ export async function addMagazineAction(data: Omit<Magazine, 'id' | 'lastUpdated
   magazines.push(newMagazine);
   await writeData('magazines.json', magazines);
   revalidatePath('/inventory/magazines');
+  revalidatePath('/dashboard');
   return newMagazine;
 }
 
@@ -194,6 +196,7 @@ export async function addAmmunitionAction(data: Omit<Ammunition, 'id' | 'lastUpd
   ammunition.push(newAmmunition);
   await writeData('ammunition.json', ammunition);
   revalidatePath('/inventory/ammunition');
+  revalidatePath('/dashboard');
   return newAmmunition;
 }
 
@@ -219,7 +222,7 @@ export async function addShipmentAction(data: Omit<Shipment, 'id'>): Promise<Shi
 }
 
 
-// Ammunition Usage (Stubs)
+// Ammunition Usage (General Logs - may be deprecated or used differently with daily logs)
 export async function getAmmunitionUsageLogs(): Promise<AmmunitionUsageLog[]> {
   return readData<AmmunitionUsageLog>('ammunition_usage.json');
 }
@@ -229,11 +232,44 @@ export async function logAmmunitionUsageAction(data: Omit<AmmunitionUsageLog, 'i
     ...data,
     id: await generateId(),
   };
-  // TODO: Update actual ammunition quantity
+  // TODO: Update actual ammunition quantity (this might be complex if usage is generic)
   logs.push(newLog);
   await writeData('ammunition_usage.json', logs);
-  revalidatePath('/inventory/ammunition');
+  revalidatePath('/inventory/ammunition'); // if linked directly to stock
   revalidatePath('/dashboard');
+  revalidatePath('/daily-ammo-usage'); // New page
+  return newLog;
+}
+
+// Ammunition Daily Usage Logs
+export async function getAmmunitionDailyUsageLogs(): Promise<AmmunitionDailyUsageLog[]> {
+  const logs = await readData<AmmunitionDailyUsageLog>('ammunition_daily_usage.json');
+  return logs.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // Sort by newest first
+}
+
+export async function addAmmunitionDailyUsageLogAction(data: Omit<AmmunitionDailyUsageLog, 'id'>) {
+  const validatedData = ammunitionDailyUsageFormSchema.safeParse(data);
+  if (!validatedData.success) {
+    console.error("Doğrulama hataları:", validatedData.error.format());
+    throw new Error('Geçersiz günlük fişek kullanımı verisi.');
+  }
+
+  const logs = await getAmmunitionDailyUsageLogs();
+  const newLog: AmmunitionDailyUsageLog = {
+    ...validatedData.data,
+    date: new Date(validatedData.data.date).toISOString(), // Ensure ISO format
+    id: await generateId(),
+  };
+  logs.push(newLog);
+  // Note: This action does NOT automatically decrement overall ammunition stock.
+  // That would require a more complex logic:
+  // 1. Identify which specific Ammunition items (from ammunition.json) correspond to these calibers.
+  // 2. Decide which depot's stock to decrement if not specified.
+  // 3. Handle cases where stock is insufficient.
+  // For now, this log is purely for tracking reported usage.
+  await writeData('ammunition_daily_usage.json', logs);
+  revalidatePath('/daily-ammo-usage');
+  revalidatePath('/dashboard'); // If dashboard shows usage summaries
   return newLog;
 }
 
@@ -278,7 +314,7 @@ export async function getCurrentDepotInventoriesForAI(): Promise<{ depotA: Depot
 }
 
 export async function getHistoricalUsageForAI(): Promise<HistoricalUsageSnapshot> {
-  const usageLogs = await getAmmunitionUsageLogs();
+  const usageLogs = await getAmmunitionUsageLogs(); // This uses the general log, might need to switch to daily logs or combine
   // Potentially filter or aggregate data if it's too large
   return {
     ammunitionUsage: usageLogs.map(log => ({ ammunitionId: log.ammunitionId, quantityUsed: log.quantityUsed, date: log.date, depotId: log.depotId})),

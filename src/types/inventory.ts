@@ -100,10 +100,22 @@ export interface AmmunitionUsageLog {
   ammunitionId: string; // Links to Ammunition item
   quantityUsed: number;
   depotId: DepotId;
-  purpose?: string; // e.g., Training, Duty, Testing
+  purpose?: string; // e.g., Eğitim, Görev, Test
   userId?: string; // User who reported usage
   notes?: string;
 }
+
+export interface AmmunitionDailyUsageLog {
+  id: string;
+  date: string; // ISO date string
+  personnelCount: number;
+  used_9x19mm: number;
+  used_5_56x45mm: number;
+  used_7_62x39mm: number;
+  used_7_62x51mm: number;
+  notes?: string;
+}
+
 
 // For AI balancing input
 export interface DepotInventorySnapshot {
@@ -119,7 +131,7 @@ export interface UpcomingRequirementsSnapshot {
   description: string; // e.g., "Training exercise for 50 personnel, requiring 5.56mm and 9mm ammo"
   requiredItems: Array<{ nameOrCaliber: string; quantity: number; itemType: InventoryItem['itemType'] }>;
   depotId?: DepotId; // Optional, if requirement is depot-specific
-  dateRange: { start: string; end: string };
+  dateRange: { start: string; end: string }; // Changed to be an object with start and end
 }
 
 // Schema for individual JSON files
@@ -128,4 +140,5 @@ export type MagazinesDb = Magazine[];
 export type AmmunitionDb = Ammunition[];
 export type ShipmentsDb = Shipment[];
 export type AmmunitionUsageDb = AmmunitionUsageLog[];
-export type FirearmDefinitionsDb = FirearmDefinition[]; // New DB type
+export type FirearmDefinitionsDb = FirearmDefinition[];
+export type AmmunitionDailyUsageDb = AmmunitionDailyUsageLog[];

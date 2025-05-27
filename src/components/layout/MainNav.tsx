@@ -19,25 +19,20 @@ import {
   ShieldAlert,
   ListChecks,
   Target,
-  Settings, // Icon for Admin
+  Settings, 
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  ClipboardList // New icon for Daily Usage
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 
 const menuItems = [
   { href: '/dashboard', label: 'Gösterge Paneli', icon: Gauge },
-  { 
-    label: 'Envanter Yönetimi', 
-    icon: Box,
-    isParent: true,
-    children: [
-      { href: '/inventory/firearms', label: 'Ateşli Silahlar', icon: Target },
-      { href: '/inventory/magazines', label: 'Şarjörler', icon: ListChecks },
-      { href: '/inventory/ammunition', label: 'Mühimmat', icon: Box },
-    ]
-  },
+  { href: '/inventory/firearms', label: 'Ateşli Silahlar', icon: Target },
+  { href: '/inventory/magazines', label: 'Şarjörler', icon: ListChecks },
+  { href: '/inventory/ammunition', label: 'Mühimmat', icon: Box },
+  { href: '/daily-ammo-usage', label: 'Günlük Fişek Kullanımı', icon: ClipboardList },
   { href: '/shipments', label: 'Malzeme Kaydı', icon: Truck },
   { href: '/maintenance', label: 'Bakım', icon: Wrench },
   { href: '/ai-balancing', label: 'Yapay Zeka Stok Dengeleme', icon: BrainCircuit },
@@ -48,7 +43,6 @@ const menuItems = [
     isParent: true,
     children: [
       { href: '/admin/firearms-definitions', label: 'Silah Tanımları', icon: Target },
-      // Add other admin pages here later e.g. Magazine Definitions, Ammunition Definitions
     ]
   }
 ];
@@ -61,18 +55,22 @@ export function MainNav() {
     setOpenMenus(prev => ({...prev, [label]: !prev[label]}));
   };
 
-  // Initialize open state based on current path
-  useState(() => {
+  useEffect(() => {
     const initialOpenMenus: {[key: string]: boolean} = {};
+    let parentLabelToOpen: string | null = null;
+
     menuItems.forEach(item => {
       if (item.isParent && item.children) {
         if (item.children.some(child => pathname.startsWith(child.href))) {
-          initialOpenMenus[item.label] = true;
+          parentLabelToOpen = item.label;
         }
       }
     });
+    if (parentLabelToOpen) {
+      initialOpenMenus[parentLabelToOpen] = true;
+    }
     setOpenMenus(initialOpenMenus);
-  });
+  }, [pathname]);
 
 
   return (
