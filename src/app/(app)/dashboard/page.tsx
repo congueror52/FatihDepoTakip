@@ -1,6 +1,8 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Briefcase, Boxes, DollarSign, Users, ShieldAlert, BarChart3, Activity } from 'lucide-react';
+import { Briefcase, Boxes, DollarSign, Users, ShieldAlert, BarChart3, Activity, BellRing, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 // import { AmmoUsageChart } from '@/components/dashboard/AmmoUsageChart'; // Placeholder, implement later
 // import { StockLevels } from '@/components/dashboard/StockLevels'; // Placeholder, implement later
 // import { AlertsSummary } from '@/components/dashboard/AlertsSummary'; // Placeholder, implement later
@@ -11,13 +13,37 @@ export default async function DashboardPage() {
     totalFirearms: 125,
     totalMagazines: 580,
     totalAmmunitionRounds: 150000,
-    activeAlerts: 3,
+    // activeAlerts: 3, // Bu artık doğrudan uyarılardan hesaplanacak
     recentActivity: [
       { id: 1, description: "5.56mm mühimmat sevkiyatı alındı", time: "2 saat önce" },
       { id: 2, description: "SN:XG5523 seri numaralı ateşli silah bakım için bildirildi", time: "5 saat önce" },
       { id: 3, description: "9mm HP fişekler için düşük stok uyarısı", time: "1 gün önce" },
     ]
   };
+
+  // Örnek uyarı verileri (alerts sayfasındakiyle tutarlı)
+  const allAlerts = [
+    { id: '1', severity: 'Yüksek', message: 'Düşük stok: 9mm FMJ mühimmat (Depo A - 500 adet kaldı)', date: new Date(Date.now() - 86400000 * 0.2).toISOString() },
+    { id: '2', severity: 'Orta', message: 'SN:XG5523 seri nolu ateşli silahın planlı bakımı gecikti', date: new Date(Date.now() - 86400000 * 2).toISOString() },
+    { id: '4', severity: 'Yüksek', message: 'Depo B sıcaklık sensörü arızalı.', date: new Date(Date.now() - 86400000 * 0.5).toISOString() },
+    { id: '3', severity: 'Düşük', message: 'Şarjör M007 (Depo B) için küçük hasar bildirildi', date: new Date(Date.now() - 86400000 * 3).toISOString() },
+    { id: '5', severity: 'Orta', message: 'Depo A nem seviyesi kritik eşiğin üzerinde.', date: new Date(Date.now() - 86400000 * 1).toISOString() },
+  ];
+
+  const severityOrder: { [key: string]: number } = { 'Yüksek': 1, 'Orta': 2, 'Düşük': 3 };
+  
+  const sortedAlerts = [...allAlerts]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) // Önce en yeniye göre
+    .sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]); // Sonra önem derecesine göre
+
+  const top3Alerts = sortedAlerts.slice(0, 3);
+
+  const getSeverityTextColor = (severity: string) => {
+    if (severity === 'Yüksek') return 'text-red-700 dark:text-red-400';
+    if (severity === 'Orta') return 'text-yellow-700 dark:text-yellow-400';
+    return 'text-blue-700 dark:text-blue-400'; // Düşük
+  };
+
 
   return (
     <div className="flex flex-col gap-6">
@@ -56,12 +82,41 @@ export default async function DashboardPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium" suppressHydrationWarning>Aktif Uyarılar</CardTitle>
-            <ShieldAlert className="h-4 w-4 text-destructive" />
+            <Link href="/alerts" className="hover:underline">
+              <CardTitle className="text-sm font-medium">
+                <span suppressHydrationWarning>Aktif Uyarılar</span>
+              </CardTitle>
+            </Link>
+            <ShieldAlert className={`h-4 w-4 ${allAlerts.length > 0 ? 'text-destructive' : 'text-muted-foreground'}`} />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-destructive">{summaryData.activeAlerts}</div>
-            <p className="text-xs text-muted-foreground" suppressHydrationWarning>Detayları Uyarılar sayfasında görüntüleyin</p>
+          <CardContent className="pt-1">
+            {sortedAlerts.length === 0 ? (
+              <p className="text-sm text-muted-foreground pt-2" suppressHydrationWarning>Aktif uyarı yok.</p>
+            ) : (
+              <div className="space-y-3">
+                {top3Alerts.map(alert => (
+                  <div key={alert.id} className="flex items-start gap-2">
+                    <BellRing className={`h-4 w-4 mt-0.5 shrink-0 ${getSeverityTextColor(alert.severity)}`} />
+                    <div>
+                      <p className={`text-xs font-medium leading-tight ${getSeverityTextColor(alert.severity)}`} suppressHydrationWarning>
+                        {alert.message}
+                      </p>
+                      <p className={`text-[0.7rem] text-muted-foreground opacity-80`} suppressHydrationWarning>
+                        {new Date(alert.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', hour: 'numeric', minute: 'numeric' })}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+                 <Link href="/alerts" className="text-xs text-primary hover:underline font-medium flex items-center gap-1 pt-1">
+                  {allAlerts.length > 3 ? (
+                    <span suppressHydrationWarning>Tüm {allAlerts.length} uyarıyı gör</span>
+                  ) : (
+                    <span suppressHydrationWarning>Uyarıları Yönet</span>
+                  )}
+                  <ArrowRight className="h-3 w-3" />
+                </Link>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
