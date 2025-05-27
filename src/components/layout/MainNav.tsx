@@ -22,7 +22,8 @@ import {
   Settings, 
   ChevronDown,
   ChevronUp,
-  ClipboardList // New icon for Daily Usage
+  ClipboardList,
+  Calculator // New icon for Consumption Rates
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
@@ -43,6 +44,7 @@ const menuItems = [
     isParent: true,
     children: [
       { href: '/admin/firearms-definitions', label: 'Silah Tanımları', icon: Target },
+      { href: '/admin/consumption-rates', label: 'Fişek Sarfiyat Oranları', icon: Calculator },
     ]
   }
 ];

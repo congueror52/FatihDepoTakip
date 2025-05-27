@@ -3,8 +3,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { AmmunitionDailyUsageForm } from "../_components/usage-log-form";
 import { ClipboardList, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { getConsumptionRatesForForm } from "@/lib/actions/inventory.actions"; // New action
 
-export default function NewAmmunitionDailyUsagePage() {
+export default async function NewAmmunitionDailyUsagePage() {
+  const consumptionRates = await getConsumptionRatesForForm();
+
   return (
     <div className="max-w-2xl mx-auto">
        <Link href="/daily-ammo-usage" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4">
@@ -18,10 +21,10 @@ export default function NewAmmunitionDailyUsagePage() {
       <Card>
         <CardHeader>
           <CardTitle suppressHydrationWarning>Kullanım Detayları</CardTitle>
-          <CardDescription suppressHydrationWarning>Günlük fişek kullanım bilgilerini girin.</CardDescription>
+          <CardDescription suppressHydrationWarning>Günlük fişek kullanım bilgilerini girin. Kişi sayısı girildiğinde fişek miktarları otomatik olarak hesaplanacaktır.</CardDescription>
         </CardHeader>
         <CardContent>
-          <AmmunitionDailyUsageForm />
+          <AmmunitionDailyUsageForm consumptionRates={consumptionRates} />
         </CardContent>
       </Card>
     </div>

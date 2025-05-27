@@ -25,8 +25,14 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
+import { useEffect } from "react";
+import type { SupportedCaliberForConsumption } from "@/types/inventory";
 
-export function AmmunitionDailyUsageForm() {
+interface AmmunitionDailyUsageFormProps {
+  consumptionRates: Record<SupportedCaliberForConsumption, number>;
+}
+
+export function AmmunitionDailyUsageForm({ consumptionRates }: AmmunitionDailyUsageFormProps) {
   const { toast } = useToast();
   const router = useRouter();
 
@@ -45,6 +51,23 @@ export function AmmunitionDailyUsageForm() {
     defaultValues,
     mode: "onChange",
   });
+
+  const personnelCount = form.watch("personnelCount");
+
+  useEffect(() => {
+    if (personnelCount > 0 && consumptionRates) {
+      form.setValue("used_9x19mm", Math.round(personnelCount * (consumptionRates["9x19mm"] || 0)));
+      form.setValue("used_5_56x45mm", Math.round(personnelCount * (consumptionRates["5.56x45mm"] || 0)));
+      form.setValue("used_7_62x39mm", Math.round(personnelCount * (consumptionRates["7.62x39mm"] || 0)));
+      form.setValue("used_7_62x51mm", Math.round(personnelCount * (consumptionRates["7.62x51mm"] || 0)));
+    } else if (personnelCount === 0) {
+        form.setValue("used_9x19mm", 0);
+        form.setValue("used_5_56x45mm", 0);
+        form.setValue("used_7_62x39mm", 0);
+        form.setValue("used_7_62x51mm", 0);
+    }
+  }, [personnelCount, consumptionRates, form]);
+
 
   async function onSubmit(data: AmmunitionDailyUsageFormValues) {
     try {
@@ -111,13 +134,14 @@ export function AmmunitionDailyUsageForm() {
                 <FormControl>
                   <Input type="number" placeholder="0" {...field} />
                 </FormControl>
+                <FormDescription><span suppressHydrationWarning>Fişek miktarları otomatik hesaplanacaktır.</span></FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
         </div>
         
-        <h3 className="text-lg font-medium border-b pb-2" suppressHydrationWarning>Kullanılan Fişek Miktarları</h3>
+        <h3 className="text-lg font-medium border-b pb-2" suppressHydrationWarning>Kullanılan Fişek Miktarları (Otomatik Hesaplandı)</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
           <FormField
             control={form.control}

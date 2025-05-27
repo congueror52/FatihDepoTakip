@@ -116,6 +116,17 @@ export interface AmmunitionDailyUsageLog {
   notes?: string;
 }
 
+// Admin-configurable standard consumption rates
+export const SUPPORTED_CALIBERS_FOR_CONSUMPTION = ["9x19mm", "5.56x45mm", "7.62x39mm", "7.62x51mm"] as const;
+export type SupportedCaliberForConsumption = typeof SUPPORTED_CALIBERS_FOR_CONSUMPTION[number];
+
+export interface AmmunitionStandardConsumptionRate {
+  id: string;
+  caliber: SupportedCaliberForConsumption;
+  roundsPerPerson: number;
+  lastUpdated: string;
+}
+
 
 // For AI balancing input
 export interface DepotInventorySnapshot {
@@ -142,3 +153,4 @@ export type ShipmentsDb = Shipment[];
 export type AmmunitionUsageDb = AmmunitionUsageLog[];
 export type FirearmDefinitionsDb = FirearmDefinition[];
 export type AmmunitionDailyUsageDb = AmmunitionDailyUsageLog[];
+export type AmmunitionStandardConsumptionRatesDb = AmmunitionStandardConsumptionRate[];
