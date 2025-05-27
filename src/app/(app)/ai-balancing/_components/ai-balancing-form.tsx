@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,7 +20,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { Loader2, PlusCircle, Trash2, CalendarIcon } from "lucide-react";
-import { type DepotInventorySnapshot, type HistoricalUsageSnapshot, type UpcomingRequirementsSnapshot, DEPOT_LOCATIONS } from "@/types/inventory";
+import { type DepotInventorySnapshot, type HistoricalUsageSnapshot, type UpcomingRequirementsSnapshot, DEPOT_LOCATIONS, type DepotId } from "@/types/inventory";
 import { suggestRebalancing } from "@/lib/actions/inventory.actions";
 import type { AiBalancingFormValues, UpcomingRequirementsFormValues } from "./ai-balancing-form-schema";
 import { aiBalancingFormSchema, upcomingRequirementsSchema } from "./ai-balancing-form-schema";
@@ -52,7 +53,7 @@ export function AiBalancingForm({
       depotAInventory: JSON.stringify(initialDepotAInventory, null, 2),
       depotBInventory: JSON.stringify(initialDepotBInventory, null, 2),
       historicalUsageData: JSON.stringify(initialHistoricalUsage, null, 2),
-      upcomingRequirements: undefined,
+      upcomingRequirements: undefined, // This will hold data structured by upcomingRequirementsSchema
     },
   });
   
@@ -80,24 +81,47 @@ export function AiBalancingForm({
 
 
   async function onUpcomingReqSubmit(data: UpcomingRequirementsFormValues) {
-     form.setValue("upcomingRequirements", {
-      ...data,
-      startDate: new Date(data.startDate).toISOString(),
-      endDate: new Date(data.endDate).toISOString(),
-    } as UpcomingRequirementsSnapshot); 
-    toast({ title: "Başarılı", description: "Yaklaşan gereksinimler kaydedildi. Yapay zeka dengelemesi için göndermeye hazır." });
-    setShowUpcomingReqForm(false);
+     // data is from upcomingReqForm and matches upcomingRequirementsSchema (with startDate, endDate)
+     form.setValue("upcomingRequirements", data); 
+     toast({ title: "Başarılı", description: "Yaklaşan gereksinimler kaydedildi. Yapay zeka dengelemesi için göndermeye hazır." });
+     setShowUpcomingReqForm(false);
   }
 
-  async function onSubmit(data: AiBalancingFormValues) {
+  async function onSubmit(formData: AiBalancingFormValues) { // formData.upcomingRequirements matches upcomingRequirementsSchema
     setIsLoading(true);
     setAiSuggestion(null);
     try {
+      let actualUpcomingRequirementsForAI: UpcomingRequirementsSnapshot;
+
+      if (formData.upcomingRequirements) {
+        actualUpcomingRequirementsForAI = {
+          description: formData.upcomingRequirements.description,
+          requiredItems: formData.upcomingRequirements.requiredItems,
+          depotId: formData.upcomingRequirements.depotId === 'any' || !formData.upcomingRequirements.depotId ? undefined : formData.upcomingRequirements.depotId as DepotId,
+          dateRange: {
+            start: new Date(formData.upcomingRequirements.startDate).toISOString(),
+            end: new Date(formData.upcomingRequirements.endDate).toISOString(),
+          }
+        };
+      } else {
+        // Provide a default if no upcoming requirements are entered by the user,
+        // as the AI flow currently expects this field as a non-optional string.
+        actualUpcomingRequirementsForAI = {
+          description: "Yaklaşan özel bir gereksinim belirtilmedi.",
+          requiredItems: [],
+          depotId: undefined,
+          dateRange: { 
+            start: new Date().toISOString(), 
+            end: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // Default to today and tomorrow
+          }
+        };
+      }
+
       const result = await suggestRebalancing(
-        JSON.parse(data.depotAInventory) as DepotInventorySnapshot,
-        JSON.parse(data.depotBInventory) as DepotInventorySnapshot,
-        JSON.parse(data.historicalUsageData) as HistoricalUsageSnapshot,
-        data.upcomingRequirements as UpcomingRequirementsSnapshot 
+        JSON.parse(formData.depotAInventory) as DepotInventorySnapshot,
+        JSON.parse(formData.depotBInventory) as DepotInventorySnapshot,
+        JSON.parse(formData.historicalUsageData) as HistoricalUsageSnapshot,
+        actualUpcomingRequirementsForAI // This is now correctly typed as UpcomingRequirementsSnapshot
       );
 
       if (result.success) {
@@ -164,9 +188,9 @@ export function AiBalancingForm({
                            <Popover>
                             <PopoverTrigger asChild>
                               <FormControl>
-                                <Button variant={"outline"} className={cn(!field.value && "text-muted-foreground")}>
+                                <Button variant={"outline"} className={cn("justify-start text-left font-normal",!field.value && "text-muted-foreground")}>
+                                  <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
                                   {field.value ? format(new Date(field.value), "PPP", { locale: tr }) : <span suppressHydrationWarning>Bir tarih seçin</span>}
-                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                 </Button>
                               </FormControl>
                             </PopoverTrigger>
@@ -187,9 +211,9 @@ export function AiBalancingForm({
                           <Popover>
                             <PopoverTrigger asChild>
                               <FormControl>
-                                <Button variant={"outline"} className={cn(!field.value && "text-muted-foreground")}>
+                                <Button variant={"outline"} className={cn("justify-start text-left font-normal",!field.value && "text-muted-foreground")}>
+                                  <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
                                   {field.value ? format(new Date(field.value), "PPP", { locale: tr }) : <span suppressHydrationWarning>Bir tarih seçin</span>}
-                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                 </Button>
                               </FormControl>
                             </PopoverTrigger>
@@ -321,7 +345,7 @@ export function AiBalancingForm({
               </FormItem>
             )}
           />
-           {form.watch("upcomingRequirements") && (
+           {form.watch("upcomingRequirements") && ( // This watches the form field that holds upcomingRequirementsSchema structure
             <Card className="bg-secondary/50">
               <CardHeader><CardTitle className="text-base"><span suppressHydrationWarning>Yaklaşan Gereksinimler Belirtildi</span></CardTitle></CardHeader>
               <CardContent><pre className="text-xs whitespace-pre-wrap">{JSON.stringify(form.getValues("upcomingRequirements"), null, 2)}</pre></CardContent>
@@ -357,3 +381,5 @@ export function AiBalancingForm({
     </div>
   );
 }
+
+    
