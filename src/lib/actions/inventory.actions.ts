@@ -268,6 +268,58 @@ export async function addAmmunitionDailyUsageLogAction(data: Omit<AmmunitionDail
   return newLog;
 }
 
+
+export interface GroupedDailyUsageLog {
+  scenarioId?: string;
+  scenarioName: string;
+  logs: AmmunitionDailyUsageLog[];
+}
+
+export async function getGroupedAmmunitionDailyUsageLogs(): Promise<GroupedDailyUsageLog[]> {
+  const allLogs = await getAmmunitionDailyUsageLogs(); // Already sorted by date
+  const allScenarios = await getUsageScenarios();
+
+  const scenarioMap = new Map(allScenarios.map(s => [s.id, s.name]));
+  const logsByScenario: Record<string, AmmunitionDailyUsageLog[]> = {};
+  const logsWithoutScenario: AmmunitionDailyUsageLog[] = [];
+
+  for (const log of allLogs) {
+    if (log.usageScenarioId && scenarioMap.has(log.usageScenarioId)) {
+      if (!logsByScenario[log.usageScenarioId]) {
+        logsByScenario[log.usageScenarioId] = [];
+      }
+      logsByScenario[log.usageScenarioId].push(log);
+    } else {
+      logsWithoutScenario.push(log);
+    }
+  }
+
+  const groupedResult: GroupedDailyUsageLog[] = [];
+
+  // Add logs associated with a known scenario first, in the order scenarios appear
+  for (const scenario of allScenarios) {
+    if (logsByScenario[scenario.id] && logsByScenario[scenario.id].length > 0) {
+      groupedResult.push({
+        scenarioId: scenario.id,
+        scenarioName: scenario.name,
+        logs: logsByScenario[scenario.id],
+      });
+    }
+  }
+  
+  // Add logs that are not associated with any known scenario
+  // or if their scenarioId was undefined/null or didn't match any existing scenario.
+  if (logsWithoutScenario.length > 0) {
+    groupedResult.push({
+      scenarioName: "Senaryo Belirtilmeyen Kullanımlar",
+      logs: logsWithoutScenario,
+    });
+  }
+  
+  return groupedResult;
+}
+
+
 // Usage Scenarios
 export async function getUsageScenarios(): Promise<UsageScenario[]> {
   return readData<UsageScenario>('usage_scenarios.json');
@@ -393,4 +445,3 @@ export async function getHistoricalUsageForAI(): Promise<HistoricalUsageSnapshot
 // export async function getConsumptionRatesForForm(): Promise<Record<SupportedCaliberForConsumption, number>> {
 //   // ...
 // }
-

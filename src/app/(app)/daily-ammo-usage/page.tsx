@@ -1,21 +1,22 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, ClipboardList, BarChart3, Users, Info } from "lucide-react";
+import { PlusCircle, ClipboardList, BarChart3, Users, Info, ListTree } from "lucide-react";
 import Link from "next/link";
-import { getAmmunitionDailyUsageLogs } from "@/lib/actions/inventory.actions";
+import { getAmmunitionDailyUsageLogs, getGroupedAmmunitionDailyUsageLogs, type GroupedDailyUsageLog } from "@/lib/actions/inventory.actions";
 import { AmmunitionDailyUsageTableClient } from "./_components/usage-log-table-client";
 
 export default async function AmmunitionDailyUsagePage() {
-  const logs = await getAmmunitionDailyUsageLogs();
+  const allLogs = await getAmmunitionDailyUsageLogs(); // For total summary
+  const groupedLogs = await getGroupedAmmunitionDailyUsageLogs();
 
   // Calculate total usage for summary (simple sum for now)
   const totalUsage = {
-    '9x19mm': logs.reduce((sum, log) => sum + log.used_9x19mm, 0),
-    '5.56x45mm': logs.reduce((sum, log) => sum + log.used_5_56x45mm, 0),
-    '7.62x39mm': logs.reduce((sum, log) => sum + log.used_7_62x39mm, 0),
-    '7.62x51mm': logs.reduce((sum, log) => sum + log.used_7_62x51mm, 0),
-    '12 Kalibre': logs.reduce((sum, log) => sum + (log["used_12 Kalibre"] || 0), 0),
+    '9x19mm': allLogs.reduce((sum, log) => sum + log.used_9x19mm, 0),
+    '5.56x45mm': allLogs.reduce((sum, log) => sum + log.used_5_56x45mm, 0),
+    '7.62x39mm': allLogs.reduce((sum, log) => sum + log.used_7_62x39mm, 0),
+    '7.62x51mm': allLogs.reduce((sum, log) => sum + log.used_7_62x51mm, 0),
+    '12 Kalibre': allLogs.reduce((sum, log) => sum + (log["used_12 Kalibre"] || 0), 0),
   };
 
 
@@ -37,9 +38,9 @@ export default async function AmmunitionDailyUsagePage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <BarChart3 className="h-6 w-6" />
-            <span suppressHydrationWarning>Kullanım Özeti</span>
+            <span suppressHydrationWarning>Kullanım Özeti (Tüm Kayıtlar)</span>
           </CardTitle>
-          <CardDescription suppressHydrationWarning>Kaydedilen günlük kullanımlara dayalı özet bilgiler.</CardDescription>
+          <CardDescription suppressHydrationWarning>Kaydedilen tüm günlük kullanımlara dayalı özet bilgiler.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
@@ -82,11 +83,30 @@ export default async function AmmunitionDailyUsagePage() {
       
       <Card>
         <CardHeader>
-          <CardTitle suppressHydrationWarning>Tüm Kullanım Kayıtları</CardTitle>
-          <CardDescription suppressHydrationWarning>Geçmiş günlük fişek kullanım kayıtlarını inceleyin.</CardDescription>
+          <CardTitle className="flex items-center gap-2">
+            <ListTree className="h-6 w-6" />
+            <span suppressHydrationWarning>Tüm Kullanım Kayıtları (Senaryo Bazlı)</span>
+          </CardTitle>
+          <CardDescription suppressHydrationWarning>Geçmiş günlük fişek kullanım kayıtlarını senaryolara göre gruplanmış olarak inceleyin.</CardDescription>
         </CardHeader>
-        <CardContent>
-          <AmmunitionDailyUsageTableClient logs={logs} />
+        <CardContent className="space-y-6">
+          {groupedLogs.length === 0 ? (
+            <p className="text-muted-foreground text-center py-4" suppressHydrationWarning>Henüz günlük fişek kullanım kaydı bulunmamaktadır.</p>
+          ) : (
+            groupedLogs.map((group) => (
+              <Card key={group.scenarioId || 'no-scenario'} className="shadow-md">
+                <CardHeader className="bg-muted/50">
+                  <CardTitle className="text-xl" suppressHydrationWarning>{group.scenarioName}</CardTitle>
+                  {group.logs.length === 0 && <CardDescription suppressHydrationWarning>Bu senaryo için kayıt bulunmamaktadır.</CardDescription>}
+                </CardHeader>
+                {group.logs.length > 0 && (
+                  <CardContent className="p-0">
+                    <AmmunitionDailyUsageTableClient logs={group.logs} />
+                  </CardContent>
+                )}
+              </Card>
+            ))
+          )}
         </CardContent>
       </Card>
     </div>
