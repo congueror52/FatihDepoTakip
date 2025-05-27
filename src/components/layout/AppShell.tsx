@@ -22,7 +22,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <SidebarHeader className="p-4">
           <Link href="/dashboard" className="flex items-center gap-2 text-lg font-semibold text-sidebar-foreground">
             <Package2 className="h-6 w-6 text-sidebar-primary" />
-            <span suppressHydrationWarning>AmmoTrack</span>
+            <span suppressHydrationWarning>Depo Takip</span>
           </Link>
         </SidebarHeader>
         <SidebarContent>
