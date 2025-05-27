@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -28,20 +29,20 @@ import * as Accordion from "@radix-ui/react-accordion";
 import { cn } from '@/lib/utils';
 
 const menuItems = [
-  { href: '/dashboard', label: 'Dashboard', icon: Gauge },
+  { href: '/dashboard', label: 'Gösterge Paneli', icon: Gauge },
   {
-    label: 'Inventory',
+    label: 'Envanter',
     icon: Warehouse,
     subItems: [
-      { href: '/inventory/firearms', label: 'Firearms', icon: Target },
-      { href: '/inventory/magazines', label: 'Magazines', icon: ListChecks },
-      { href: '/inventory/ammunition', label: 'Ammunition', icon: Box },
+      { href: '/inventory/firearms', label: 'Ateşli Silahlar', icon: Target },
+      { href: '/inventory/magazines', label: 'Şarjörler', icon: ListChecks },
+      { href: '/inventory/ammunition', label: 'Mühimmat', icon: Box },
     ],
   },
-  { href: '/shipments', label: 'Shipments', icon: Truck },
-  { href: '/maintenance', label: 'Maintenance', icon: Wrench },
-  { href: '/ai-balancing', label: 'AI Stock Balancing', icon: BrainCircuit },
-  { href: '/alerts', label: 'Alerts', icon: ShieldAlert },
+  { href: '/shipments', label: 'Sevkiyatlar', icon: Truck },
+  { href: '/maintenance', label: 'Bakım', icon: Wrench },
+  { href: '/ai-balancing', label: 'Yapay Zeka Stok Dengeleme', icon: BrainCircuit },
+  { href: '/alerts', label: 'Uyarılar', icon: ShieldAlert },
 ];
 
 export function MainNav() {
