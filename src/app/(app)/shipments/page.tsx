@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlusCircle, Truck } from "lucide-react";
@@ -9,22 +10,22 @@ export default async function ShipmentsPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Truck className="h-8 w-8" />
-          <h1 className="text-3xl font-bold tracking-tight" suppressHydrationWarning>Sevkiyat Takibi</h1>
+          <h1 className="text-3xl font-bold tracking-tight" suppressHydrationWarning>Malzeme Kaydı Takibi</h1>
         </div>
         {/* <Link href="/shipments/new"> */}
           <Button disabled>
-            <PlusCircle className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>Yeni Sevkiyat Kaydet</span>
+            <PlusCircle className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>Yeni Malzeme Kaydı Ekle</span>
           </Button>
         {/* </Link> */}
       </div>
       
       <Card>
         <CardHeader>
-          <CardTitle suppressHydrationWarning>Sevkiyat Geçmişi</CardTitle>
-          <CardDescription suppressHydrationWarning>Gelen ve giden sevkiyatları görüntüleyin.</CardDescription>
+          <CardTitle suppressHydrationWarning>Malzeme Kayıt Geçmişi</CardTitle>
+          <CardDescription suppressHydrationWarning>Gelen ve giden malzeme kayıtlarını görüntüleyin.</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground" suppressHydrationWarning>Sevkiyat kayıtları ve geçmiş tablosu burada görüntülenecektir. Özellik yapım aşamasında.</p>
+          <p className="text-muted-foreground" suppressHydrationWarning>Malzeme kayıtları ve geçmiş tablosu burada görüntülenecektir. Özellik yapım aşamasında.</p>
         </CardContent>
       </Card>
     </div>
