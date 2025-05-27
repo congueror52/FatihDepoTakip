@@ -27,7 +27,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react"; // Added useMemo
 import type { SupportedCaliber, UsageScenario } from "@/types/inventory";
 import { SUPPORTED_CALIBERS } from "@/types/inventory";
 
@@ -42,10 +42,12 @@ export function AmmunitionDailyUsageForm({ usageScenarios }: AmmunitionDailyUsag
   const { toast } = useToast();
   const router = useRouter();
 
-  const initialCheckboxState = SUPPORTED_CALIBERS.reduce((acc, caliber) => {
-    acc[caliber] = false; // Default to unchecked
-    return acc;
-  }, {} as CaliberCheckboxState);
+  const initialCheckboxState = useMemo(() => { // Memoized initialCheckboxState
+    return SUPPORTED_CALIBERS.reduce((acc, caliber) => {
+      acc[caliber] = false; // Default to unchecked
+      return acc;
+    }, {} as CaliberCheckboxState);
+  }, []); // Empty dependency array as SUPPORTED_CALIBERS is constant
 
   const [checkedCalibers, setCheckedCalibers] = useState<CaliberCheckboxState>(initialCheckboxState);
   const [currentScenarioRates, setCurrentScenarioRates] = useState<ScenarioConsumptionRates | null>(null);
@@ -58,7 +60,6 @@ export function AmmunitionDailyUsageForm({ usageScenarios }: AmmunitionDailyUsag
     used_5_56x45mm: 0,
     used_7_62x39mm: 0,
     used_7_62x51mm: 0,
-    // Add other calibers if SUPPORTED_CALIBERS is extended
     "used_12 Kalibre": 0,
     notes: "",
   };
@@ -116,13 +117,11 @@ export function AmmunitionDailyUsageForm({ usageScenarios }: AmmunitionDailyUsag
       if (checkedCalibers[caliber] && currentScenarioRates && currentScenarioRates[caliber] !== undefined) {
         form.setValue(formFieldName, Math.round(count * currentScenarioRates[caliber]));
       } else if (checkedCalibers[caliber] && !currentScenarioRates) {
-        // Caliber checked, but no scenario or rate in scenario: keep manual input or default to 0.
-        // For now, if no scenario, assume manual entry or 0.
-         if (form.getValues(formFieldName) === 0 && count > 0) { // Only overwrite if it was 0, to allow manual override
-           // Potentially prompt user or have a default "manual mode" rate if desired
-         }
+         // Caliber checked, but no scenario or rate in scenario: keep manual input or default to 0.
+         // If you want to ensure it zeroes out if not in scenario, explicitly set to 0 here
+         // or ensure manual entry is still possible / doesn't get overwritten if it was non-zero
       }
-      else {
+      else { // Not checked or no rate (effectively, not part of calculation for now)
         form.setValue(formFieldName, 0);
       }
     });
