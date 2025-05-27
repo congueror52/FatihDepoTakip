@@ -109,6 +109,7 @@ export interface AmmunitionDailyUsageLog {
   id: string;
   date: string; // ISO date string
   personnelCount: number;
+  usageScenarioId?: string; // Link to UsageScenario
   used_9x19mm: number;
   used_5_56x45mm: number;
   used_7_62x39mm: number;
@@ -124,6 +125,15 @@ export interface AmmunitionStandardConsumptionRate {
   id: string;
   caliber: SupportedCaliberForConsumption;
   roundsPerPerson: number;
+  lastUpdated: string;
+}
+
+// Admin-configurable usage scenarios
+export interface UsageScenario {
+  id: string;
+  name: string;
+  description?: string;
+  preselectedCalibers: SupportedCaliberForConsumption[];
   lastUpdated: string;
 }
 
@@ -154,3 +164,4 @@ export type AmmunitionUsageDb = AmmunitionUsageLog[];
 export type FirearmDefinitionsDb = FirearmDefinition[];
 export type AmmunitionDailyUsageDb = AmmunitionDailyUsageLog[];
 export type AmmunitionStandardConsumptionRatesDb = AmmunitionStandardConsumptionRate[];
+export type UsageScenariosDb = UsageScenario[]; // New DB type

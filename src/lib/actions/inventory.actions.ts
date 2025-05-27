@@ -2,12 +2,13 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import type { Firearm, Magazine, Ammunition, Shipment, AmmunitionUsageLog, DepotInventorySnapshot, HistoricalUsageSnapshot, UpcomingRequirementsSnapshot, FirearmDefinition, AmmunitionDailyUsageLog, AmmunitionStandardConsumptionRate, SupportedCaliberForConsumption } from '@/types/inventory';
+import type { Firearm, Magazine, Ammunition, Shipment, AmmunitionUsageLog, DepotInventorySnapshot, HistoricalUsageSnapshot, UpcomingRequirementsSnapshot, FirearmDefinition, AmmunitionDailyUsageLog, AmmunitionStandardConsumptionRate, SupportedCaliberForConsumption, UsageScenario } from '@/types/inventory';
 import { readData, writeData, generateId } from '@/lib/data-utils';
 import { firearmFormSchema } from '@/app/(app)/inventory/firearms/_components/firearm-form-schema';
 import { firearmDefinitionFormSchema } from '@/app/(app)/admin/firearms-definitions/_components/firearm-definition-form-schema';
 import { ammunitionDailyUsageFormSchema } from '@/app/(app)/daily-ammo-usage/_components/usage-log-form-schema';
 import { ammunitionStandardConsumptionRateFormSchema } from '@/app/(app)/admin/consumption-rates/_components/consumption-rate-form-schema';
+import { usageScenarioFormSchema } from '@/app/(app)/admin/usage-scenarios/_components/usage-scenario-form-schema'; // New import
 import { suggestRebalancing as suggestRebalancingAI } from '@/ai/flows/suggest-rebalancing';
 
 // Firearm Definitions
@@ -262,12 +263,6 @@ export async function addAmmunitionDailyUsageLogAction(data: Omit<AmmunitionDail
     id: await generateId(),
   };
   logs.push(newLog);
-  // Note: This action does NOT automatically decrement overall ammunition stock.
-  // That would require a more complex logic:
-  // 1. Identify which specific Ammunition items (from ammunition.json) correspond to these calibers.
-  // 2. Decide which depot's stock to decrement if not specified.
-  // 3. Handle cases where stock is insufficient.
-  // For now, this log is purely for tracking reported usage.
   await writeData('ammunition_daily_usage.json', logs);
   revalidatePath('/daily-ammo-usage');
   revalidatePath('/dashboard'); // If dashboard shows usage summaries
@@ -291,7 +286,6 @@ export async function addAmmunitionStandardConsumptionRateAction(data: Omit<Ammu
   }
   
   const rates = await getAmmunitionStandardConsumptionRates();
-  // Check for existing rate for the same caliber
   const existingRate = rates.find(r => r.caliber === validatedData.data.caliber);
   if (existingRate) {
     throw new Error(`Bu kalibre (${validatedData.data.caliber}) için zaten bir sarfiyat oranı tanımlanmış. Mevcut olanı güncelleyin.`);
@@ -321,7 +315,6 @@ export async function updateAmmunitionStandardConsumptionRateAction(rate: Ammuni
     throw new Error('Güncellenecek sarfiyat oranı bulunamadı.');
   }
 
-  // Check if another rate with the new caliber already exists (if caliber is changed)
   if (validatedData.data.caliber !== rates[index].caliber) {
     const conflictingRate = rates.find(r => r.caliber === validatedData.data.caliber && r.id !== rate.id);
     if (conflictingRate) {
@@ -347,6 +340,72 @@ export async function deleteAmmunitionStandardConsumptionRateAction(id: string):
   rates = rates.filter(r => r.id !== id);
   await writeData('ammunition_standard_consumption_rates.json', rates);
   revalidatePath('/admin/consumption-rates');
+}
+
+// Usage Scenarios
+export async function getUsageScenarios(): Promise<UsageScenario[]> {
+  return readData<UsageScenario>('usage_scenarios.json');
+}
+
+export async function getUsageScenarioById(id: string): Promise<UsageScenario | undefined> {
+  const scenarios = await getUsageScenarios();
+  return scenarios.find(s => s.id === id);
+}
+
+export async function addUsageScenarioAction(data: Omit<UsageScenario, 'id' | 'lastUpdated'>) {
+  const validatedData = usageScenarioFormSchema.safeParse(data);
+  if (!validatedData.success) {
+    console.error("Doğrulama hataları:", validatedData.error.format());
+    throw new Error('Geçersiz kullanım senaryosu verisi.');
+  }
+  
+  const scenarios = await getUsageScenarios();
+  const newScenario: UsageScenario = {
+    ...validatedData.data,
+    id: await generateId(),
+    lastUpdated: new Date().toISOString(),
+  };
+  scenarios.push(newScenario);
+  await writeData('usage_scenarios.json', scenarios);
+  revalidatePath('/admin/usage-scenarios');
+  return newScenario;
+}
+
+export async function updateUsageScenarioAction(scenario: UsageScenario) {
+  const validatedData = usageScenarioFormSchema.safeParse({
+    name: scenario.name,
+    description: scenario.description,
+    preselectedCalibers: scenario.preselectedCalibers,
+  });
+   if (!validatedData.success) {
+    console.error("Doğrulama hataları:", validatedData.error.format());
+    throw new Error('Güncelleme için geçersiz kullanım senaryosu verisi.');
+  }
+
+  let scenarios = await getUsageScenarios();
+  const index = scenarios.findIndex(s => s.id === scenario.id);
+  if (index === -1) {
+    throw new Error('Güncellenecek kullanım senaryosu bulunamadı.');
+  }
+  
+  const updatedScenario = {
+    ...scenarios[index],
+    ...validatedData.data,
+    lastUpdated: new Date().toISOString(),
+  };
+
+  scenarios[index] = updatedScenario;
+  await writeData('usage_scenarios.json', scenarios);
+  revalidatePath('/admin/usage-scenarios');
+  revalidatePath(`/admin/usage-scenarios/${scenario.id}/edit`);
+  return updatedScenario;
+}
+
+export async function deleteUsageScenarioAction(id: string): Promise<void> {
+  let scenarios = await getUsageScenarios();
+  scenarios = scenarios.filter(s => s.id !== id);
+  await writeData('usage_scenarios.json', scenarios);
+  revalidatePath('/admin/usage-scenarios');
 }
 
 
@@ -407,7 +466,9 @@ export async function getConsumptionRatesForForm(): Promise<Record<SupportedCali
     "7.62x51mm": 0,
   };
   rates.forEach(rate => {
-    rateMap[rate.caliber] = rate.roundsPerPerson;
+    if (rateMap.hasOwnProperty(rate.caliber)) { // Type guard
+      rateMap[rate.caliber] = rate.roundsPerPerson;
+    }
   });
   return rateMap;
 }

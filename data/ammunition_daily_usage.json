@@ -1,2 +1,22 @@
-
-[]
+[
+  {
+    "date": "2025-05-27T00:00:00.000Z",
+    "personnelCount": 125,
+    "used_9x19mm": 9375,
+    "used_5_56x45mm": 3125,
+    "used_7_62x39mm": 0,
+    "used_7_62x51mm": 0,
+    "notes": "kadro atışında kullanılan fişekler",
+    "id": "72553fd1-a6b0-4ac4-b05e-986e9f25d52a"
+  },
+  {
+    "date": "2025-05-26T00:00:00.000Z",
+    "personnelCount": 398,
+    "used_9x19mm": 29850,
+    "used_5_56x45mm": 9950,
+    "used_7_62x39mm": 0,
+    "used_7_62x51mm": 0,
+    "notes": "",
+    "id": "161d6273-8af8-43cc-9775-e65b78cc8df6"
+  }
+]
