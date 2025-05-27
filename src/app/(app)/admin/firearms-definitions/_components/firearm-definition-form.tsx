@@ -50,10 +50,10 @@ export function FirearmDefinitionForm({ definition }: FirearmDefinitionFormProps
     try {
       if (definition) {
         await updateFirearmDefinitionAction({ ...data, id: definition.id, lastUpdated: definition.lastUpdated });
-        toast({ title: "Başarılı", description: "Silah tanımı başarıyla güncellendi." });
+        toast({ variant: "success", title: "Başarılı", description: "Silah tanımı başarıyla güncellendi." });
       } else {
         await addFirearmDefinitionAction(data);
-        toast({ title: "Başarılı", description: "Silah tanımı başarıyla eklendi." });
+        toast({ variant: "success", title: "Başarılı", description: "Silah tanımı başarıyla eklendi." });
       }
       router.push("/admin/firearms-definitions");
       router.refresh(); 

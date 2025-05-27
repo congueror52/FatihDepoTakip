@@ -68,10 +68,10 @@ export function UsageScenarioForm({ scenario }: UsageScenarioFormProps) {
 
       if (scenario) {
         await updateUsageScenarioAction({ ...payload, id: scenario.id, lastUpdated: scenario.lastUpdated });
-        toast({ title: "Başarılı", description: "Kullanım senaryosu başarıyla güncellendi." });
+        toast({ variant: "success", title: "Başarılı", description: "Kullanım senaryosu başarıyla güncellendi." });
       } else {
         await addUsageScenarioAction(payload);
-        toast({ title: "Başarılı", description: "Kullanım senaryosu başarıyla eklendi." });
+        toast({ variant: "success", title: "Başarılı", description: "Kullanım senaryosu başarıyla eklendi." });
       }
       router.push("/admin/usage-scenarios");
       router.refresh(); 

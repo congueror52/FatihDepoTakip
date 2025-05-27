@@ -110,7 +110,7 @@ export function FirearmForm({ firearm, firearmDefinitions }: FirearmFormProps) {
           notes: data.notes,
         };
         await updateFirearmAction(firearmToUpdate);
-        toast({ title: "Başarılı", description: "Ateşli silah başarıyla güncellendi." });
+        toast({ variant: "success", title: "Başarılı", description: "Ateşli silah başarıyla güncellendi." });
       } else {
         // For new firearms, we pass only definitionId and instance-specific fields.
         // The action will copy name, model etc from definition.
@@ -126,7 +126,7 @@ export function FirearmForm({ firearm, firearmDefinitions }: FirearmFormProps) {
           purchaseDate: data.purchaseDate ? new Date(data.purchaseDate).toISOString() : undefined,
           notes: data.notes,
         });
-        toast({ title: "Başarılı", description: "Ateşli silah başarıyla eklendi." });
+        toast({ variant: "success", title: "Başarılı", description: "Ateşli silah başarıyla eklendi." });
       }
       router.push("/inventory/firearms");
       router.refresh();

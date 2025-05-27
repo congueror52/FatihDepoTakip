@@ -83,7 +83,7 @@ export function AiBalancingForm({
   async function onUpcomingReqSubmit(data: UpcomingRequirementsFormValues) {
      // data is from upcomingReqForm and matches upcomingRequirementsSchema (with startDate, endDate)
      form.setValue("upcomingRequirements", data); 
-     toast({ title: "Başarılı", description: "Yaklaşan gereksinimler kaydedildi. Yapay zeka dengelemesi için göndermeye hazır." });
+     toast({ variant: "success", title: "Başarılı", description: "Yaklaşan gereksinimler kaydedildi. Yapay zeka dengelemesi için göndermeye hazır." });
      setShowUpcomingReqForm(false);
   }
 
@@ -126,7 +126,7 @@ export function AiBalancingForm({
 
       if (result.success) {
         setAiSuggestion(result.data);
-        toast({ title: "Yapay Zeka Önerisi Alındı", description: "Aşağıdaki yeniden dengeleme planını inceleyin." });
+        toast({ variant: "success", title: "Yapay Zeka Önerisi Alındı", description: "Aşağıdaki yeniden dengeleme planını inceleyin." });
       } else {
         toast({ variant: "destructive", title: "Hata", description: result.error });
       }

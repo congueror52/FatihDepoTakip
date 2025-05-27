@@ -43,7 +43,7 @@ export function FirearmDefinitionsTableClient({ definitions: initialDefinitions 
     try {
       await deleteFirearmDefinitionAction(selectedDefinitionId);
       setDefinitions(definitions.filter(d => d.id !== selectedDefinitionId));
-      toast({ title: "Başarılı", description: "Silah tanımı başarıyla silindi." });
+      toast({ variant: "success", title: "Başarılı", description: "Silah tanımı başarıyla silindi." });
     } catch (error) {
       toast({ variant: "destructive", title: "Hata", description: "Silah tanımı silinemedi. Bu tanımı kullanan envanter öğeleri olabilir." });
     } finally {

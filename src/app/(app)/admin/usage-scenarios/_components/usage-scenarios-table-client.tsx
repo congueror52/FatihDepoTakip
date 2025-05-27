@@ -44,7 +44,7 @@ export function UsageScenariosTableClient({ scenarios: initialScenarios }: Usage
     try {
       await deleteUsageScenarioAction(selectedScenarioId);
       setScenarios(scenarios.filter(s => s.id !== selectedScenarioId));
-      toast({ title: "Başarılı", description: "Kullanım senaryosu başarıyla silindi." });
+      toast({ variant: "success", title: "Başarılı", description: "Kullanım senaryosu başarıyla silindi." });
     } catch (error) {
       toast({ variant: "destructive", title: "Hata", description: "Kullanım senaryosu silinemedi." });
     } finally {

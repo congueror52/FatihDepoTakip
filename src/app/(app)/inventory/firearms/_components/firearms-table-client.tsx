@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { Firearm } from "@/types/inventory";
@@ -44,7 +45,7 @@ export function FirearmsTableClient({ firearms: initialFirearms }: FirearmsTable
     try {
       await deleteFirearmAction(selectedFirearmId);
       setFirearms(firearms.filter(f => f.id !== selectedFirearmId));
-      toast({ title: "Başarılı", description: "Ateşli silah başarıyla silindi." });
+      toast({ variant: "success", title: "Başarılı", description: "Ateşli silah başarıyla silindi." });
     } catch (error) {
       toast({ variant: "destructive", title: "Hata", description: "Ateşli silah silinemedi." });
     } finally {
@@ -112,7 +113,7 @@ export function FirearmsTableClient({ firearms: initialFirearms }: FirearmsTable
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" className="h-8 w-8 p-0">
-                        <span className="sr-only">Menüyü aç</span>
+                        <span className="sr-only" suppressHydrationWarning>Menüyü aç</span>
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>

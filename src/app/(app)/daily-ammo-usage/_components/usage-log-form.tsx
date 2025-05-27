@@ -133,7 +133,7 @@ export function AmmunitionDailyUsageForm({ usageScenarios }: AmmunitionDailyUsag
   async function onSubmit(data: AmmunitionDailyUsageFormValues) {
     try {
       await addAmmunitionDailyUsageLogAction(data);
-      toast({ title: "Başarılı", description: "Günlük fişek kullanım kaydı başarıyla eklendi." });
+      toast({ variant: "success", title: "Başarılı", description: "Günlük fişek kullanım kaydı başarıyla eklendi." });
       router.push("/daily-ammo-usage");
       router.refresh(); 
     } catch (error: any) {
