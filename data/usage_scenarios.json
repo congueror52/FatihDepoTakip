@@ -1,7 +1,7 @@
 [
   {
     "id": "scenario_1",
-    "name": "Kadro Atışı - Tabanca 2.Dönem",
+    "name": "Kadro Atışı 2.Dönem",
     "description": "Personelin tabanca atış becerilerini geliştirme.",
     "consumptionRatesPerCaliber": [
       {
@@ -13,7 +13,7 @@
         "roundsPerPerson": 25
       }
     ],
-    "lastUpdated": "2025-05-27T19:03:09.813Z"
+    "lastUpdated": "2025-05-27T19:12:49.799Z"
   },
   {
     "id": "scenario_2",
