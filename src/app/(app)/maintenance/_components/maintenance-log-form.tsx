@@ -45,8 +45,12 @@ export function MaintenanceLogForm({ firearms, magazines }: MaintenanceLogFormPr
 
 
   const defaultValues: Partial<MaintenanceLogFormValues> = {
+    itemId: undefined, 
+    itemType: undefined,
     date: format(new Date(), 'yyyy-MM-dd'),
     description: "",
+    statusChangeFrom: "", // Initialize as empty string for the Input
+    statusChangeTo: undefined,
     technician: "",
     partsUsed: "",
     cost: 0,
@@ -71,9 +75,11 @@ export function MaintenanceLogForm({ firearms, magazines }: MaintenanceLogFormPr
       setAvailableItems([]);
       setCurrentStatuses([]);
     }
+    // Reset dependent fields when itemType changes
     form.resetField("itemId");
-    form.resetField("statusChangeFrom");
+    form.setValue("statusChangeFrom", ""); // Ensure it's controlled
     form.resetField("statusChangeTo");
+
   }, [selectedItemType, firearms, magazines, form]);
 
   useEffect(() => {
@@ -83,13 +89,16 @@ export function MaintenanceLogForm({ firearms, magazines }: MaintenanceLogFormPr
         form.setValue("statusChangeFrom", item.status as MaintenanceItemStatus);
         form.setValue("itemType", item.itemType as 'firearm' | 'magazine');
       }
+    } else {
+      // If no item is selected, ensure statusChangeFrom is reset to an empty string
+      form.setValue("statusChangeFrom", "");
     }
   }, [selectedItemId, availableItems, form]);
 
 
   async function onSubmit(data: MaintenanceLogFormValues) {
-    if (!data.itemType) {
-        toast({ variant: "destructive", title: "Hata", description: "Lütfen bir öğe türü seçin." });
+    if (!data.itemType || !data.itemId) { // Also check itemId
+        toast({ variant: "destructive", title: "Hata", description: "Lütfen bir öğe türü ve öğe seçin." });
         return;
     }
     try {
@@ -103,7 +112,7 @@ export function MaintenanceLogForm({ firearms, magazines }: MaintenanceLogFormPr
         cost: data.cost,
       });
       toast({ variant: "success", title: "Başarılı", description: "Bakım kaydı başarıyla eklendi." });
-      router.push(`/inventory/${data.itemType === 'firearm' ? 'firearms' : 'magazines'}/${data.itemId}`);
+      router.push(`/inventory/${data.itemType === 'firearm' ? 'silahlar' : 'sarjorler'}/${data.itemId}`); // Updated paths
       router.refresh(); 
     } catch (error: any) {
       toast({ variant: "destructive", title: "Hata", description: error.message || "Bakım kaydı eklenirken hata oluştu." });
@@ -115,21 +124,33 @@ export function MaintenanceLogForm({ firearms, magazines }: MaintenanceLogFormPr
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <FormItem>
-                <FormLabel><span suppressHydrationWarning>Öğe Türü</span></FormLabel>
-                <Select onValueChange={(value: 'firearm' | 'magazine') => setSelectedItemType(value)} >
-                    <FormControl>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Bakım yapılacak öğe türünü seçin" />
-                        </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                        <SelectItem value="firearm"><span suppressHydrationWarning>Silah</span></SelectItem>
-                        <SelectItem value="magazine"><span suppressHydrationWarning>Şarjör</span></SelectItem>
-                    </SelectContent>
-                </Select>
-                <FormMessage />
-            </FormItem>
+            <FormField
+              control={form.control}
+              name="itemType"
+              render={({ field }) => (
+                <FormItem>
+                    <FormLabel><span suppressHydrationWarning>Öğe Türü</span></FormLabel>
+                    <Select 
+                      onValueChange={(value: 'firearm' | 'magazine' | undefined) => {
+                        field.onChange(value);
+                        setSelectedItemType(value);
+                      }} 
+                      value={field.value}
+                    >
+                        <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Bakım yapılacak öğe türünü seçin" />
+                            </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            <SelectItem value="firearm"><span suppressHydrationWarning>Silah</span></SelectItem>
+                            <SelectItem value="magazine"><span suppressHydrationWarning>Şarjör</span></SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <FormField
                 control={form.control}
@@ -239,7 +260,7 @@ export function MaintenanceLogForm({ firearms, magazines }: MaintenanceLogFormPr
                 render={({ field }) => (
                 <FormItem>
                     <FormLabel><span suppressHydrationWarning>Yeni Durum</span></FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!selectedItemId}>
+                    <Select onValueChange={field.onChange} value={field.value} disabled={!selectedItemId}>
                     <FormControl>
                         <SelectTrigger>
                             <SelectValue placeholder="Yeni durumu seçin" />
@@ -286,7 +307,7 @@ export function MaintenanceLogForm({ firearms, magazines }: MaintenanceLogFormPr
             />
         </div>
 
-        <Button type="submit" disabled={form.formState.isSubmitting}>
+        <Button type="submit" disabled={form.formState.isSubmitting || !form.formState.isValid}>
           {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {form.formState.isSubmitting ? <span suppressHydrationWarning>Kaydediliyor...</span> : <span suppressHydrationWarning>Bakım Kaydı Ekle</span>}
         </Button>
@@ -294,3 +315,4 @@ export function MaintenanceLogForm({ firearms, magazines }: MaintenanceLogFormPr
     </Form>
   );
 }
+    

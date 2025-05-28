@@ -3,7 +3,7 @@
     "definitionId": "fd_1",
     "serialNumber": "112345",
     "depotId": "depotA",
-    "status": "Hizmette",
+    "status": "Arızalı",
     "purchaseDate": "2025-05-28T00:00:00.000Z",
     "id": "f772813a-26de-4455-a558-c875c6acc884",
     "itemType": "firearm",
@@ -11,8 +11,19 @@
     "model": "Sar 223 P",
     "manufacturer": "Sarsılmaz",
     "caliber": "5.56x45mm",
-    "lastUpdated": "2025-05-28T09:26:46.918Z",
-    "maintenanceHistory": []
+    "lastUpdated": "2025-05-28T10:45:27.515Z",
+    "maintenanceHistory": [
+      {
+        "date": "2025-05-28T00:00:00.000Z",
+        "description": "arıza raporu yazıldı",
+        "statusChangeFrom": "Hizmette",
+        "statusChangeTo": "Arızalı",
+        "technician": "",
+        "partsUsed": "",
+        "cost": 0,
+        "id": "82449aa9-2414-4924-ab9c-6f07b57fbf51"
+      }
+    ]
   },
   {
     "definitionId": "fd_1",
