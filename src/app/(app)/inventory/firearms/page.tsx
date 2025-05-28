@@ -1,27 +1,47 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, Target, ShieldX, Wrench, ShieldCheck, Construction, ServerCrash } from "lucide-react"; // Added more icons
+import { PlusCircle, Target, ShieldX, Wrench, ShieldCheck, Construction, ServerCrash, Info } from "lucide-react";
 import Link from "next/link";
-import { getFirearms } from "@/lib/actions/inventory.actions";
+import { getFirearms, getFirearmDefinitions } from "@/lib/actions/inventory.actions";
 import { FirearmsTableClient } from "./_components/firearms-table-client";
 import type { FirearmStatus } from "@/types/inventory";
+import { firearmStatuses } from "./_components/firearm-form-schema"; // Import firearmStatuses
 
 export default async function FirearmsPage() {
   const firearms = await getFirearms();
+  const firearmDefinitions = await getFirearmDefinitions();
 
-  const statusCounts = firearms.reduce((acc, firearm) => {
+  const overallStatusCounts = firearms.reduce((acc, firearm) => {
     acc[firearm.status] = (acc[firearm.status] || 0) + 1;
     return acc;
   }, {} as Record<FirearmStatus, number>);
 
   const summaryCards: { title: string; count: number; icon: React.ElementType; statusKey: FirearmStatus, bgColor?: string, textColor?: string, borderColor?: string }[] = [
-    { title: "Hizmetteki Silahlar", count: statusCounts['Hizmette'] || 0, icon: ShieldCheck, statusKey: 'Hizmette', bgColor: 'bg-green-50 dark:bg-green-900/30', textColor: 'text-green-700 dark:text-green-400', borderColor: 'border-green-200 dark:border-green-700' },
-    { title: "Arızalı Silahlar", count: statusCounts['Arızalı'] || 0, icon: ShieldX, statusKey: 'Arızalı', bgColor: 'bg-red-50 dark:bg-red-900/30', textColor: 'text-red-700 dark:text-red-400', borderColor: 'border-red-200 dark:border-red-700' },
-    { title: "Bakımdaki Silahlar", count: statusCounts['Bakımda'] || 0, icon: Wrench, statusKey: 'Bakımda', bgColor: 'bg-yellow-50 dark:bg-yellow-900/30', textColor: 'text-yellow-700 dark:text-yellow-400', borderColor: 'border-yellow-200 dark:border-yellow-700' },
-    { title: "Onarım Bekleyenler", count: statusCounts['Onarım Bekliyor'] || 0, icon: Construction, statusKey: 'Onarım Bekliyor', bgColor: 'bg-orange-50 dark:bg-orange-900/30', textColor: 'text-orange-700 dark:text-orange-400', borderColor: 'border-orange-200 dark:border-orange-700' },
-    { title: "Hizmet Dışı Silahlar", count: statusCounts['Hizmet Dışı'] || 0, icon: ServerCrash, statusKey: 'Hizmet Dışı', bgColor: 'bg-slate-50 dark:bg-slate-700/30', textColor: 'text-slate-700 dark:text-slate-400', borderColor: 'border-slate-200 dark:border-slate-600' },
+    { title: "Hizmetteki Silahlar", count: overallStatusCounts['Hizmette'] || 0, icon: ShieldCheck, statusKey: 'Hizmette', bgColor: 'bg-green-50 dark:bg-green-900/30', textColor: 'text-green-700 dark:text-green-400', borderColor: 'border-green-200 dark:border-green-700' },
+    { title: "Arızalı Silahlar", count: overallStatusCounts['Arızalı'] || 0, icon: ShieldX, statusKey: 'Arızalı', bgColor: 'bg-red-50 dark:bg-red-900/30', textColor: 'text-red-700 dark:text-red-400', borderColor: 'border-red-200 dark:border-red-700' },
+    { title: "Bakımdaki Silahlar", count: overallStatusCounts['Bakımda'] || 0, icon: Wrench, statusKey: 'Bakımda', bgColor: 'bg-yellow-50 dark:bg-yellow-900/30', textColor: 'text-yellow-700 dark:text-yellow-400', borderColor: 'border-yellow-200 dark:border-yellow-700' },
+    { title: "Onarım Bekleyenler", count: overallStatusCounts['Onarım Bekliyor'] || 0, icon: Construction, statusKey: 'Onarım Bekliyor', bgColor: 'bg-orange-50 dark:bg-orange-900/30', textColor: 'text-orange-700 dark:text-orange-400', borderColor: 'border-orange-200 dark:border-orange-700' },
+    { title: "Hizmet Dışı Silahlar", count: overallStatusCounts['Hizmet Dışı'] || 0, icon: ServerCrash, statusKey: 'Hizmet Dışı', bgColor: 'bg-slate-50 dark:bg-slate-700/30', textColor: 'text-slate-700 dark:text-slate-400', borderColor: 'border-slate-200 dark:border-slate-600' },
   ];
+
+  const summaryByDefinition = firearmDefinitions.map(definition => {
+    const instances = firearms.filter(f => f.definitionId === definition.id);
+    const totalCount = instances.length;
+    const statusCounts: Partial<Record<FirearmStatus, number>> = {};
+    
+    for (const status of firearmStatuses) { // Use imported firearmStatuses
+      const count = instances.filter(f => f.status === status).length;
+      if (count > 0) {
+        statusCounts[status] = count;
+      }
+    }
+    return {
+      definition,
+      totalCount,
+      statusCounts,
+    };
+  }).filter(summary => summary.totalCount > 0); // Only show definitions that have instances
 
 
   return (
@@ -47,11 +67,38 @@ export default async function FirearmsPage() {
             </CardHeader>
             <CardContent>
               <div className={`text-2xl font-bold ${card.textColor}`}>{card.count}</div>
-              {/* <p className="text-xs text-muted-foreground pt-1">Toplam envanterin %X'i</p> */}
             </CardContent>
           </Card>
         ))}
       </div>
+
+      {summaryByDefinition.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+                <Info className="h-6 w-6 text-blue-600" />
+                <span suppressHydrationWarning>Silah Türüne Göre Detaylı Durum</span>
+            </CardTitle>
+            <CardDescription suppressHydrationWarning>Envanterdeki her bir silah türünün mevcut durum özeti.</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {summaryByDefinition.map(summary => (
+              <Card key={summary.definition.id} className="shadow-md">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg" suppressHydrationWarning>{summary.definition.name} ({summary.definition.model})</CardTitle>
+                  <CardDescription suppressHydrationWarning>Kalibre: {summary.definition.caliber}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-1 text-sm">
+                  <p><strong><span suppressHydrationWarning>Toplam:</span></strong> {summary.totalCount}</p>
+                  {Object.entries(summary.statusCounts).map(([status, count]) => (
+                    <p key={status}><span suppressHydrationWarning>{status}:</span> {count}</p>
+                  ))}
+                </CardContent>
+              </Card>
+            ))}
+          </CardContent>
+        </Card>
+      )}
       
       <Card>
         <CardHeader>
