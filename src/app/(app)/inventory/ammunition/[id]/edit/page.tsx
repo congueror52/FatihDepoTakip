@@ -1,5 +1,5 @@
 
-import { getAmmunitionById } from "@/lib/actions/inventory.actions";
+import { getAmmunitionById, getDepots } from "@/lib/actions/inventory.actions"; // Import getDepots
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AmmunitionForm } from "../../_components/ammunition-form";
 import { Box, ArrowLeft } from "lucide-react";
@@ -8,6 +8,7 @@ import { notFound } from "next/navigation";
 
 export default async function EditAmmunitionPage({ params }: { params: { id: string } }) {
   const ammunition = await getAmmunitionById(params.id);
+  const depots = await getDepots(); // Fetch depots
 
   if (!ammunition) {
     notFound();
@@ -29,7 +30,7 @@ export default async function EditAmmunitionPage({ params }: { params: { id: str
           <CardDescription><span suppressHydrationWarning>Mühimmat için bilgileri değiştirin: {ammunition.name}.</span></CardDescription>
         </CardHeader>
         <CardContent>
-          <AmmunitionForm ammunition={ammunition} />
+          <AmmunitionForm ammunition={ammunition} depots={depots} /> {/* Pass depots to the form */}
         </CardContent>
       </Card>
     </div>

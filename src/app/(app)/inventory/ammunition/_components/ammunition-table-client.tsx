@@ -1,7 +1,7 @@
 
 'use client';
 
-import type { Ammunition } from "@/types/inventory";
+import type { Ammunition, Depot } from "@/types/inventory"; // Added Depot
 import {
   Table,
   TableBody,
@@ -28,13 +28,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { deleteAmmunitionAction } from "@/lib/actions/inventory.actions";
-import { DEPOT_LOCATIONS } from "@/types/inventory";
+// Removed DEPOT_LOCATIONS import
 
 interface AmmunitionTableClientProps {
   ammunition: Ammunition[];
+  depots: Depot[]; // Added depots prop
 }
 
-export function AmmunitionTableClient({ ammunition: initialAmmunition }: AmmunitionTableClientProps) {
+export function AmmunitionTableClient({ ammunition: initialAmmunition, depots }: AmmunitionTableClientProps) { // Added depots to props
   const [ammunitionList, setAmmunitionList] = useState<Ammunition[]>(initialAmmunition);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedAmmunitionId, setSelectedAmmunitionId] = useState<string | null>(null);
@@ -46,8 +47,8 @@ export function AmmunitionTableClient({ ammunition: initialAmmunition }: Ammunit
       await deleteAmmunitionAction(selectedAmmunitionId);
       setAmmunitionList(ammunitionList.filter(a => a.id !== selectedAmmunitionId));
       toast({ variant: "success", title: "Başarılı", description: "Mühimmat başarıyla silindi." });
-    } catch (error) {
-      toast({ variant: "destructive", title: "Hata", description: "Mühimmat silinemedi." });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Hata", description: error.message || "Mühimmat silinemedi." });
     } finally {
       setIsDeleteDialogOpen(false);
       setSelectedAmmunitionId(null);
@@ -70,7 +71,7 @@ export function AmmunitionTableClient({ ammunition: initialAmmunition }: Ammunit
   };
   
   const getDepotName = (depotId: string) => {
-    const depot = DEPOT_LOCATIONS.find(d => d.id === depotId);
+    const depot = depots.find(d => d.id === depotId); // Use passed depots prop
     return depot ? depot.name : depotId;
   }
 

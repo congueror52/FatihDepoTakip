@@ -22,8 +22,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import type { Ammunition } from "@/types/inventory";
-import { DEPOT_LOCATIONS, SUPPORTED_CALIBERS } from "@/types/inventory";
+import type { Ammunition, Depot } from "@/types/inventory"; // Added Depot type
+import { SUPPORTED_CALIBERS } from "@/types/inventory"; // Removed DEPOT_LOCATIONS
 import { ammunitionFormSchema, ammunitionStatuses, type AmmunitionFormValues } from "./ammunition-form-schema";
 import { addAmmunitionAction, updateAmmunitionAction } from "@/lib/actions/inventory.actions";
 import { useToast } from "@/hooks/use-toast";
@@ -37,9 +37,10 @@ import { tr } from "date-fns/locale";
 
 interface AmmunitionFormProps {
   ammunition?: Ammunition;
+  depots: Depot[]; // Added depots prop
 }
 
-export function AmmunitionForm({ ammunition }: AmmunitionFormProps) {
+export function AmmunitionForm({ ammunition, depots }: AmmunitionFormProps) { // Added depots to props
   const { toast } = useToast();
   const router = useRouter();
 
@@ -51,7 +52,7 @@ export function AmmunitionForm({ ammunition }: AmmunitionFormProps) {
     caliber: SUPPORTED_CALIBERS[0],
     quantity: 0,
     status: 'Mevcut',
-    depotId: DEPOT_LOCATIONS[0].id,
+    depotId: depots.length > 0 ? depots[0].id : "", // Default to first available depot
   };
   
   const form = useForm<AmmunitionFormValues>({
@@ -76,8 +77,8 @@ export function AmmunitionForm({ ammunition }: AmmunitionFormProps) {
       }
       router.push("/inventory/ammunition");
       router.refresh();
-    } catch (error) {
-      toast({ variant: "destructive", title: "Hata", description: `Mühimmat ${ammunition ? 'güncellenirken' : 'eklenirken'} hata oluştu.` });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Hata", description: error.message || `Mühimmat ${ammunition ? 'güncellenirken' : 'eklenirken'} hata oluştu.` });
       console.error("Form gönderme hatası:", error);
     }
   }
@@ -143,7 +144,8 @@ export function AmmunitionForm({ ammunition }: AmmunitionFormProps) {
                     <SelectTrigger><SelectValue placeholder="Bir depo seçin" /></SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {DEPOT_LOCATIONS.map(depot => (
+                    {depots.length === 0 && <SelectItem value="" disabled><span suppressHydrationWarning>Depo bulunamadı</span></SelectItem>}
+                    {depots.map(depot => (
                       <SelectItem key={depot.id} value={depot.id}><span suppressHydrationWarning>{depot.name}</span></SelectItem>
                     ))}
                   </SelectContent>

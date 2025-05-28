@@ -3,8 +3,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { AmmunitionForm } from "../_components/ammunition-form";
 import { Box, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { getDepots } from "@/lib/actions/inventory.actions"; // Import getDepots
 
-export default function NewAmmunitionPage() {
+export default async function NewAmmunitionPage() {
+  const depots = await getDepots(); // Fetch depots
+
   return (
     <div className="max-w-2xl mx-auto">
       <Link href="/inventory/ammunition" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4">
@@ -21,7 +24,7 @@ export default function NewAmmunitionPage() {
           <CardDescription suppressHydrationWarning>Yeni mühimmat için bilgileri girin.</CardDescription>
         </CardHeader>
         <CardContent>
-          <AmmunitionForm />
+          <AmmunitionForm depots={depots} /> {/* Pass depots to the form */}
         </CardContent>
       </Card>
     </div>

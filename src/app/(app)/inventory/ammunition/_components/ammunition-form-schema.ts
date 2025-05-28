@@ -1,6 +1,6 @@
 
 import { z } from "zod";
-import { DEPOT_LOCATIONS, SUPPORTED_CALIBERS } from "@/types/inventory";
+import { SUPPORTED_CALIBERS } from "@/types/inventory"; // Removed DEPOT_LOCATIONS import
 
 export const ammunitionStatuses = ['Mevcut', 'Düşük Stok', 'Kritik Stok', 'Tükenmek Üzere'] as const;
 
@@ -10,9 +10,7 @@ export const ammunitionFormSchema = z.object({
     errorMap: () => ({ message: "Lütfen geçerli bir kalibre seçin." }),
   }),
   quantity: z.coerce.number().int().min(0, { message: "Miktar 0 veya daha büyük olmalıdır." }),
-  depotId: z.enum(DEPOT_LOCATIONS.map(d => d.id) as [string, ...string[]], {
-    errorMap: () => ({ message: "Lütfen geçerli bir depo seçin." }),
-  }),
+  depotId: z.string().min(1, { message: "Lütfen geçerli bir depo seçin." }), // Changed to generic string validation
   status: z.enum(ammunitionStatuses, {
     errorMap: () => ({ message: "Lütfen geçerli bir durum seçin." }),
   }),
