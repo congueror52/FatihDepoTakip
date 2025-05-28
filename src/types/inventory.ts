@@ -1,5 +1,5 @@
 
-export type DepotId = 'depotA' | 'depotB';
+export type DepotId = string; // Changed from 'depotA' | 'depotB'
 
 export const DEPOT_LOCATIONS: { id: DepotId; name: string }[] = [
   { id: 'depotA', name: 'Depo Alfa' },
@@ -24,10 +24,10 @@ export interface BaseItem {
 // Master definition for a firearm type
 export interface FirearmDefinition {
   id: string;
-  name: string; // e.g., "Piyade Tüfeği", "Tabanca" -> "Tüfek", "Tabanca"
-  model: string; // e.g., MPT-76, SAR9
-  manufacturer?: string; // e.g., Sarsılmaz
-  caliber: string; // e.g., 7.62x51mm, 9x19mm
+  name: string; 
+  model: string; 
+  manufacturer?: string; 
+  caliber: string; 
   description?: string;
   lastUpdated: string;
 }
@@ -47,8 +47,8 @@ export interface Magazine extends BaseItem {
   caliber: string;
   capacity: number;
   status: MagazineStatus;
-  compatibleWith?: string[]; // e.g., specific firearm models
-  serialNumber?: string; // Optional serial for magazines
+  compatibleWith?: string[]; 
+  serialNumber?: string; 
   maintenanceHistory?: MaintenanceLog[];
 }
 
@@ -56,7 +56,7 @@ export interface Ammunition extends BaseItem {
   itemType: 'ammunition';
   caliber: string;
   quantity: number;
-  bulletType?: string; // e.g., FMJ, HP
+  bulletType?: string; 
   lotNumber?: string;
   status: AmmunitionStatus; 
 }
@@ -68,19 +68,19 @@ export interface Shipment {
   date: string; // ISO date string
   type: 'Gelen' | 'Giden' | 'Transfer';
   items: Array<{
-    inventoryId?: string; // Link to existing inventory item if updating quantity
+    inventoryId?: string; 
     name: string;
     itemType: InventoryItem['itemType'];
     quantity: number;
     caliber?: string;
-    model?: string; // if firearm
-    serialNumber?: string; // if firearm
-    capacity?: number; // if magazine
-    depotId: DepotId; // Target depot for incoming/transfer, source for outgoing
-    destinationDepotId?: DepotId; // For transfers
+    model?: string; 
+    serialNumber?: string; 
+    capacity?: number; 
+    depotId: DepotId; 
+    destinationDepotId?: DepotId; 
   }>;
   notes?: string;
-  supplier?: string; // For incoming
+  supplier?: string; 
   trackingNumber?: string;
 }
 
@@ -101,8 +101,8 @@ export interface AmmunitionUsageLog {
   ammunitionId: string; // Links to Ammunition item
   quantityUsed: number;
   depotId: DepotId;
-  purpose?: string; // e.g., Eğitim, Görev, Test
-  userId?: string; // User who reported usage
+  purpose?: string; 
+  userId?: string; 
   notes?: string;
 }
 
@@ -118,12 +118,10 @@ export interface AmmunitionDailyUsageLog {
   notes?: string;
 }
 
-// Supported calibers for various forms and definitions
 export const SUPPORTED_CALIBERS = ["9x19mm", "5.56x45mm", "7.62x39mm", "7.62x51mm"] as const;
 export type SupportedCaliber = typeof SUPPORTED_CALIBERS[number];
 
 
-// Admin-configurable usage scenarios with embedded consumption rates
 export interface ScenarioCaliberConsumption {
   caliber: SupportedCaliber;
   roundsPerPerson: number;
@@ -134,6 +132,15 @@ export interface UsageScenario {
   description?: string;
   consumptionRatesPerCaliber: ScenarioCaliberConsumption[];
   lastUpdated: string;
+}
+
+export interface Depot {
+  id: DepotId; 
+  name: string; 
+  address?: string;
+  contactPerson?: string;
+  notes?: string;
+  lastUpdated: string; 
 }
 
 
@@ -169,13 +176,12 @@ export interface DepotInventorySnapshot {
 
 export interface HistoricalUsageSnapshot {
   ammunitionUsage: Array<Pick<AmmunitionUsageLog, 'ammunitionId' | 'quantityUsed' | 'date' | 'depotId'>>;
-  // Could also include firearm/magazine repair frequency if relevant
 }
 export interface UpcomingRequirementsSnapshot {
-  description: string; // e.g., "Training exercise for 50 personnel, requiring 5.56mm and 9mm ammo"
+  description: string; 
   requiredItems: Array<{ nameOrCaliber: string; quantity: number; itemType: InventoryItem['itemType'] }>;
-  depotId?: DepotId; // Optional, if requirement is depot-specific
-  dateRange: { start: string; end: string }; // Changed to be an object with start and end
+  depotId?: DepotId; 
+  dateRange: { start: string; end: string }; 
 }
 
 // Schema for individual JSON files
@@ -187,3 +193,4 @@ export type AmmunitionUsageDb = AmmunitionUsageLog[];
 export type FirearmDefinitionsDb = FirearmDefinition[];
 export type AmmunitionDailyUsageDb = AmmunitionDailyUsageLog[];
 export type UsageScenariosDb = UsageScenario[];
+export type DepotsDb = Depot[];

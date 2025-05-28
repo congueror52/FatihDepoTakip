@@ -23,7 +23,8 @@ import {
   ChevronDown,
   ChevronUp,
   ClipboardList,
-  FileCheck2 
+  FileCheck2,
+  Warehouse // Added Warehouse icon for Depots
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
@@ -45,6 +46,7 @@ const menuItems = [
     children: [
       { href: '/admin/firearms-definitions', label: 'Silah Tanımları', icon: Target },
       { href: '/admin/usage-scenarios', label: 'Kullanım Senaryoları', icon: FileCheck2 },
+      { href: '/admin/depots', label: 'Depo Tanımları', icon: Warehouse },
     ]
   }
 ];

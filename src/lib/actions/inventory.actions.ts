@@ -2,7 +2,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import type { Firearm, Magazine, Ammunition, Shipment, AmmunitionUsageLog, DepotInventorySnapshot, HistoricalUsageSnapshot, UpcomingRequirementsSnapshot, FirearmDefinition, AmmunitionDailyUsageLog, UsageScenario, ScenarioCaliberConsumption, SupportedCaliber, MagazineStatus, AmmunitionStatus } from '@/types/inventory';
+import type { Firearm, Magazine, Ammunition, Shipment, AmmunitionUsageLog, DepotInventorySnapshot, HistoricalUsageSnapshot, UpcomingRequirementsSnapshot, FirearmDefinition, AmmunitionDailyUsageLog, UsageScenario, ScenarioCaliberConsumption, SupportedCaliber, MagazineStatus, AmmunitionStatus, Depot } from '@/types/inventory';
 import { readData, writeData, generateId } from '@/lib/data-utils';
 import { firearmFormSchema } from '@/app/(app)/inventory/firearms/_components/firearm-form-schema';
 import { firearmDefinitionFormSchema } from '@/app/(app)/admin/firearms-definitions/_components/firearm-definition-form-schema';
@@ -11,6 +11,7 @@ import { usageScenarioFormSchema } from '@/app/(app)/admin/usage-scenarios/_comp
 import { suggestRebalancing as suggestRebalancingAI } from '@/ai/flows/suggest-rebalancing';
 import { magazineFormSchema } from '@/app/(app)/inventory/magazines/_components/magazine-form-schema'; 
 import { ammunitionFormSchema } from '@/app/(app)/inventory/ammunition/_components/ammunition-form-schema'; 
+import { depotFormSchema } from '@/app/(app)/admin/depots/_components/depot-form-schema';
 
 // Firearm Definitions
 export async function getFirearmDefinitions(): Promise<FirearmDefinition[]> {
@@ -102,10 +103,10 @@ export async function addFirearmAction(data: Omit<Firearm, 'id' | 'lastUpdated' 
     ...validatedData.data,
     id: await generateId(),
     itemType: 'firearm',
-    name: definition.name, // Copied from definition
-    model: definition.model, // Copied from definition
-    manufacturer: definition.manufacturer, // Copied from definition
-    caliber: definition.caliber, // Copied from definition
+    name: definition.name, 
+    model: definition.model, 
+    manufacturer: definition.manufacturer, 
+    caliber: definition.caliber, 
     lastUpdated: new Date().toISOString(),
     maintenanceHistory: []
   };
@@ -124,6 +125,10 @@ export async function updateFirearmAction(firearm: Firearm) {
     status: firearm.status,
     purchaseDate: firearm.purchaseDate,
     notes: firearm.notes,
+    name: firearm.name, // Ensure name is passed for validation if included in schema
+    model: firearm.model, // Ensure model is passed
+    manufacturer: firearm.manufacturer,
+    caliber: firearm.caliber,
   });
 
   if (!validatedData.success) {
@@ -140,7 +145,11 @@ export async function updateFirearmAction(firearm: Firearm) {
   const currentFirearm = firearms[index];
   const updatedFirearm: Firearm = {
     ...currentFirearm, 
-    ...validatedData.data, 
+    serialNumber: validatedData.data.serialNumber, // only update fields from form
+    depotId: validatedData.data.depotId,
+    status: validatedData.data.status,
+    purchaseDate: validatedData.data.purchaseDate,
+    notes: validatedData.data.notes,
     lastUpdated: new Date().toISOString(),
   };
 
@@ -205,13 +214,12 @@ export async function updateMagazineAction(magazine: Magazine) {
   }
   
   magazines[index] = {
-    ...magazines[index], // Preserve other fields like itemType, maintenanceHistory
+    ...magazines[index], 
     ...validatedData.data,
     lastUpdated: new Date().toISOString(),
   };
   await writeData('magazines.json', magazines);
   revalidatePath('/inventory/magazines');
-  revalidatePath(`/inventory/magazines/${magazine.id}`);
   revalidatePath(`/inventory/magazines/${magazine.id}/edit`);
   revalidatePath('/dashboard');
   return magazines[index];
@@ -269,13 +277,12 @@ export async function updateAmmunitionAction(ammunition: Ammunition) {
   }
   
   allAmmunition[index] = {
-     ...allAmmunition[index], // Preserve other fields like itemType
+     ...allAmmunition[index], 
     ...validatedData.data,
     lastUpdated: new Date().toISOString(),
   };
   await writeData('ammunition.json', allAmmunition);
   revalidatePath('/inventory/ammunition');
-  revalidatePath(`/inventory/ammunition/${ammunition.id}`);
   revalidatePath(`/inventory/ammunition/${ammunition.id}/edit`);
   revalidatePath('/dashboard');
   return allAmmunition[index];
@@ -302,7 +309,6 @@ export async function addShipmentAction(data: Omit<Shipment, 'id'>): Promise<Shi
   };
   shipments.push(newShipment);
   await writeData('shipments.json', shipments);
-  // Revalidate relevant inventory paths as shipments affect stock
   revalidatePath('/shipments');
   revalidatePath('/inventory/firearms');
   revalidatePath('/inventory/magazines');
@@ -322,19 +328,18 @@ export async function logAmmunitionUsageAction(data: Omit<AmmunitionUsageLog, 'i
     ...data,
     id: await generateId(),
   };
-  // TODO: Update actual ammunition quantity (this might be complex if usage is generic)
   logs.push(newLog);
   await writeData('ammunition_usage.json', logs);
-  revalidatePath('/inventory/ammunition'); // if linked directly to stock
+  revalidatePath('/inventory/ammunition'); 
   revalidatePath('/dashboard');
-  revalidatePath('/daily-ammo-usage'); // New page
+  revalidatePath('/daily-ammo-usage'); 
   return newLog;
 }
 
 // Ammunition Daily Usage Logs
 export async function getAmmunitionDailyUsageLogs(): Promise<AmmunitionDailyUsageLog[]> {
   const logs = await readData<AmmunitionDailyUsageLog>('ammunition_daily_usage.json');
-  return logs.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // Sort by newest first
+  return logs.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); 
 }
 
 export async function getAmmunitionDailyUsageLogById(id: string): Promise<AmmunitionDailyUsageLog | undefined> {
@@ -352,13 +357,13 @@ export async function addAmmunitionDailyUsageLogAction(data: Omit<AmmunitionDail
   const logs = await getAmmunitionDailyUsageLogs();
   const newLog: AmmunitionDailyUsageLog = {
     ...validatedData.data,
-    date: new Date(validatedData.data.date).toISOString(), // Ensure ISO format
+    date: new Date(validatedData.data.date).toISOString(), 
     id: await generateId(),
   };
   logs.push(newLog);
   await writeData('ammunition_daily_usage.json', logs);
   revalidatePath('/daily-ammo-usage');
-  revalidatePath('/dashboard'); // If dashboard shows usage summaries
+  revalidatePath('/dashboard'); 
   return newLog;
 }
 
@@ -376,9 +381,9 @@ export async function updateAmmunitionDailyUsageLogAction(logToUpdate: Ammunitio
   }
 
   logs[index] = {
-    ...logs[index], // Preserve original ID
-    ...validatedData.data, // Apply validated updates
-    date: new Date(validatedData.data.date).toISOString(), // Ensure ISO format
+    ...logs[index], 
+    ...validatedData.data, 
+    date: new Date(validatedData.data.date).toISOString(), 
   };
 
   await writeData('ammunition_daily_usage.json', logs);
@@ -404,7 +409,7 @@ export interface GroupedDailyUsageLog {
 }
 
 export async function getGroupedAmmunitionDailyUsageLogs(): Promise<GroupedDailyUsageLog[]> {
-  const allLogs = await getAmmunitionDailyUsageLogs(); // Already sorted by date
+  const allLogs = await getAmmunitionDailyUsageLogs(); 
   const allScenarios = await getUsageScenarios();
 
   const scenarioMap = new Map(allScenarios.map(s => [s.id, s.name]));
@@ -424,7 +429,6 @@ export async function getGroupedAmmunitionDailyUsageLogs(): Promise<GroupedDaily
 
   const groupedResult: GroupedDailyUsageLog[] = [];
 
-  // Add logs associated with a known scenario first, in the order scenarios appear
   for (const scenario of allScenarios) {
     if (logsByScenario[scenario.id] && logsByScenario[scenario.id].length > 0) {
       groupedResult.push({
@@ -435,8 +439,6 @@ export async function getGroupedAmmunitionDailyUsageLogs(): Promise<GroupedDaily
     }
   }
   
-  // Add logs that are not associated with any known scenario
-  // or if their scenarioId was undefined/null or didn't match any existing scenario.
   if (logsWithoutScenario.length > 0) {
     groupedResult.push({
       scenarioName: "Senaryo Belirtilmeyen Kullanımlar",
@@ -521,6 +523,75 @@ export async function deleteUsageScenarioAction(id: string): Promise<void> {
 }
 
 
+// Depot Definitions
+export async function getDepots(): Promise<Depot[]> {
+  return readData<Depot>('depots.json');
+}
+
+export async function getDepotById(id: string): Promise<Depot | undefined> {
+  const depots = await getDepots();
+  return depots.find(d => d.id === id);
+}
+
+export async function addDepotAction(data: Omit<Depot, 'id' | 'lastUpdated'>) {
+  const validatedData = depotFormSchema.safeParse(data);
+  if (!validatedData.success) {
+    throw new Error('Geçersiz depo verisi: ' + JSON.stringify(validatedData.error.format()));
+  }
+  
+  const depots = await getDepots();
+  // Check if ID already exists if it's not auto-generated and meant to be user-defined (like 'depotA')
+  if (depots.some(d => d.id === validatedData.data.id)) {
+      throw new Error('Bu ID ile bir depo zaten mevcut.');
+  }
+
+  const newDepot: Depot = {
+    ...validatedData.data,
+    // id is now part of validatedData.data if included in form
+    lastUpdated: new Date().toISOString(),
+  };
+  depots.push(newDepot);
+  await writeData('depots.json', depots);
+  revalidatePath('/admin/depots');
+  return newDepot;
+}
+
+export async function updateDepotAction(depot: Depot) {
+  const validatedData = depotFormSchema.safeParse(depot);
+   if (!validatedData.success) {
+    console.error("Doğrulama hataları:", validatedData.error.format());
+    throw new Error('Güncelleme için geçersiz depo verisi.');
+  }
+
+  let depots = await getDepots();
+  const index = depots.findIndex(d => d.id === depot.id);
+  if (index === -1) {
+    throw new Error('Güncellenecek depo bulunamadı.');
+  }
+  
+  const updatedDepot = {
+    ...depots[index],
+    ...validatedData.data, // name, address, contactPerson, notes
+    id: depots[index].id, // Ensure ID is not changed during update from form
+    lastUpdated: new Date().toISOString(),
+  };
+
+  depots[index] = updatedDepot;
+  await writeData('depots.json', depots);
+  revalidatePath('/admin/depots');
+  revalidatePath(`/admin/depots/${depot.id}/edit`);
+  return updatedDepot;
+}
+
+export async function deleteDepotAction(id: string): Promise<void> {
+  let depots = await getDepots();
+  // TODO: Check if any inventory item uses this depot before deleting.
+  depots = depots.filter(d => d.id !== id);
+  await writeData('depots.json', depots);
+  revalidatePath('/admin/depots');
+}
+
+
 // AI Stock Balancing Action
 export async function suggestRebalancing(
   depotAInventory: DepotInventorySnapshot,
@@ -549,9 +620,9 @@ export async function getCurrentDepotInventoriesForAI(): Promise<{ depotA: Depot
   const allAmmunition = await getAmmunition();
 
   const createSnapshot = (depotId: 'depotA' | 'depotB'): DepotInventorySnapshot => ({
-    firearms: allFirearms.filter(i => i.depotId === depotId).map(f => ({ id: f.id, name: f.name, model: f.model, caliber: f.caliber, status: f.status, itemType: 'firearm' })),
-    magazines: allMagazines.filter(i => i.depotId === depotId).map(m => ({ id: m.id, name: m.name, caliber: m.caliber, capacity: m.capacity, status: m.status, itemType: 'magazine' })),
-    ammunition: allAmmunition.filter(i => i.depotId === depotId).map(a => ({ id: a.id, name: a.name, caliber: a.caliber, quantity: a.quantity, status: a.status, itemType: 'ammunition' })),
+    firearms: allFirearms.filter(i => i.depotId === depotId).map(f => ({ id: f.id, name: f.name, model: f.model, caliber: f.caliber, status: f.status })),
+    magazines: allMagazines.filter(i => i.depotId === depotId).map(m => ({ id: m.id, name: m.name, caliber: m.caliber, capacity: m.capacity, status: m.status })),
+    ammunition: allAmmunition.filter(i => i.depotId === depotId).map(a => ({ id: a.id, name: a.name, caliber: a.caliber, quantity: a.quantity, status: a.status })),
   });
   
   return {

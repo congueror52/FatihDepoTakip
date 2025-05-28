@@ -1,0 +1,19 @@
+
+[
+  {
+    "id": "depotA",
+    "name": "Depo Alfa",
+    "address": "Alfa Sanayi Bölgesi, No:1, Ankara",
+    "contactPerson": "Ahmet Yılmaz",
+    "notes": "Ana dağıtım merkezi.",
+    "lastUpdated": "2024-05-01T10:00:00.000Z"
+  },
+  {
+    "id": "depotB",
+    "name": "Depo Bravo",
+    "address": "Bravo Lojistik Üssü, No:2, İstanbul",
+    "contactPerson": "Ayşe Kaya",
+    "notes": "İkincil depolama ve acil durum stoğu.",
+    "lastUpdated": "2024-05-15T14:30:00.000Z"
+  }
+]
