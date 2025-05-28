@@ -1,0 +1,35 @@
+
+[
+  {
+    "id": "type_incoming",
+    "name": "Gelen Malzeme",
+    "description": "Dış bir kaynaktan depoya malzeme girişi.",
+    "requiresSourceDepot": false,
+    "requiresDestinationDepot": true,
+    "lastUpdated": "2023-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "type_outgoing",
+    "name": "Giden Malzeme",
+    "description": "Depodan dış bir hedefe malzeme çıkışı.",
+    "requiresSourceDepot": true,
+    "requiresDestinationDepot": false,
+    "lastUpdated": "2023-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "type_transfer",
+    "name": "Depolar Arası Transfer",
+    "description": "İki depo arasında malzeme transferi.",
+    "requiresSourceDepot": true,
+    "requiresDestinationDepot": true,
+    "lastUpdated": "2023-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "type_prev_period_transfer",
+    "name": "Geçen Dönemden Devreden",
+    "description": "Önceki bir dönemden mevcut döneme aktarılan malzeme.",
+    "requiresSourceDepot": false,
+    "requiresDestinationDepot": true,
+    "lastUpdated": "2023-01-01T00:00:00.000Z"
+  }
+]

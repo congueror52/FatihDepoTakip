@@ -2,7 +2,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import type { Firearm, Magazine, Ammunition, Shipment, ShipmentItem, AmmunitionUsageLog, DepotInventorySnapshot, HistoricalUsageSnapshot, UpcomingRequirementsSnapshot, FirearmDefinition, AmmunitionDailyUsageLog, UsageScenario, ScenarioCaliberConsumption, SupportedCaliber, MagazineStatus, AmmunitionStatus, Depot, MaintenanceLog, MaintenanceItemStatus, FirearmStatus, InventoryItemType } from '@/types/inventory';
+import type { Firearm, Magazine, Ammunition, Shipment, ShipmentItem, AmmunitionUsageLog, DepotInventorySnapshot, HistoricalUsageSnapshot, UpcomingRequirementsSnapshot, FirearmDefinition, AmmunitionDailyUsageLog, UsageScenario, ScenarioCaliberConsumption, SupportedCaliber, MagazineStatus, AmmunitionStatus, Depot, MaintenanceLog, MaintenanceItemStatus, FirearmStatus, InventoryItemType, ShipmentTypeDefinition } from '@/types/inventory';
 import { readData, writeData, generateId } from '@/lib/data-utils';
 import { firearmFormSchema } from '@/app/(app)/inventory/firearms/_components/firearm-form-schema';
 import { firearmDefinitionFormSchema } from '@/app/(app)/admin/firearms-definitions/_components/firearm-definition-form-schema';
@@ -14,6 +14,8 @@ import { ammunitionFormSchema } from '@/app/(app)/inventory/ammunition/_componen
 import { depotFormSchema } from '@/app/(app)/admin/depots/_components/depot-form-schema';
 import { maintenanceLogFormSchema } from '@/app/(app)/maintenance/_components/maintenance-log-form-schema';
 import { shipmentFormSchema } from '@/app/(app)/shipments/_components/shipment-form-schema';
+import { shipmentTypeDefinitionFormSchema } from '@/app/(app)/admin/shipment-types/_components/shipment-type-definition-form-schema';
+
 
 // Firearm Definitions
 export async function getFirearmDefinitions(): Promise<FirearmDefinition[]> {
@@ -337,6 +339,22 @@ export async function addShipmentAction(data: Omit<Shipment, 'id' | 'lastUpdated
     throw new Error('Geçersiz malzeme kaydı verisi.');
   }
 
+  const shipmentTypeDef = await getShipmentTypeDefinitionById(validatedData.data.typeId);
+  if (!shipmentTypeDef) {
+    throw new Error("Geçersiz malzeme kayıt türü ID'si.");
+  }
+
+  if (shipmentTypeDef.requiresSourceDepot && !validatedData.data.sourceDepotId) {
+    throw new Error(`'${shipmentTypeDef.name}' türü için kaynak depo gereklidir.`);
+  }
+  if (shipmentTypeDef.requiresDestinationDepot && !validatedData.data.destinationDepotId) {
+    throw new Error(`'${shipmentTypeDef.name}' türü için hedef depo gereklidir.`);
+  }
+  if (shipmentTypeDef.requiresSourceDepot && shipmentTypeDef.requiresDestinationDepot && validatedData.data.sourceDepotId === validatedData.data.destinationDepotId) {
+    throw new Error("Transfer işleminde kaynak ve hedef depo aynı olamaz.");
+  }
+
+
   const shipments = await getShipments();
   const newShipment: Shipment = {
     ...validatedData.data,
@@ -346,7 +364,6 @@ export async function addShipmentAction(data: Omit<Shipment, 'id' | 'lastUpdated
   shipments.push(newShipment);
   await writeData('shipments.json', shipments);
   revalidatePath('/shipments');
-  // Potentially revalidate inventory pages if shipments affect stock
   revalidatePath('/inventory/firearms');
   revalidatePath('/inventory/magazines');
   revalidatePath('/inventory/ammunition');
@@ -359,6 +376,21 @@ export async function updateShipmentAction(shipment: Shipment): Promise<Shipment
   if (!validatedData.success) {
     console.error("Doğrulama hataları:", validatedData.error.format());
     throw new Error('Güncelleme için geçersiz malzeme kaydı verisi.');
+  }
+
+  const shipmentTypeDef = await getShipmentTypeDefinitionById(validatedData.data.typeId);
+  if (!shipmentTypeDef) {
+    throw new Error("Geçersiz malzeme kayıt türü ID'si.");
+  }
+
+  if (shipmentTypeDef.requiresSourceDepot && !validatedData.data.sourceDepotId) {
+    throw new Error(`'${shipmentTypeDef.name}' türü için kaynak depo gereklidir.`);
+  }
+  if (shipmentTypeDef.requiresDestinationDepot && !validatedData.data.destinationDepotId) {
+    throw new Error(`'${shipmentTypeDef.name}' türü için hedef depo gereklidir.`);
+  }
+  if (shipmentTypeDef.requiresSourceDepot && shipmentTypeDef.requiresDestinationDepot && validatedData.data.sourceDepotId === validatedData.data.destinationDepotId) {
+    throw new Error("Transfer işleminde kaynak ve hedef depo aynı olamaz.");
   }
 
   let shipments = await getShipments();
@@ -375,7 +407,6 @@ export async function updateShipmentAction(shipment: Shipment): Promise<Shipment
   await writeData('shipments.json', shipments);
   revalidatePath('/shipments');
   revalidatePath(`/shipments/${shipment.id}/edit`);
-  // Potentially revalidate inventory pages
   revalidatePath('/dashboard');
   return shipments[index];
 }
@@ -387,7 +418,6 @@ export async function deleteShipmentAction(id: string): Promise<void> {
   revalidatePath('/shipments');
   revalidatePath('/dashboard');
 }
-
 
 
 // Ammunition Usage (General Logs - may be deprecated or used differently with daily logs)
@@ -662,6 +692,7 @@ export async function updateDepotAction(depot: Depot) {
 
 export async function deleteDepotAction(id: string): Promise<void> {
   let depots = await getDepots();
+  // TODO: Check if this depot is used in any inventory item or shipment before deleting.
   depots = depots.filter(d => d.id !== id);
   await writeData('depots.json', depots);
   revalidatePath('/admin/depots');
@@ -712,6 +743,70 @@ export async function addMaintenanceLogToItemAction(
   revalidatePath('/maintenance');
   revalidatePath('/dashboard');
   return newLog;
+}
+
+
+// Shipment Type Definitions
+export async function getShipmentTypeDefinitions(): Promise<ShipmentTypeDefinition[]> {
+  return readData<ShipmentTypeDefinition>('shipment_types.json');
+}
+
+export async function getShipmentTypeDefinitionById(id: string): Promise<ShipmentTypeDefinition | undefined> {
+  const definitions = await getShipmentTypeDefinitions();
+  return definitions.find(d => d.id === id);
+}
+
+export async function addShipmentTypeDefinitionAction(data: Omit<ShipmentTypeDefinition, 'id' | 'lastUpdated'>) {
+  const validatedData = shipmentTypeDefinitionFormSchema.safeParse(data);
+  if (!validatedData.success) {
+    console.error("Validation Errors:", validatedData.error.format());
+    throw new Error('Geçersiz malzeme kayıt türü verisi.');
+  }
+  
+  const definitions = await getShipmentTypeDefinitions();
+  const newDefinition: ShipmentTypeDefinition = {
+    ...validatedData.data,
+    id: await generateId(),
+    lastUpdated: new Date().toISOString(),
+  };
+  definitions.push(newDefinition);
+  await writeData('shipment_types.json', definitions);
+  revalidatePath('/admin/shipment-types');
+  return newDefinition;
+}
+
+export async function updateShipmentTypeDefinitionAction(definition: ShipmentTypeDefinition) {
+  const validatedData = shipmentTypeDefinitionFormSchema.safeParse(definition);
+   if (!validatedData.success) {
+    console.error("Validation Errors:", validatedData.error.format());
+    throw new Error('Güncelleme için geçersiz malzeme kayıt türü verisi.');
+  }
+
+  let definitions = await getShipmentTypeDefinitions();
+  const index = definitions.findIndex(d => d.id === definition.id);
+  if (index === -1) {
+    throw new Error('Güncellenecek malzeme kayıt türü bulunamadı.');
+  }
+  
+  const updatedDefinition = {
+    ...definitions[index],
+    ...validatedData.data,
+    lastUpdated: new Date().toISOString(),
+  };
+
+  definitions[index] = updatedDefinition;
+  await writeData('shipment_types.json', definitions);
+  revalidatePath('/admin/shipment-types');
+  revalidatePath(`/admin/shipment-types/${definition.id}/edit`);
+  return updatedDefinition;
+}
+
+export async function deleteShipmentTypeDefinitionAction(id: string): Promise<void> {
+  let definitions = await getShipmentTypeDefinitions();
+  // TODO: Check if any shipment instance uses this type definition before deleting.
+  definitions = definitions.filter(d => d.id !== id);
+  await writeData('shipment_types.json', definitions);
+  revalidatePath('/admin/shipment-types');
 }
 
 

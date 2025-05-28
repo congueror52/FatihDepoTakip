@@ -1,7 +1,7 @@
 
 'use client';
 
-import type { Shipment, Depot } from "@/types/inventory";
+import type { Shipment, Depot, ShipmentTypeDefinition } from "@/types/inventory";
 import {
   Table,
   TableBody,
@@ -34,9 +34,10 @@ import { tr } from "date-fns/locale";
 interface ShipmentsTableClientProps {
   shipments: Shipment[];
   depots: Depot[];
+  shipmentTypeDefs: ShipmentTypeDefinition[];
 }
 
-export function ShipmentsTableClient({ shipments: initialShipments, depots }: ShipmentsTableClientProps) {
+export function ShipmentsTableClient({ shipments: initialShipments, depots, shipmentTypeDefs }: ShipmentsTableClientProps) {
   const [shipments, setShipments] = useState<Shipment[]>(initialShipments);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedShipmentId, setSelectedShipmentId] = useState<string | null>(null);
@@ -48,14 +49,19 @@ export function ShipmentsTableClient({ shipments: initialShipments, depots }: Sh
     return depot ? depot.name : depotId;
   };
 
+  const getShipmentTypeName = (typeId: string) => {
+    const typeDef = shipmentTypeDefs.find(t => t.id === typeId);
+    return typeDef ? typeDef.name : "Bilinmeyen Tür";
+  }
+
   const handleDelete = async () => {
     if (!selectedShipmentId) return;
     try {
       await deleteShipmentAction(selectedShipmentId);
       setShipments(shipments.filter(s => s.id !== selectedShipmentId));
       toast({ variant: "success", title: "Başarılı", description: "Malzeme kaydı başarıyla silindi." });
-    } catch (error) {
-      toast({ variant: "destructive", title: "Hata", description: "Malzeme kaydı silinemedi." });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Hata", description: error.message || "Malzeme kaydı silinemedi." });
     } finally {
       setIsDeleteDialogOpen(false);
       setSelectedShipmentId(null);
@@ -67,13 +73,12 @@ export function ShipmentsTableClient({ shipments: initialShipments, depots }: Sh
     setIsDeleteDialogOpen(true);
   };
   
-  const getTypeColor = (type: Shipment['type']) => {
-    switch (type) {
-      case 'Gelen': return 'bg-green-500 hover:bg-green-600';
-      case 'Giden': return 'bg-red-500 hover:bg-red-600';
-      case 'Transfer': return 'bg-blue-500 hover:bg-blue-600';
-      default: return 'bg-primary';
-    }
+  const getTypeColor = (typeName: string) => {
+    // Color logic can be expanded if ShipmentTypeDefinition gets a color property
+    if (typeName.includes("Gelen") || typeName.includes("Devreden")) return 'bg-green-500 hover:bg-green-600';
+    if (typeName.includes("Giden")) return 'bg-red-500 hover:bg-red-600';
+    if (typeName.includes("Transfer")) return 'bg-blue-500 hover:bg-blue-600';
+    return 'bg-primary';
   };
 
   return (
@@ -97,48 +102,46 @@ export function ShipmentsTableClient({ shipments: initialShipments, depots }: Sh
               <TableCell colSpan={8} className="text-center" suppressHydrationWarning>Malzeme kaydı bulunamadı.</TableCell>
             </TableRow>
           ) : (
-            shipments.map((shipment) => (
-              <TableRow key={shipment.id}>
-                <TableCell className="font-medium">{shipment.id.substring(0,8)}...</TableCell>
-                <TableCell>{format(new Date(shipment.date), "PPP", { locale: tr })}</TableCell>
-                <TableCell>
-                  <Badge variant="secondary" className={`${getTypeColor(shipment.type)} text-primary-foreground`}>
-                    {shipment.type}
-                  </Badge>
-                </TableCell>
-                <TableCell>{getDepotName(shipment.sourceDepotId)}</TableCell>
-                <TableCell>{getDepotName(shipment.destinationDepotId)}</TableCell>
-                <TableCell>{shipment.items.length}</TableCell>
-                <TableCell className="max-w-xs truncate">{shipment.notes || '-'}</TableCell>
-                <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
-                        <span className="sr-only" suppressHydrationWarning>Menüyü aç</span>
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel><span suppressHydrationWarning>Eylemler</span></DropdownMenuLabel>
-                       {/* <DropdownMenuItem asChild>
-                         <Link href={`/shipments/${shipment.id}`} className="flex items-center">
-                           <Eye className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>Detayları Görüntüle</span>
-                         </Link>
-                       </DropdownMenuItem> */}
-                      <DropdownMenuItem asChild>
-                        <Link href={`/shipments/${shipment.id}/edit`} className="flex items-center">
-                           <Edit className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>Düzenle</span>
-                         </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => openDeleteDialog(shipment.id)} className="text-destructive flex items-center">
-                        <Trash2 className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>Sil</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            ))
+            shipments.map((shipment) => {
+              const shipmentTypeName = getShipmentTypeName(shipment.typeId);
+              return (
+                <TableRow key={shipment.id}>
+                  <TableCell className="font-medium">{shipment.id.substring(0,8)}...</TableCell>
+                  <TableCell>{format(new Date(shipment.date), "PPP", { locale: tr })}</TableCell>
+                  <TableCell>
+                    <Badge variant="secondary" className={`${getTypeColor(shipmentTypeName)} text-primary-foreground`}>
+                      {shipmentTypeName}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{getDepotName(shipment.sourceDepotId)}</TableCell>
+                  <TableCell>{getDepotName(shipment.destinationDepotId)}</TableCell>
+                  <TableCell>{shipment.items.length}</TableCell>
+                  <TableCell className="max-w-xs truncate">{shipment.notes || '-'}</TableCell>
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <span className="sr-only" suppressHydrationWarning>Menüyü aç</span>
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel><span suppressHydrationWarning>Eylemler</span></DropdownMenuLabel>
+                        <DropdownMenuItem asChild>
+                          <Link href={`/shipments/${shipment.id}/edit`} className="flex items-center">
+                             <Edit className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>Düzenle</span>
+                           </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => openDeleteDialog(shipment.id)} className="text-destructive flex items-center">
+                          <Trash2 className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>Sil</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              )
+            })
           )}
         </TableBody>
       </Table>

@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { Shipment, ShipmentItem, DepotId, Depot } from "@/types/inventory";
+import type { Shipment, ShipmentItem, DepotId, Depot, ShipmentTypeDefinition } from "@/types/inventory";
 import { INVENTORY_ITEM_TYPES, SUPPORTED_CALIBERS } from "@/types/inventory";
 import { shipmentFormSchema, type ShipmentFormValues, type ShipmentItemFormValues } from "./shipment-form-schema";
 import { addShipmentAction, updateShipmentAction } from "@/lib/actions/inventory.actions";
@@ -30,24 +30,30 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { v4 as uuidv4 } from 'uuid';
+import { useEffect, useState } from "react";
 
 interface ShipmentFormProps {
   shipment?: Shipment;
   depots: Depot[];
+  shipmentTypeDefs: ShipmentTypeDefinition[];
 }
 
-export function ShipmentForm({ shipment, depots }: ShipmentFormProps) {
+export function ShipmentForm({ shipment, depots, shipmentTypeDefs }: ShipmentFormProps) {
   const { toast } = useToast();
   const router = useRouter();
   const isEditing = !!shipment;
+  const [selectedShipmentType, setSelectedShipmentType] = useState<ShipmentTypeDefinition | undefined>(
+    isEditing && shipment ? shipmentTypeDefs.find(st => st.id === shipment.typeId) : undefined
+  );
+
 
   const defaultValues: Partial<ShipmentFormValues> = shipment ? {
     ...shipment,
     date: format(new Date(shipment.date), 'yyyy-MM-dd'),
-    items: shipment.items.map(item => ({ ...item, id: item.id || uuidv4() })), // Ensure items have IDs for useFieldArray
+    items: shipment.items.map(item => ({ ...item, id: item.id || uuidv4() })), 
   } : {
     date: format(new Date(), 'yyyy-MM-dd'),
-    type: 'Gelen',
+    typeId: shipmentTypeDefs.length > 0 ? shipmentTypeDefs[0].id : "", // Default to first available type
     items: [{ id: uuidv4(), name: "", itemType: "ammunition", quantity: 1 }],
     sourceDepotId: undefined,
     destinationDepotId: undefined,
@@ -67,7 +73,17 @@ export function ShipmentForm({ shipment, depots }: ShipmentFormProps) {
     name: "items",
   });
 
-  const shipmentType = form.watch("type");
+  const currentTypeId = form.watch("typeId");
+
+  useEffect(() => {
+    const typeDef = shipmentTypeDefs.find(st => st.id === currentTypeId);
+    setSelectedShipmentType(typeDef);
+    if (typeDef) {
+        if (!typeDef.requiresSourceDepot) form.setValue('sourceDepotId', undefined);
+        if (!typeDef.requiresDestinationDepot) form.setValue('destinationDepotId', undefined);
+    }
+  }, [currentTypeId, shipmentTypeDefs, form]);
+
 
   async function onSubmit(data: ShipmentFormValues) {
     try {
@@ -120,25 +136,33 @@ export function ShipmentForm({ shipment, depots }: ShipmentFormProps) {
           />
           <FormField
             control={form.control}
-            name="type"
+            name="typeId"
             render={({ field }) => (
               <FormItem>
                 <FormLabel><span suppressHydrationWarning>Kayıt Türü</span></FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select 
+                    onValueChange={(value) => {
+                        field.onChange(value);
+                        const typeDef = shipmentTypeDefs.find(st => st.id === value);
+                        setSelectedShipmentType(typeDef);
+                    }} 
+                    defaultValue={field.value}
+                >
                   <FormControl><SelectTrigger><SelectValue placeholder="Kayıt türünü seçin" /></SelectTrigger></FormControl>
                   <SelectContent>
-                    <SelectItem value="Gelen"><span suppressHydrationWarning>Gelen Malzeme</span></SelectItem>
-                    <SelectItem value="Giden"><span suppressHydrationWarning>Giden Malzeme</span></SelectItem>
-                    <SelectItem value="Transfer"><span suppressHydrationWarning>Depolar Arası Transfer</span></SelectItem>
+                    {shipmentTypeDefs.map(typeDef => (
+                        <SelectItem key={typeDef.id} value={typeDef.id}><span suppressHydrationWarning>{typeDef.name}</span></SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
+                {selectedShipmentType?.description && <FormDescription className="text-xs pt-1">{selectedShipmentType.description}</FormDescription>}
                 <FormMessage />
               </FormItem>
             )}
           />
         </div>
 
-        {shipmentType === 'Giden' || shipmentType === 'Transfer' ? (
+        {selectedShipmentType?.requiresSourceDepot && (
           <FormField
             control={form.control}
             name="sourceDepotId"
@@ -155,9 +179,9 @@ export function ShipmentForm({ shipment, depots }: ShipmentFormProps) {
               </FormItem>
             )}
           />
-        ) : null}
+        )}
 
-        {shipmentType === 'Gelen' || shipmentType === 'Transfer' ? (
+        {selectedShipmentType?.requiresDestinationDepot && (
           <FormField
             control={form.control}
             name="destinationDepotId"
@@ -174,12 +198,7 @@ export function ShipmentForm({ shipment, depots }: ShipmentFormProps) {
               </FormItem>
             )}
           />
-        ) : null}
-         <FormField
-            control={form.control}
-            name="type" // This is a dummy field to display the general depot error
-            render={() => <FormMessage />}
-        />
+        )}
 
 
         <Card>

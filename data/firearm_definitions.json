@@ -16,5 +16,14 @@
     "caliber": "7.62X39",
     "description": "",
     "lastUpdated": "2025-05-28T11:19:21.550Z"
+  },
+  {
+    "name": "MPT-76",
+    "model": "MPT-76",
+    "manufacturer": "Sarsılmaz",
+    "caliber": "7.62X51",
+    "description": "",
+    "id": "03b7b801-1e09-410a-a3e7-1e827415548d",
+    "lastUpdated": "2025-05-28T12:22:43.540Z"
   }
 ]

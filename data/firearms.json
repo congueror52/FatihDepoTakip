@@ -71,5 +71,20 @@
     "caliber": "5.56x45mm",
     "lastUpdated": "2025-05-28T11:21:14.093Z",
     "maintenanceHistory": []
+  },
+  {
+    "definitionId": "03b7b801-1e09-410a-a3e7-1e827415548d",
+    "serialNumber": "444444",
+    "depotId": "depotA",
+    "status": "Hizmette",
+    "notes": "",
+    "id": "b24d1cf4-1a85-4ea8-9c4d-c65b8a18254f",
+    "itemType": "firearm",
+    "name": "MPT-76",
+    "model": "MPT-76",
+    "manufacturer": "Sarsılmaz",
+    "caliber": "7.62X51",
+    "lastUpdated": "2025-05-28T12:23:34.998Z",
+    "maintenanceHistory": []
   }
 ]

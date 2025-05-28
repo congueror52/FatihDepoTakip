@@ -1,5 +1,5 @@
 
-import { getShipmentById, getDepots } from "@/lib/actions/inventory.actions";
+import { getShipmentById, getDepots, getShipmentTypeDefinitions } from "@/lib/actions/inventory.actions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShipmentForm } from "../../_components/shipment-form";
 import { Truck, ArrowLeft } from "lucide-react";
@@ -9,6 +9,7 @@ import { notFound } from "next/navigation";
 export default async function EditShipmentPage({ params }: { params: { id: string } }) {
   const shipment = await getShipmentById(params.id);
   const depots = await getDepots();
+  const shipmentTypeDefs = await getShipmentTypeDefinitions();
 
   if (!shipment) {
     notFound();
@@ -30,7 +31,7 @@ export default async function EditShipmentPage({ params }: { params: { id: strin
           <CardDescription><span suppressHydrationWarning>Malzeme kaydı için bilgileri değiştirin (ID: {shipment.id.substring(0,8)}...).</span></CardDescription>
         </CardHeader>
         <CardContent>
-          <ShipmentForm shipment={shipment} depots={depots} />
+          <ShipmentForm shipment={shipment} depots={depots} shipmentTypeDefs={shipmentTypeDefs} />
         </CardContent>
       </Card>
     </div>

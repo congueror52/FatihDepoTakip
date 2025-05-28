@@ -10,7 +10,7 @@ export type FirearmStatus = 'Hizmette' | 'Bakımda' | 'Arızalı' | 'Onarım Bek
 export type MagazineStatus = 'Hizmette' | 'Bakımda' | 'Arızalı' | 'Kayıp' | 'Hizmet Dışı';
 export type AmmunitionStatus = 'Mevcut' | 'Düşük Stok' | 'Kritik Stok' | 'Tükenmek Üzere';
 export type MaintenanceItemStatus = FirearmStatus | MagazineStatus;
-export type ShipmentType = 'Gelen' | 'Giden' | 'Transfer';
+
 export type InventoryItemType = 'firearm' | 'magazine' | 'ammunition';
 
 
@@ -78,10 +78,21 @@ export interface ShipmentItem {
   serialNumber?: string; // For individual firearms, if applicable in shipment
   capacity?: number; // For magazines
 }
+
+// Definition for a shipment type (managed by admin)
+export interface ShipmentTypeDefinition {
+  id: string;
+  name: string;
+  description?: string;
+  requiresSourceDepot: boolean;
+  requiresDestinationDepot: boolean;
+  lastUpdated: string;
+}
+
 export interface Shipment {
   id: string;
   date: string; // ISO date string
-  type: ShipmentType;
+  typeId: string; // References ShipmentTypeDefinition.id
   items: ShipmentItem[];
   notes?: string;
   supplier?: string; // Relevant for 'Gelen'
@@ -208,3 +219,4 @@ export type FirearmDefinitionsDb = FirearmDefinition[];
 export type AmmunitionDailyUsageDb = AmmunitionDailyUsageLog[];
 export type UsageScenariosDb = UsageScenario[];
 export type DepotsDb = Depot[];
+export type ShipmentTypeDefinitionsDb = ShipmentTypeDefinition[];

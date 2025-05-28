@@ -1,19 +1,26 @@
-
 [
   {
     "id": "depotA",
-    "name": "Depo Alfa",
-    "address": "Alfa Sanayi Bölgesi, No:1, Ankara",
-    "contactPerson": "Ahmet Yılmaz",
+    "name": "Kadro Atışı",
+    "address": "BEYKOZ POLİGONU",
+    "contactPerson": "Fatih KABAKTEPE",
     "notes": "Ana dağıtım merkezi.",
-    "lastUpdated": "2024-05-01T10:00:00.000Z"
+    "lastUpdated": "2025-05-28T12:28:01.407Z"
   },
   {
     "id": "depotB",
-    "name": "Depo Bravo",
-    "address": "Bravo Lojistik Üssü, No:2, İstanbul",
-    "contactPerson": "Ayşe Kaya",
-    "notes": "İkincil depolama ve acil durum stoğu.",
-    "lastUpdated": "2024-05-15T14:30:00.000Z"
+    "name": "ACM",
+    "address": "BEYKOZ POLİGONU",
+    "contactPerson": "FATİH KABAKTEPE",
+    "notes": "ACİL MÜDAHALE EĞİTİMİNDE KULLANILIYOR",
+    "lastUpdated": "2025-05-28T12:29:38.913Z"
+  },
+  {
+    "id": "depoB",
+    "name": "tabanca yarışması",
+    "address": "",
+    "contactPerson": "",
+    "notes": "",
+    "lastUpdated": "2025-05-28T12:35:46.365Z"
   }
 ]

@@ -3,12 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlusCircle, Truck } from "lucide-react";
 import Link from "next/link";
-import { getShipments, getDepots } from "@/lib/actions/inventory.actions";
+import { getShipments, getDepots, getShipmentTypeDefinitions } from "@/lib/actions/inventory.actions";
 import { ShipmentsTableClient } from "./_components/shipments-table-client";
 
 export default async function ShipmentsPage() {
   const shipments = await getShipments();
-  const depots = await getDepots(); // For displaying depot names in the table
+  const depots = await getDepots(); 
+  const shipmentTypeDefs = await getShipmentTypeDefinitions();
+
 
   return (
     <div className="flex flex-col gap-6">
@@ -30,9 +32,8 @@ export default async function ShipmentsPage() {
           <CardDescription suppressHydrationWarning>Gelen, giden ve depolar arası transfer malzeme kayıtlarını yönetin.</CardDescription>
         </CardHeader>
         <CardContent>
-          {/* Check if shipments are available before rendering table */}
-          {shipments && depots ? (
-            <ShipmentsTableClient shipments={shipments} depots={depots} />
+          {shipments && depots && shipmentTypeDefs ? (
+            <ShipmentsTableClient shipments={shipments} depots={depots} shipmentTypeDefs={shipmentTypeDefs} />
           ) : (
             <p className="text-muted-foreground" suppressHydrationWarning>Malzeme kayıtları yükleniyor veya bulunamadı.</p>
           )}

@@ -3,10 +3,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ShipmentForm } from "../_components/shipment-form";
 import { Truck, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { getDepots } from "@/lib/actions/inventory.actions";
+import { getDepots, getShipmentTypeDefinitions } from "@/lib/actions/inventory.actions";
 
 export default async function NewShipmentPage() {
   const depots = await getDepots();
+  const shipmentTypeDefs = await getShipmentTypeDefinitions();
   return (
     <div className="max-w-4xl mx-auto">
       <Link href="/shipments" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4">
@@ -23,7 +24,7 @@ export default async function NewShipmentPage() {
           <CardDescription suppressHydrationWarning>Yeni bir malzeme kaydı için bilgileri girin.</CardDescription>
         </CardHeader>
         <CardContent>
-          <ShipmentForm depots={depots} />
+          <ShipmentForm depots={depots} shipmentTypeDefs={shipmentTypeDefs} />
         </CardContent>
       </Card>
     </div>
