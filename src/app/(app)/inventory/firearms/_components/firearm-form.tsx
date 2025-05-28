@@ -22,10 +22,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import type { Firearm, FirearmDefinition } from "@/types/inventory";
-import { DEPOT_LOCATIONS } from "@/types/inventory";
+import type { Firearm, FirearmDefinition, Depot } from "@/types/inventory"; // Added Depot
+// import { DEPOT_LOCATIONS } from "@/types/inventory"; // Removed
 import { firearmFormSchema, firearmStatuses, type FirearmFormValues } from "./firearm-form-schema";
-import { addFirearmAction, updateFirearmAction, getFirearmDefinitions } from "@/lib/actions/inventory.actions";
+import { addFirearmAction, updateFirearmAction } from "@/lib/actions/inventory.actions";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { CalendarIcon, Loader2 } from "lucide-react";
@@ -38,11 +38,12 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface FirearmFormProps {
-  firearm?: Firearm; // Optional: for editing existing firearm
+  firearm?: Firearm; 
   firearmDefinitions: FirearmDefinition[];
+  depots: Depot[]; // Added depots prop
 }
 
-export function FirearmForm({ firearm, firearmDefinitions }: FirearmFormProps) {
+export function FirearmForm({ firearm, firearmDefinitions, depots }: FirearmFormProps) { // Added depots to props
   const { toast } = useToast();
   const router = useRouter();
   const [selectedDefinition, setSelectedDefinition] = useState<FirearmDefinition | null>(null);
@@ -50,15 +51,14 @@ export function FirearmForm({ firearm, firearmDefinitions }: FirearmFormProps) {
   const defaultValues: FirearmFormValues = firearm ? {
     ...firearm,
     purchaseDate: firearm.purchaseDate ? format(new Date(firearm.purchaseDate), 'yyyy-MM-dd') : undefined,
-    notes: firearm.notes || "", // Ensure notes is a string
+    notes: firearm.notes || "", 
   } : {
-    definitionId: "", // Initialize for new firearm Select
-    serialNumber: "", // Initialize to empty string
+    definitionId: "", 
+    serialNumber: "", 
     status: 'Hizmette',
-    depotId: DEPOT_LOCATIONS[0].id,
+    depotId: depots.length > 0 ? depots[0].id : "", // Default to first available depot
     purchaseDate: undefined,
-    notes: "", // Initialize to empty string
-    // Auto-filled fields will be set later, initialize as empty strings
+    notes: "", 
     name: "",
     model: "",
     manufacturer: "",
@@ -76,7 +76,6 @@ export function FirearmForm({ firearm, firearmDefinitions }: FirearmFormProps) {
       const definition = firearmDefinitions.find(def => def.id === firearm.definitionId);
       if (definition) {
         setSelectedDefinition(definition);
-        // Set auto-filled fields in the form for display, they are not part of the submission data directly
         form.setValue('name', definition.name);
         form.setValue('model', definition.model);
         form.setValue('manufacturer', definition.manufacturer || "");
@@ -91,7 +90,6 @@ export function FirearmForm({ firearm, firearmDefinitions }: FirearmFormProps) {
     if (definition) {
       setSelectedDefinition(definition);
       form.setValue('definitionId', definition.id);
-      // Auto-fill display fields
       form.setValue('name', definition.name);
       form.setValue('model', definition.model);
       form.setValue('manufacturer', definition.manufacturer || "");
@@ -109,10 +107,8 @@ export function FirearmForm({ firearm, firearmDefinitions }: FirearmFormProps) {
   async function onSubmit(data: FirearmFormValues) {
     try {
       if (firearm) {
-        // For updates, we pass the full firearm object which includes definitionId and copied fields.
-        // The action will decide what to update.
         const firearmToUpdate: Firearm = {
-          ...firearm, // existing firearm data (id, name, model etc.)
+          ...firearm, 
           serialNumber: data.serialNumber,
           depotId: data.depotId,
           status: data.status,
@@ -122,8 +118,6 @@ export function FirearmForm({ firearm, firearmDefinitions }: FirearmFormProps) {
         await updateFirearmAction(firearmToUpdate);
         toast({ variant: "success", title: "Başarılı", description: "Silah başarıyla güncellendi." });
       } else {
-        // For new firearms, we pass only definitionId and instance-specific fields.
-        // The action will copy name, model etc from definition.
          if (!data.definitionId) {
           toast({ variant: "destructive", title: "Hata", description: "Lütfen bir silah türü seçin." });
           return;
@@ -140,8 +134,8 @@ export function FirearmForm({ firearm, firearmDefinitions }: FirearmFormProps) {
       }
       router.push("/inventory/firearms");
       router.refresh();
-    } catch (error) {
-      toast({ variant: "destructive", title: "Hata", description: `Silah ${firearm ? 'güncellenirken' : 'eklenirken'} hata oluştu.` });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Hata", description: error.message || `Silah ${firearm ? 'güncellenirken' : 'eklenirken'} hata oluştu.` });
       console.error("Form gönderme hatası:", error);
     }
   }
@@ -161,7 +155,7 @@ export function FirearmForm({ firearm, firearmDefinitions }: FirearmFormProps) {
                   handleDefinitionChange(value);
                 }} 
                 defaultValue={field.value}
-                disabled={!!firearm} // Disable if editing, definition shouldn't change
+                disabled={!!firearm} 
               >
                 <FormControl>
                   <SelectTrigger>
@@ -222,7 +216,8 @@ export function FirearmForm({ firearm, firearmDefinitions }: FirearmFormProps) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {DEPOT_LOCATIONS.map(depot => (
+                    {depots.length === 0 && <SelectItem value="" disabled><span suppressHydrationWarning>Depo bulunamadı</span></SelectItem>}
+                    {depots.map(depot => (
                       <SelectItem key={depot.id} value={depot.id}><span suppressHydrationWarning>{depot.name}</span></SelectItem>
                     ))}
                   </SelectContent>
@@ -321,5 +316,3 @@ export function FirearmForm({ firearm, firearmDefinitions }: FirearmFormProps) {
     </Form>
   );
 }
-
-    

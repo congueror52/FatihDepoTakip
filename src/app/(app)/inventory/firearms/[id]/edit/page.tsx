@@ -1,5 +1,5 @@
 
-import { getFirearmById, getFirearmDefinitions } from "@/lib/actions/inventory.actions";
+import { getFirearmById, getFirearmDefinitions, getDepots } from "@/lib/actions/inventory.actions"; // Added getDepots
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FirearmForm } from "../../_components/firearm-form";
 import { Target, ArrowLeft } from "lucide-react";
@@ -8,7 +8,8 @@ import { notFound } from "next/navigation";
 
 export default async function EditFirearmPage({ params }: { params: { id: string } }) {
   const firearm = await getFirearmById(params.id);
-  const firearmDefinitions = await getFirearmDefinitions(); // Needed for the form
+  const firearmDefinitions = await getFirearmDefinitions(); 
+  const depots = await getDepots(); // Fetch depots
 
   if (!firearm) {
     notFound();
@@ -30,7 +31,7 @@ export default async function EditFirearmPage({ params }: { params: { id: string
           <CardDescription><span suppressHydrationWarning>Silah için bilgileri değiştirin: {firearm.serialNumber}.</span></CardDescription>
         </CardHeader>
         <CardContent>
-          <FirearmForm firearm={firearm} firearmDefinitions={firearmDefinitions} />
+          <FirearmForm firearm={firearm} firearmDefinitions={firearmDefinitions} depots={depots} /> {/* Pass depots to the form */}
         </CardContent>
       </Card>
     </div>

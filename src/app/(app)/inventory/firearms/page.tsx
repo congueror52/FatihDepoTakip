@@ -3,14 +3,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlusCircle, Target, ShieldX, Wrench, ShieldCheck, Construction, ServerCrash, Info } from "lucide-react";
 import Link from "next/link";
-import { getFirearms, getFirearmDefinitions } from "@/lib/actions/inventory.actions";
+import { getFirearms, getFirearmDefinitions, getDepots } from "@/lib/actions/inventory.actions"; // Added getDepots
 import { FirearmsTableClient } from "./_components/firearms-table-client";
 import type { FirearmStatus } from "@/types/inventory";
-import { firearmStatuses } from "./_components/firearm-form-schema"; // Import firearmStatuses
+import { firearmStatuses } from "./_components/firearm-form-schema"; 
 
 export default async function FirearmsPage() {
   const firearms = await getFirearms();
   const firearmDefinitions = await getFirearmDefinitions();
+  const depots = await getDepots(); // Fetch depots
 
   const overallStatusCounts = firearms.reduce((acc, firearm) => {
     acc[firearm.status] = (acc[firearm.status] || 0) + 1;
@@ -30,7 +31,7 @@ export default async function FirearmsPage() {
     const totalCount = instances.length;
     const statusCounts: Partial<Record<FirearmStatus, number>> = {};
     
-    for (const status of firearmStatuses) { // Use imported firearmStatuses
+    for (const status of firearmStatuses) { 
       const count = instances.filter(f => f.status === status).length;
       if (count > 0) {
         statusCounts[status] = count;
@@ -41,7 +42,7 @@ export default async function FirearmsPage() {
       totalCount,
       statusCounts,
     };
-  }).filter(summary => summary.totalCount > 0); // Only show definitions that have instances
+  }).filter(summary => summary.totalCount > 0); 
 
 
   return (
@@ -106,7 +107,7 @@ export default async function FirearmsPage() {
           <CardDescription suppressHydrationWarning>Envanterdeki tüm silahları yönetin ve takip edin.</CardDescription>
         </CardHeader>
         <CardContent>
-          <FirearmsTableClient firearms={firearms} />
+          <FirearmsTableClient firearms={firearms} depots={depots} /> {/* Pass depots to the table */}
         </CardContent>
       </Card>
     </div>

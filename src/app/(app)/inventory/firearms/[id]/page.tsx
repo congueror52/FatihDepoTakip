@@ -1,17 +1,19 @@
 
-import { getFirearmById } from "@/lib/actions/inventory.actions";
+import { getFirearmById, getDepots } from "@/lib/actions/inventory.actions"; // Added getDepots
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft, Edit, Wrench, History, StickyNote } from "lucide-react";
-import { DEPOT_LOCATIONS } from "@/types/inventory";
+// import { DEPOT_LOCATIONS } from "@/types/inventory"; // Removed
+import type { Depot } from "@/types/inventory"; // Added Depot type
 import { notFound } from "next/navigation";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 
 export default async function FirearmDetailPage({ params }: { params: { id: string } }) {
   const firearm = await getFirearmById(params.id);
+  const depots = await getDepots(); // Fetch all depots
 
   if (!firearm) {
     notFound();
@@ -29,7 +31,7 @@ export default async function FirearmDetailPage({ params }: { params: { id: stri
     }
   };
 
-  const depot = DEPOT_LOCATIONS.find(d => d.id === firearm.depotId);
+  const depot = depots.find(d => d.id === firearm.depotId); // Find depot from fetched list
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -59,7 +61,7 @@ export default async function FirearmDetailPage({ params }: { params: { id: stri
           </div>
           <div>
             <h3 className="font-semibold mb-1"><span suppressHydrationWarning>Depo:</span></h3>
-            <p>{depot?.name || 'Bilinmeyen Depo'}</p>
+            <p>{depot?.name || firearm.depotId || 'Bilinmeyen Depo'}</p> {/* Display depotId if name not found */}
           </div>
           {firearm.manufacturer && (
             <div>
@@ -111,9 +113,11 @@ export default async function FirearmDetailPage({ params }: { params: { id: stri
           ) : (
             <p suppressHydrationWarning>Bakım geçmişi kaydedilmemiş.</p>
           )}
-          <Button variant="outline" className="mt-4" disabled>
-             <Wrench className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>Bakım Kaydı Ekle</span>
-          </Button>
+          <Link href={`/maintenance/new?itemType=firearm&itemId=${firearm.id}`}>
+            <Button variant="outline" className="mt-4">
+                <Wrench className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>Bakım Kaydı Ekle</span>
+            </Button>
+          </Link>
         </CardContent>
       </Card>
     </div>

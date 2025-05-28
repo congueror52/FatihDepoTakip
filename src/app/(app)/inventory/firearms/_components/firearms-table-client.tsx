@@ -1,7 +1,7 @@
 
 'use client';
 
-import type { Firearm } from "@/types/inventory";
+import type { Firearm, Depot } from "@/types/inventory"; // Added Depot
 import {
   Table,
   TableBody,
@@ -28,13 +28,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { deleteFirearmAction } from "@/lib/actions/inventory.actions";
-import { DEPOT_LOCATIONS } from "@/types/inventory";
+// import { DEPOT_LOCATIONS } from "@/types/inventory"; // Removed
 
 interface FirearmsTableClientProps {
   firearms: Firearm[];
+  depots: Depot[]; // Added depots prop
 }
 
-export function FirearmsTableClient({ firearms: initialFirearms }: FirearmsTableClientProps) {
+export function FirearmsTableClient({ firearms: initialFirearms, depots }: FirearmsTableClientProps) { // Added depots to props
   const [firearms, setFirearms] = useState<Firearm[]>(initialFirearms);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedFirearmId, setSelectedFirearmId] = useState<string | null>(null);
@@ -46,8 +47,8 @@ export function FirearmsTableClient({ firearms: initialFirearms }: FirearmsTable
       await deleteFirearmAction(selectedFirearmId);
       setFirearms(firearms.filter(f => f.id !== selectedFirearmId));
       toast({ variant: "success", title: "Başarılı", description: "Silah başarıyla silindi." });
-    } catch (error) {
-      toast({ variant: "destructive", title: "Hata", description: "Silah silinemedi." });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Hata", description: error.message || "Silah silinemedi." });
     } finally {
       setIsDeleteDialogOpen(false);
       setSelectedFirearmId(null);
@@ -72,7 +73,7 @@ export function FirearmsTableClient({ firearms: initialFirearms }: FirearmsTable
   };
   
   const getDepotName = (depotId: string) => {
-    const depot = DEPOT_LOCATIONS.find(d => d.id === depotId);
+    const depot = depots.find(d => d.id === depotId); // Use passed depots prop
     return depot ? depot.name : depotId;
   }
 
