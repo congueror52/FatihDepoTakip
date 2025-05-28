@@ -47,7 +47,7 @@ export interface Magazine extends BaseItem {
   caliber: string;
   capacity: number;
   status: MagazineStatus;
-  compatibleWith?: string[]; 
+  compatibleFirearmDefinitionId?: string; // Optional: To link which firearm definition this magazine was created for
   serialNumber?: string; 
   maintenanceHistory?: MaintenanceLog[];
 }

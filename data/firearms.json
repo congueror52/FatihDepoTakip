@@ -13,5 +13,21 @@
     "caliber": "5.56x45mm",
     "lastUpdated": "2025-05-28T09:26:46.918Z",
     "maintenanceHistory": []
+  },
+  {
+    "definitionId": "fd_1",
+    "serialNumber": "12122323",
+    "depotId": "depotA",
+    "status": "Arızalı",
+    "purchaseDate": "2025-05-27T00:00:00.000Z",
+    "notes": "dgdf",
+    "id": "e03ae53d-3a78-48dc-991a-d178d85f48ea",
+    "itemType": "firearm",
+    "name": "Sar 223 P",
+    "model": "Sar 223 P",
+    "manufacturer": "Sarsılmaz",
+    "caliber": "5.56x45mm",
+    "lastUpdated": "2025-05-28T10:13:33.661Z",
+    "maintenanceHistory": []
   }
 ]

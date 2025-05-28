@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import type { Magazine } from "@/types/inventory";
+import type { Magazine, FirearmDefinition } from "@/types/inventory"; // Added FirearmDefinition
 import { DEPOT_LOCATIONS, SUPPORTED_CALIBERS } from "@/types/inventory";
 import { magazineFormSchema, magazineStatuses, type MagazineFormValues } from "./magazine-form-schema";
 import { addMagazineAction, updateMagazineAction } from "@/lib/actions/inventory.actions";
@@ -34,14 +34,19 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
+import { useState, useEffect } from "react";
 
 interface MagazineFormProps {
   magazine?: Magazine;
+  firearmDefinitions: FirearmDefinition[]; // Added firearmDefinitions prop
 }
 
-export function MagazineForm({ magazine }: MagazineFormProps) {
+export function MagazineForm({ magazine, firearmDefinitions }: MagazineFormProps) {
   const { toast } = useToast();
   const router = useRouter();
+  const [selectedFirearmDefId, setSelectedFirearmDefId] = useState<string | undefined>(magazine?.compatibleFirearmDefinitionId || undefined);
+  const [isNameCaliberReadOnly, setIsNameCaliberReadOnly] = useState<boolean>(!!magazine?.compatibleFirearmDefinitionId);
+
 
   const defaultValues: Partial<MagazineFormValues> = magazine ? {
     ...magazine,
@@ -60,11 +65,41 @@ export function MagazineForm({ magazine }: MagazineFormProps) {
     mode: "onChange",
   });
 
+  useEffect(() => {
+    if (selectedFirearmDefId) {
+      const definition = firearmDefinitions.find(def => def.id === selectedFirearmDefId);
+      if (definition) {
+        form.setValue('name', `${definition.name} Şarjörü`);
+        form.setValue('caliber', definition.caliber as typeof SUPPORTED_CALIBERS[number]);
+        setIsNameCaliberReadOnly(true);
+      }
+    } else {
+        // If no firearm definition is selected, make fields editable (unless it's an existing magazine that wasn't linked)
+        // For new magazines, if no def is selected, they are editable.
+        // For existing magazines, if they were not linked, they should remain editable.
+        if (!magazine?.id) { // Only for new magazines, allow reverting to manual
+            setIsNameCaliberReadOnly(false);
+        } else {
+            // For existing magazines, if it had a link, it stays read-only until selection is cleared.
+            // If it didn't have a link, it's already editable by default state of isNameCaliberReadOnly.
+            // This logic needs to ensure that if the user clears the selection, it becomes editable
+            // and reverts to original name/caliber if it's an edit.
+             setIsNameCaliberReadOnly(false); // Default to editable if selection cleared
+             if (magazine) { // If editing, revert to original values if selection cleared
+                form.setValue('name', magazine.name);
+                form.setValue('caliber', magazine.caliber as typeof SUPPORTED_CALIBERS[number]);
+             }
+        }
+    }
+  }, [selectedFirearmDefId, firearmDefinitions, form, magazine]);
+
+
   async function onSubmit(data: MagazineFormValues) {
     try {
       const payload = {
         ...data,
         purchaseDate: data.purchaseDate ? new Date(data.purchaseDate).toISOString() : undefined,
+        compatibleFirearmDefinitionId: selectedFirearmDefId // Store the link
       };
 
       if (magazine) {
@@ -76,8 +111,8 @@ export function MagazineForm({ magazine }: MagazineFormProps) {
       }
       router.push("/inventory/magazines");
       router.refresh();
-    } catch (error) {
-      toast({ variant: "destructive", title: "Hata", description: `Şarjör ${magazine ? 'güncellenirken' : 'eklenirken'} hata oluştu.` });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Hata", description: error.message || `Şarjör ${magazine ? 'güncellenirken' : 'eklenirken'} hata oluştu.` });
       console.error("Form gönderme hatası:", error);
     }
   }
@@ -85,6 +120,41 @@ export function MagazineForm({ magazine }: MagazineFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <FormItem>
+            <FormLabel><span suppressHydrationWarning>Ait Olduğu Silah Türü (İsteğe Bağlı)</span></FormLabel>
+            <Select 
+                onValueChange={(value) => {
+                    if (value === "clear_selection") {
+                        setSelectedFirearmDefId(undefined);
+                        if (!magazine) { // If new form, clear name/caliber
+                           form.setValue('name', "");
+                           form.setValue('caliber', SUPPORTED_CALIBERS[0]);
+                        }
+                    } else {
+                        setSelectedFirearmDefId(value);
+                    }
+                }} 
+                defaultValue={selectedFirearmDefId}
+            >
+                <FormControl>
+                    <SelectTrigger>
+                        <SelectValue placeholder="Bir silah türü seçin (Ad ve Kalibreyi otomatik doldurur)" />
+                    </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                    <SelectItem value="clear_selection" disabled={!selectedFirearmDefId}>
+                        <span suppressHydrationWarning>Silah Türü Seçimini Temizle</span>
+                    </SelectItem>
+                    {firearmDefinitions.map(def => (
+                        <SelectItem key={def.id} value={def.id}>
+                            <span suppressHydrationWarning>{def.name} ({def.model} - {def.caliber})</span>
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+            <FormDescription><span suppressHydrationWarning>Bir silah türü seçmek, şarjör adı ve kalibresini otomatik olarak dolduracaktır.</span></FormDescription>
+        </FormItem>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
             control={form.control}
@@ -93,7 +163,7 @@ export function MagazineForm({ magazine }: MagazineFormProps) {
               <FormItem>
                 <FormLabel><span suppressHydrationWarning>Şarjör Adı/Tanımı</span></FormLabel>
                 <FormControl>
-                  <Input placeholder="örn. Standart Piyade Tüfeği Şarjörü" {...field} />
+                  <Input placeholder="örn. Standart Piyade Tüfeği Şarjörü" {...field} readOnly={isNameCaliberReadOnly} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -118,7 +188,7 @@ export function MagazineForm({ magazine }: MagazineFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel><span suppressHydrationWarning>Kalibre</span></FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} value={field.value} disabled={isNameCaliberReadOnly}>
                   <FormControl>
                     <SelectTrigger><SelectValue placeholder="Bir kalibre seçin" /></SelectTrigger>
                   </FormControl>

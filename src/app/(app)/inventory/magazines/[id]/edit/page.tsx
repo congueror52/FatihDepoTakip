@@ -1,5 +1,5 @@
 
-import { getMagazineById } from "@/lib/actions/inventory.actions";
+import { getMagazineById, getFirearmDefinitions } from "@/lib/actions/inventory.actions"; // Import getFirearmDefinitions
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { MagazineForm } from "../../_components/magazine-form";
 import { ListChecks, ArrowLeft } from "lucide-react";
@@ -8,6 +8,7 @@ import { notFound } from "next/navigation";
 
 export default async function EditMagazinePage({ params }: { params: { id: string } }) {
   const magazine = await getMagazineById(params.id);
+  const firearmDefinitions = await getFirearmDefinitions(); // Fetch firearm definitions
 
   if (!magazine) {
     notFound();
@@ -29,7 +30,7 @@ export default async function EditMagazinePage({ params }: { params: { id: strin
           <CardDescription><span suppressHydrationWarning>Şarjör için bilgileri değiştirin: {magazine.name}.</span></CardDescription>
         </CardHeader>
         <CardContent>
-          <MagazineForm magazine={magazine} />
+          <MagazineForm magazine={magazine} firearmDefinitions={firearmDefinitions} /> {/* Pass firearmDefinitions to the form */}
         </CardContent>
       </Card>
     </div>
