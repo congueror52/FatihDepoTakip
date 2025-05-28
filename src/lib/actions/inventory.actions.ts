@@ -2,7 +2,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import type { Firearm, Magazine, Ammunition, Shipment, AmmunitionUsageLog, DepotInventorySnapshot, HistoricalUsageSnapshot, UpcomingRequirementsSnapshot, FirearmDefinition, AmmunitionDailyUsageLog, UsageScenario, ScenarioCaliberConsumption, SupportedCaliber, MagazineStatus, AmmunitionStatus, Depot } from '@/types/inventory';
+import type { Firearm, Magazine, Ammunition, Shipment, AmmunitionUsageLog, DepotInventorySnapshot, HistoricalUsageSnapshot, UpcomingRequirementsSnapshot, FirearmDefinition, AmmunitionDailyUsageLog, UsageScenario, ScenarioCaliberConsumption, SupportedCaliber, MagazineStatus, AmmunitionStatus, Depot, MaintenanceLog, MaintenanceItemStatus } from '@/types/inventory';
 import { readData, writeData, generateId } from '@/lib/data-utils';
 import { firearmFormSchema } from '@/app/(app)/inventory/firearms/_components/firearm-form-schema';
 import { firearmDefinitionFormSchema } from '@/app/(app)/admin/firearms-definitions/_components/firearm-definition-form-schema';
@@ -12,6 +12,7 @@ import { suggestRebalancing as suggestRebalancingAI } from '@/ai/flows/suggest-r
 import { magazineFormSchema, type MagazineFormValues } from '@/app/(app)/inventory/magazines/_components/magazine-form-schema'; 
 import { ammunitionFormSchema } from '@/app/(app)/inventory/ammunition/_components/ammunition-form-schema'; 
 import { depotFormSchema } from '@/app/(app)/admin/depots/_components/depot-form-schema';
+import { maintenanceLogFormSchema } from '@/app/(app)/maintenance/_components/maintenance-log-form-schema';
 
 // Firearm Definitions
 export async function getFirearmDefinitions(): Promise<FirearmDefinition[]> {
@@ -410,7 +411,7 @@ export async function updateAmmunitionDailyUsageLogAction(logToUpdate: Ammunitio
 
   await writeData('ammunition_daily_usage.json', logs);
   revalidatePath('/daily-ammo-usage');
-  revalidatePath(`/daily-ammo-usage/${logToUpdate.id}/edit`); // Assume an edit page might exist
+  revalidatePath(`/daily-ammo-usage/${logToUpdate.id}/edit`); 
   revalidatePath('/dashboard');
   return logs[index];
 }
@@ -625,6 +626,54 @@ export async function deleteDepotAction(id: string): Promise<void> {
   revalidatePath('/admin/depots');
 }
 
+// Maintenance Logs
+export async function addMaintenanceLogToItemAction(
+  itemId: string,
+  itemType: 'firearm' | 'magazine',
+  logData: Omit<MaintenanceLog, 'id'>
+) {
+  // Validate basic log data structure (you might want a specific schema for logData itself if it were more complex)
+  if (!itemId || !itemType || !logData.date || !logData.description || !logData.statusChangeFrom || !logData.statusChangeTo) {
+    throw new Error('Bakım kaydı için eksik veri.');
+  }
+
+  const newLog: MaintenanceLog = {
+    ...logData,
+    id: await generateId(),
+  };
+
+  if (itemType === 'firearm') {
+    const firearms = await getFirearms();
+    const itemIndex = firearms.findIndex(f => f.id === itemId);
+    if (itemIndex === -1) throw new Error('Bakım yapılacak silah bulunamadı.');
+    
+    firearms[itemIndex].maintenanceHistory = [...(firearms[itemIndex].maintenanceHistory || []), newLog];
+    firearms[itemIndex].status = newLog.statusChangeTo as FirearmStatus; // Cast is okay here if form logic ensures correct status type
+    firearms[itemIndex].lastUpdated = new Date().toISOString();
+    await writeData('firearms.json', firearms);
+    revalidatePath(`/inventory/firearms/${itemId}`);
+    revalidatePath('/inventory/firearms');
+
+  } else if (itemType === 'magazine') {
+    const magazines = await getMagazines();
+    const itemIndex = magazines.findIndex(m => m.id === itemId);
+    if (itemIndex === -1) throw new Error('Bakım yapılacak şarjör bulunamadı.');
+
+    magazines[itemIndex].maintenanceHistory = [...(magazines[itemIndex].maintenanceHistory || []), newLog];
+    magazines[itemIndex].status = newLog.statusChangeTo as MagazineStatus; // Cast
+    magazines[itemIndex].lastUpdated = new Date().toISOString();
+    await writeData('magazines.json', magazines);
+    revalidatePath(`/inventory/magazines/${itemId}`); // Assuming a detail page exists or will exist
+    revalidatePath('/inventory/magazines');
+  } else {
+    throw new Error('Geçersiz öğe türü.');
+  }
+  
+  revalidatePath('/maintenance');
+  revalidatePath('/dashboard');
+  return newLog;
+}
+
 
 // AI Stock Balancing Action
 export async function suggestRebalancing(
@@ -671,4 +720,3 @@ export async function getHistoricalUsageForAI(): Promise<HistoricalUsageSnapshot
     ammunitionUsage: usageLogs.map(log => ({ ammunitionId: log.ammunitionId, quantityUsed: log.quantityUsed, date: log.date, depotId: log.depotId})),
   };
 }
-

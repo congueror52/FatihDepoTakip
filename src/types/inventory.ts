@@ -9,6 +9,7 @@ export const DEPOT_LOCATIONS: { id: DepotId; name: string }[] = [
 export type FirearmStatus = 'Hizmette' | 'Bakımda' | 'Arızalı' | 'Onarım Bekliyor' | 'Onarıldı' | 'Hizmet Dışı';
 export type MagazineStatus = 'Hizmette' | 'Bakımda' | 'Arızalı' | 'Kayıp' | 'Hizmet Dışı';
 export type AmmunitionStatus = 'Mevcut' | 'Düşük Stok' | 'Kritik Stok' | 'Tükenmek Üzere';
+export type MaintenanceItemStatus = FirearmStatus | MagazineStatus;
 
 
 export interface BaseItem {
@@ -88,10 +89,10 @@ export interface MaintenanceLog {
   id:string;
   date: string; // ISO date string
   description: string;
-  statusChangeFrom: FirearmStatus | MagazineStatus;
-  statusChangeTo: FirearmStatus | MagazineStatus;
+  statusChangeFrom: MaintenanceItemStatus;
+  statusChangeTo: MaintenanceItemStatus;
   technician?: string;
-  partsUsed?: string[];
+  partsUsed?: string; // Changed to string for simplicity
   cost?: number;
 }
 
