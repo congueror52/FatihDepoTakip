@@ -13,7 +13,7 @@ import {
 // import { Button } from "@/components/ui/button";
 // import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 // import { MoreHorizontal, Trash2, Pencil } from "lucide-react"; // Pencil for Edit
-import { useState } from "react";
+import { useState, useEffect } from "react"; // useEffect eklendi
 // import { useToast } from "@/hooks/use-toast";
 // import { deleteAmmunitionDailyUsageLogAction } from "@/lib/actions/inventory.actions"; // Implement if needed
 import { format } from "date-fns";
@@ -28,6 +28,11 @@ export function AmmunitionDailyUsageTableClient({ logs: initialLogs }: Ammunitio
   // const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   // const [selectedLogId, setSelectedLogId] = useState<string | null>(null);
   // const { toast } = useToast();
+
+  // initialLogs prop'u değiştiğinde logs state'ini güncelle
+  useEffect(() => {
+    setLogs(initialLogs);
+  }, [initialLogs]);
 
   // const handleDelete = async () => {
   //   if (!selectedLogId) return;
