@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "name": "Sar 223 P Şarjörü",
+    "caliber": "5.56x45mm",
+    "capacity": 30,
+    "depotId": "depotA",
+    "status": "Hizmette",
+    "manufacturer": "Sarsılmaz",
+    "id": "4ce5ce30-5e37-4b62-ac51-22ecb3ae0cfd",
+    "itemType": "magazine",
+    "lastUpdated": "2025-05-28T10:18:52.368Z",
+    "maintenanceHistory": []
+  }
+]

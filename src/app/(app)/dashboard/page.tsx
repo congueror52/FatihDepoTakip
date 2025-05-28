@@ -1,19 +1,24 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Briefcase, Boxes, DollarSign, Users, ShieldAlert, BarChart3, Activity, BellRing, ArrowRight, Target } from 'lucide-react';
+import { Briefcase, Boxes, DollarSign, Users, ShieldAlert, BarChart3, Activity, BellRing, ArrowRight, Target, ListChecks } from 'lucide-react'; // Added ListChecks
 import Image from 'next/image';
 import Link from 'next/link';
+import { getFirearms, getMagazines, getAmmunition } from '@/lib/actions/inventory.actions'; // Added getMagazines
+
 // import { AmmoUsageChart } from '@/components/dashboard/AmmoUsageChart'; // Placeholder, implement later
 // import { StockLevels } from '@/components/dashboard/StockLevels'; // Placeholder, implement later
 // import { AlertsSummary } from '@/components/dashboard/AlertsSummary'; // Placeholder, implement later
 
 export default async function DashboardPage() {
   // Gerçek bir uygulamada veriler burada çekilir
+  const firearms = await getFirearms();
+  const magazines = await getMagazines(); // Fetch magazines
+  const ammunition = await getAmmunition();
+
   const summaryData = {
-    totalFirearms: 125,
-    totalMagazines: 580,
-    totalAmmunitionRounds: 150000,
-    // activeAlerts: 3, // Bu artık doğrudan uyarılardan hesaplanacak
+    totalFirearms: firearms.length,
+    totalMagazines: magazines.length, // Use fetched magazine count
+    totalAmmunitionRounds: ammunition.reduce((sum, ammo) => sum + ammo.quantity, 0),
     recentActivity: [
       { id: 1, description: "5.56mm mühimmat sevkiyatı alındı", time: "2 saat önce" },
       { id: 2, description: "SN:XG5523 seri numaralı silah bakım için bildirildi", time: "5 saat önce" },
@@ -33,15 +38,15 @@ export default async function DashboardPage() {
   const severityOrder: { [key: string]: number } = { 'Yüksek': 1, 'Orta': 2, 'Düşük': 3 };
   
   const sortedAlerts = [...allAlerts]
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) // Önce en yeniye göre
-    .sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]); // Sonra önem derecesine göre
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) 
+    .sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]); 
 
   const top3Alerts = sortedAlerts.slice(0, 3);
 
   const getSeverityTextColor = (severity: string) => {
     if (severity === 'Yüksek') return 'text-red-700 dark:text-red-400';
     if (severity === 'Orta') return 'text-yellow-700 dark:text-yellow-400';
-    return 'text-blue-700 dark:text-blue-400'; // Düşük
+    return 'text-blue-700 dark:text-blue-400'; 
   };
 
 
@@ -59,7 +64,7 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{summaryData.totalFirearms}</div>
-            <p className="text-xs text-muted-foreground" suppressHydrationWarning>geçen aydan beri +2</p>
+            {/* <p className="text-xs text-muted-foreground" suppressHydrationWarning>geçen aydan beri +2</p> */}
           </CardContent>
         </Card>
         <Card>
@@ -67,11 +72,11 @@ export default async function DashboardPage() {
             <Link href="/inventory/magazines" className="hover:underline">
               <CardTitle className="text-sm font-medium" suppressHydrationWarning>Toplam Şarjör</CardTitle>
             </Link>
-            <Boxes className="h-4 w-4 text-muted-foreground" />
+            <ListChecks className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{summaryData.totalMagazines}</div>
-            <p className="text-xs text-muted-foreground" suppressHydrationWarning>geçen aydan beri +15</p>
+            {/* <p className="text-xs text-muted-foreground" suppressHydrationWarning>geçen aydan beri +15</p> */}
           </CardContent>
         </Card>
         <Card>
@@ -83,7 +88,7 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{summaryData.totalAmmunitionRounds.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground" suppressHydrationWarning>son sevkiyattan beri +5,000</p>
+            {/* <p className="text-xs text-muted-foreground" suppressHydrationWarning>son sevkiyattan beri +5,000</p> */}
           </CardContent>
         </Card>
         <Card>

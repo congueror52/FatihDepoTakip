@@ -11,6 +11,7 @@ export const magazineFormSchema = z.object({
     errorMap: () => ({ message: "Lütfen geçerli bir kalibre seçin." }),
   }),
   capacity: z.coerce.number().int().min(1, { message: "Kapasite en az 1 olmalıdır." }),
+  quantity: z.coerce.number().int().min(1, { message: "Miktar en az 1 olmalıdır." }).default(1), // For batch adding
   depotId: z.enum(DEPOT_LOCATIONS.map(d => d.id) as [string, ...string[]], {
     errorMap: () => ({ message: "Lütfen geçerli bir depo seçin." }),
   }),
@@ -22,6 +23,7 @@ export const magazineFormSchema = z.object({
     message: "Satın alma tarihi için geçersiz tarih formatı.",
   }),
   notes: z.string().max(500).optional(),
+  compatibleFirearmDefinitionId: z.string().optional(), // Added this to schema based on previous implementation
 });
 
 export type MagazineFormValues = z.infer<typeof magazineFormSchema>;

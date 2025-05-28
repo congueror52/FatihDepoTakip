@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import type { Magazine, FirearmDefinition } from "@/types/inventory"; // Added FirearmDefinition
+import type { Magazine, FirearmDefinition } from "@/types/inventory";
 import { DEPOT_LOCATIONS, SUPPORTED_CALIBERS } from "@/types/inventory";
 import { magazineFormSchema, magazineStatuses, type MagazineFormValues } from "./magazine-form-schema";
 import { addMagazineAction, updateMagazineAction } from "@/lib/actions/inventory.actions";
@@ -38,7 +38,7 @@ import { useState, useEffect } from "react";
 
 interface MagazineFormProps {
   magazine?: Magazine;
-  firearmDefinitions: FirearmDefinition[]; // Added firearmDefinitions prop
+  firearmDefinitions: FirearmDefinition[];
 }
 
 export function MagazineForm({ magazine, firearmDefinitions }: MagazineFormProps) {
@@ -47,16 +47,21 @@ export function MagazineForm({ magazine, firearmDefinitions }: MagazineFormProps
   const [selectedFirearmDefId, setSelectedFirearmDefId] = useState<string | undefined>(magazine?.compatibleFirearmDefinitionId || undefined);
   const [isNameCaliberReadOnly, setIsNameCaliberReadOnly] = useState<boolean>(!!magazine?.compatibleFirearmDefinitionId);
 
+  const isEditing = !!magazine;
 
   const defaultValues: Partial<MagazineFormValues> = magazine ? {
     ...magazine,
+    quantity: 1, // Quantity is 1 when editing an existing magazine
     purchaseDate: magazine.purchaseDate ? format(new Date(magazine.purchaseDate), 'yyyy-MM-dd') : undefined,
+    compatibleFirearmDefinitionId: magazine.compatibleFirearmDefinitionId,
   } : {
     name: "",
     caliber: SUPPORTED_CALIBERS[0],
     capacity: 30,
+    quantity: 1, // Default quantity for new magazines
     status: 'Hizmette',
     depotId: DEPOT_LOCATIONS[0].id,
+    compatibleFirearmDefinitionId: undefined,
   };
   
   const form = useForm<MagazineFormValues>({
@@ -71,27 +76,18 @@ export function MagazineForm({ magazine, firearmDefinitions }: MagazineFormProps
       if (definition) {
         form.setValue('name', `${definition.name} Şarjörü`);
         form.setValue('caliber', definition.caliber as typeof SUPPORTED_CALIBERS[number]);
+        form.setValue('compatibleFirearmDefinitionId', definition.id);
         setIsNameCaliberReadOnly(true);
       }
     } else {
-        // If no firearm definition is selected, make fields editable (unless it's an existing magazine that wasn't linked)
-        // For new magazines, if no def is selected, they are editable.
-        // For existing magazines, if they were not linked, they should remain editable.
-        if (!magazine?.id) { // Only for new magazines, allow reverting to manual
-            setIsNameCaliberReadOnly(false);
-        } else {
-            // For existing magazines, if it had a link, it stays read-only until selection is cleared.
-            // If it didn't have a link, it's already editable by default state of isNameCaliberReadOnly.
-            // This logic needs to ensure that if the user clears the selection, it becomes editable
-            // and reverts to original name/caliber if it's an edit.
-             setIsNameCaliberReadOnly(false); // Default to editable if selection cleared
-             if (magazine) { // If editing, revert to original values if selection cleared
-                form.setValue('name', magazine.name);
-                form.setValue('caliber', magazine.caliber as typeof SUPPORTED_CALIBERS[number]);
-             }
+        if (!magazine) { 
+            form.setValue('name', defaultValues.name || "");
+            form.setValue('caliber', defaultValues.caliber || SUPPORTED_CALIBERS[0]);
+            form.setValue('compatibleFirearmDefinitionId', undefined);
         }
+        setIsNameCaliberReadOnly(false);
     }
-  }, [selectedFirearmDefId, firearmDefinitions, form, magazine]);
+  }, [selectedFirearmDefId, firearmDefinitions, form, magazine, defaultValues.name, defaultValues.caliber]);
 
 
   async function onSubmit(data: MagazineFormValues) {
@@ -99,15 +95,15 @@ export function MagazineForm({ magazine, firearmDefinitions }: MagazineFormProps
       const payload = {
         ...data,
         purchaseDate: data.purchaseDate ? new Date(data.purchaseDate).toISOString() : undefined,
-        compatibleFirearmDefinitionId: selectedFirearmDefId // Store the link
+        compatibleFirearmDefinitionId: selectedFirearmDefId, 
       };
 
       if (magazine) {
-        await updateMagazineAction({ ...magazine, ...payload });
+        await updateMagazineAction({ ...magazine, ...payload, quantity: 1 }); // Ensure quantity is 1 for updates
         toast({ variant: "success", title: "Başarılı", description: "Şarjör başarıyla güncellendi." });
       } else {
-        await addMagazineAction(payload);
-        toast({ variant: "success", title: "Başarılı", description: "Şarjör başarıyla eklendi." });
+        await addMagazineAction(payload); // addMagazineAction will handle the quantity
+        toast({ variant: "success", title: "Başarılı", description: `${payload.quantity} adet şarjör başarıyla eklendi.` });
       }
       router.push("/inventory/magazines");
       router.refresh();
@@ -126,15 +122,11 @@ export function MagazineForm({ magazine, firearmDefinitions }: MagazineFormProps
                 onValueChange={(value) => {
                     if (value === "clear_selection") {
                         setSelectedFirearmDefId(undefined);
-                        if (!magazine) { // If new form, clear name/caliber
-                           form.setValue('name', "");
-                           form.setValue('caliber', SUPPORTED_CALIBERS[0]);
-                        }
                     } else {
                         setSelectedFirearmDefId(value);
                     }
                 }} 
-                defaultValue={selectedFirearmDefId}
+                value={selectedFirearmDefId || ""}
             >
                 <FormControl>
                     <SelectTrigger>
@@ -176,8 +168,9 @@ export function MagazineForm({ magazine, firearmDefinitions }: MagazineFormProps
               <FormItem>
                 <FormLabel><span suppressHydrationWarning>Seri Numarası (İsteğe Bağlı)</span></FormLabel>
                 <FormControl>
-                  <Input placeholder="MAG-SN12345" {...field} />
+                  <Input placeholder="MAG-SN12345" {...field} disabled={!isEditing && form.getValues("quantity") > 1} />
                 </FormControl>
+                {!isEditing && form.getValues("quantity") > 1 && <FormDescription className="text-xs"><span suppressHydrationWarning>Toplu eklemede seri numarası girilemez.</span></FormDescription>}
                 <FormMessage />
               </FormItem>
             )}
@@ -207,7 +200,7 @@ export function MagazineForm({ magazine, firearmDefinitions }: MagazineFormProps
             name="capacity"
             render={({ field }) => (
               <FormItem>
-                <FormLabel><span suppressHydrationWarning>Kapasite (Adet)</span></FormLabel>
+                <FormLabel><span suppressHydrationWarning>Kapasite (Fişek Adedi)</span></FormLabel>
                 <FormControl>
                   <Input type="number" placeholder="30" {...field} onChange={e => field.onChange(parseInt(e.target.value, 10) || 0)} />
                 </FormControl>
@@ -215,6 +208,33 @@ export function MagazineForm({ magazine, firearmDefinitions }: MagazineFormProps
               </FormItem>
             )}
           />
+          {!isEditing && (
+            <FormField
+              control={form.control}
+              name="quantity"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel><span suppressHydrationWarning>Eklenecek Miktar</span></FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="number" 
+                      placeholder="1" 
+                      {...field} 
+                      onChange={e => {
+                        const val = parseInt(e.target.value, 10) || 1;
+                        field.onChange(val);
+                        if (val > 1) {
+                          form.setValue('serialNumber', ''); // Clear serial number if quantity > 1
+                        }
+                      }} 
+                    />
+                  </FormControl>
+                  <FormDescription><span suppressHydrationWarning>Aynı özelliklerde kaç adet şarjör eklenecek?</span></FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
           <FormField
             control={form.control}
             name="depotId"
