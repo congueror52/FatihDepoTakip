@@ -51,16 +51,24 @@ export function MagazineForm({ magazine, firearmDefinitions }: MagazineFormProps
 
   const defaultValues: Partial<MagazineFormValues> = magazine ? {
     ...magazine,
+    name: magazine.name || "",
+    serialNumber: magazine.serialNumber || "",
+    manufacturer: magazine.manufacturer || "",
+    notes: magazine.notes || "",
     quantity: 1, // Quantity is 1 when editing an existing magazine
     purchaseDate: magazine.purchaseDate ? format(new Date(magazine.purchaseDate), 'yyyy-MM-dd') : undefined,
     compatibleFirearmDefinitionId: magazine.compatibleFirearmDefinitionId,
   } : {
     name: "",
+    serialNumber: "",
     caliber: SUPPORTED_CALIBERS[0],
     capacity: 30,
     quantity: 1, // Default quantity for new magazines
     status: 'Hizmette',
     depotId: DEPOT_LOCATIONS[0].id,
+    manufacturer: "",
+    purchaseDate: undefined,
+    notes: "",
     compatibleFirearmDefinitionId: undefined,
   };
   
@@ -81,7 +89,7 @@ export function MagazineForm({ magazine, firearmDefinitions }: MagazineFormProps
       }
     } else {
         if (!magazine) { 
-            form.setValue('name', defaultValues.name || "");
+            form.setValue('name', defaultValues.name || ""); 
             form.setValue('caliber', defaultValues.caliber || SUPPORTED_CALIBERS[0]);
             form.setValue('compatibleFirearmDefinitionId', undefined);
         }
