@@ -1,5 +1,5 @@
 
-export type DepotId = string; // Changed from 'depotA' | 'depotB'
+export type DepotId = string; 
 
 export const DEPOT_LOCATIONS: { id: DepotId; name: string }[] = [
   { id: 'depotA', name: 'Depo Alfa' },
@@ -10,6 +10,8 @@ export type FirearmStatus = 'Hizmette' | 'Bakımda' | 'Arızalı' | 'Onarım Bek
 export type MagazineStatus = 'Hizmette' | 'Bakımda' | 'Arızalı' | 'Kayıp' | 'Hizmet Dışı';
 export type AmmunitionStatus = 'Mevcut' | 'Düşük Stok' | 'Kritik Stok' | 'Tükenmek Üzere';
 export type MaintenanceItemStatus = FirearmStatus | MagazineStatus;
+export type ShipmentType = 'Gelen' | 'Giden' | 'Transfer';
+export type InventoryItemType = 'firearm' | 'magazine' | 'ammunition';
 
 
 export interface BaseItem {
@@ -48,7 +50,7 @@ export interface Magazine extends BaseItem {
   caliber: string;
   capacity: number;
   status: MagazineStatus;
-  compatibleFirearmDefinitionId?: string; // Optional: To link which firearm definition this magazine was created for
+  compatibleFirearmDefinitionId?: string; 
   serialNumber?: string; 
   maintenanceHistory?: MaintenanceLog[];
 }
@@ -64,26 +66,31 @@ export interface Ammunition extends BaseItem {
 
 export type InventoryItem = Firearm | Magazine | Ammunition;
 
+
+export interface ShipmentItem {
+  id: string; // for useFieldArray key
+  name: string; // Description of the item, e.g., "SAR9 Magazine" or "5.56x45mm FMJ MKE"
+  itemType: InventoryItemType;
+  quantity: number;
+  // Optional details, relevant based on itemType
+  caliber?: string;
+  model?: string; // For firearms
+  serialNumber?: string; // For individual firearms, if applicable in shipment
+  capacity?: number; // For magazines
+}
 export interface Shipment {
   id: string;
   date: string; // ISO date string
-  type: 'Gelen' | 'Giden' | 'Transfer';
-  items: Array<{
-    inventoryId?: string; 
-    name: string;
-    itemType: InventoryItem['itemType'];
-    quantity: number;
-    caliber?: string;
-    model?: string; 
-    serialNumber?: string; 
-    capacity?: number; 
-    depotId: DepotId; 
-    destinationDepotId?: DepotId; 
-  }>;
+  type: ShipmentType;
+  items: ShipmentItem[];
   notes?: string;
-  supplier?: string; 
+  supplier?: string; // Relevant for 'Gelen'
   trackingNumber?: string;
+  sourceDepotId?: DepotId; // For 'Giden' or 'Transfer (from)'
+  destinationDepotId?: DepotId; // For 'Gelen' or 'Transfer (to)'
+  lastUpdated: string;
 }
+
 
 export interface MaintenanceLog {
   id:string;
@@ -92,14 +99,14 @@ export interface MaintenanceLog {
   statusChangeFrom: MaintenanceItemStatus;
   statusChangeTo: MaintenanceItemStatus;
   technician?: string;
-  partsUsed?: string; // Changed to string for simplicity
+  partsUsed?: string; 
   cost?: number;
 }
 
 export interface AmmunitionUsageLog {
   id: string;
   date: string; // ISO date string
-  ammunitionId: string; // Links to Ammunition item
+  ammunitionId: string; 
   quantityUsed: number;
   depotId: DepotId;
   purpose?: string; 
@@ -111,7 +118,7 @@ export interface AmmunitionDailyUsageLog {
   id: string;
   date: string; // ISO date string
   personnelCount: number;
-  usageScenarioId?: string; // Link to UsageScenario
+  usageScenarioId?: string; 
   used_9x19mm: number;
   used_5_56x45mm: number;
   used_7_62x39mm: number;
@@ -121,6 +128,12 @@ export interface AmmunitionDailyUsageLog {
 
 export const SUPPORTED_CALIBERS = ["9x19mm", "5.56x45mm", "7.62x39mm", "7.62x51mm"] as const;
 export type SupportedCaliber = typeof SUPPORTED_CALIBERS[number];
+
+export const INVENTORY_ITEM_TYPES: {value: InventoryItemType, label: string}[] = [
+    {value: 'firearm', label: 'Silah'},
+    {value: 'magazine', label: 'Şarjör'},
+    {value: 'ammunition', label: 'Mühimmat'},
+];
 
 
 export interface ScenarioCaliberConsumption {

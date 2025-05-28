@@ -40,5 +40,21 @@
     "caliber": "5.56x45mm",
     "lastUpdated": "2025-05-28T10:13:33.661Z",
     "maintenanceHistory": []
+  },
+  {
+    "definitionId": "fd_3",
+    "serialNumber": "4477888",
+    "depotId": "depotA",
+    "status": "Hizmette",
+    "purchaseDate": "2025-05-26T00:00:00.000Z",
+    "notes": "",
+    "id": "307dfd2c-47dc-4e84-a3af-f7574a2f79ff",
+    "itemType": "firearm",
+    "name": "AK-47 ",
+    "model": "AK47",
+    "manufacturer": "BELLİ DEĞİL",
+    "caliber": "7.62X39",
+    "lastUpdated": "2025-05-28T11:19:56.934Z",
+    "maintenanceHistory": []
   }
 ]

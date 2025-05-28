@@ -2,7 +2,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import type { Firearm, Magazine, Ammunition, Shipment, AmmunitionUsageLog, DepotInventorySnapshot, HistoricalUsageSnapshot, UpcomingRequirementsSnapshot, FirearmDefinition, AmmunitionDailyUsageLog, UsageScenario, ScenarioCaliberConsumption, SupportedCaliber, MagazineStatus, AmmunitionStatus, Depot, MaintenanceLog, MaintenanceItemStatus } from '@/types/inventory';
+import type { Firearm, Magazine, Ammunition, Shipment, ShipmentItem, AmmunitionUsageLog, DepotInventorySnapshot, HistoricalUsageSnapshot, UpcomingRequirementsSnapshot, FirearmDefinition, AmmunitionDailyUsageLog, UsageScenario, ScenarioCaliberConsumption, SupportedCaliber, MagazineStatus, AmmunitionStatus, Depot, MaintenanceLog, MaintenanceItemStatus, FirearmStatus, InventoryItemType } from '@/types/inventory';
 import { readData, writeData, generateId } from '@/lib/data-utils';
 import { firearmFormSchema } from '@/app/(app)/inventory/firearms/_components/firearm-form-schema';
 import { firearmDefinitionFormSchema } from '@/app/(app)/admin/firearms-definitions/_components/firearm-definition-form-schema';
@@ -13,6 +13,7 @@ import { magazineFormSchema, type MagazineFormValues } from '@/app/(app)/invento
 import { ammunitionFormSchema } from '@/app/(app)/inventory/ammunition/_components/ammunition-form-schema'; 
 import { depotFormSchema } from '@/app/(app)/admin/depots/_components/depot-form-schema';
 import { maintenanceLogFormSchema } from '@/app/(app)/maintenance/_components/maintenance-log-form-schema';
+import { shipmentFormSchema } from '@/app/(app)/shipments/_components/shipment-form-schema';
 
 // Firearm Definitions
 export async function getFirearmDefinitions(): Promise<FirearmDefinition[]> {
@@ -192,6 +193,7 @@ export async function addMagazineAction(data: MagazineFormValues) {
   
   const magazines = await getMagazines();
   const quantity = validatedData.data.quantity || 1;
+  const addedMagazines: Magazine[] = [];
 
   for (let i = 0; i < quantity; i++) {
     const newMagazine: Magazine = {
@@ -204,25 +206,23 @@ export async function addMagazineAction(data: MagazineFormValues) {
       purchaseDate: validatedData.data.purchaseDate,
       notes: validatedData.data.notes,
       compatibleFirearmDefinitionId: validatedData.data.compatibleFirearmDefinitionId,
-      serialNumber: quantity > 1 ? undefined : validatedData.data.serialNumber, // Only set serial if quantity is 1
+      serialNumber: quantity > 1 ? undefined : validatedData.data.serialNumber, 
       id: await generateId(),
       itemType: 'magazine',
       lastUpdated: new Date().toISOString(),
       maintenanceHistory: [],
     };
     magazines.push(newMagazine);
+    addedMagazines.push(newMagazine);
   }
   
   await writeData('magazines.json', magazines);
   revalidatePath('/inventory/magazines');
   revalidatePath('/dashboard');
-  // Returning the first added magazine as a sample, or true/void could also work
-  return magazines[magazines.length - quantity]; 
+  return addedMagazines.length > 0 ? addedMagazines[0] : undefined; 
 }
 
 export async function updateMagazineAction(magazine: Magazine & { quantity?: number }) {
-   // Quantity is not used for update, as we update a single record.
-   // We omit quantity from the data being validated for update.
    const { quantity, ...magazineDataToValidate } = magazine;
    const validatedData = magazineFormSchema.omit({ quantity: true }).safeParse(magazineDataToValidate);
 
@@ -320,25 +320,74 @@ export async function deleteAmmunitionAction(id: string): Promise<void> {
 }
 
 
-// Shipments (Stubs)
+// Shipments
 export async function getShipments(): Promise<Shipment[]> {
   return readData<Shipment>('shipments.json');
 }
-export async function addShipmentAction(data: Omit<Shipment, 'id'>): Promise<Shipment> {
+
+export async function getShipmentById(id: string): Promise<Shipment | undefined> {
+  const shipments = await getShipments();
+  return shipments.find(s => s.id === id);
+}
+
+export async function addShipmentAction(data: Omit<Shipment, 'id' | 'lastUpdated'>): Promise<Shipment> {
+  const validatedData = shipmentFormSchema.safeParse(data);
+  if (!validatedData.success) {
+    console.error("Doğrulama hataları:", validatedData.error.format());
+    throw new Error('Geçersiz malzeme kaydı verisi.');
+  }
+
   const shipments = await getShipments();
   const newShipment: Shipment = {
-    ...data,
+    ...validatedData.data,
     id: await generateId(),
+    lastUpdated: new Date().toISOString(),
   };
   shipments.push(newShipment);
   await writeData('shipments.json', shipments);
   revalidatePath('/shipments');
+  // Potentially revalidate inventory pages if shipments affect stock
   revalidatePath('/inventory/firearms');
   revalidatePath('/inventory/magazines');
   revalidatePath('/inventory/ammunition');
   revalidatePath('/dashboard');
   return newShipment;
 }
+
+export async function updateShipmentAction(shipment: Shipment): Promise<Shipment> {
+  const validatedData = shipmentFormSchema.safeParse(shipment);
+  if (!validatedData.success) {
+    console.error("Doğrulama hataları:", validatedData.error.format());
+    throw new Error('Güncelleme için geçersiz malzeme kaydı verisi.');
+  }
+
+  let shipments = await getShipments();
+  const index = shipments.findIndex(s => s.id === shipment.id);
+  if (index === -1) {
+    throw new Error('Güncellenecek malzeme kaydı bulunamadı.');
+  }
+  
+  shipments[index] = {
+    ...shipments[index],
+    ...validatedData.data,
+    lastUpdated: new Date().toISOString(),
+  };
+  await writeData('shipments.json', shipments);
+  revalidatePath('/shipments');
+  revalidatePath(`/shipments/${shipment.id}/edit`);
+  // Potentially revalidate inventory pages
+  revalidatePath('/dashboard');
+  return shipments[index];
+}
+
+export async function deleteShipmentAction(id: string): Promise<void> {
+  let shipments = await getShipments();
+  shipments = shipments.filter(s => s.id !== id);
+  await writeData('shipments.json', shipments);
+  revalidatePath('/shipments');
+  revalidatePath('/dashboard');
+}
+
 
 
 // Ammunition Usage (General Logs - may be deprecated or used differently with daily logs)
@@ -452,10 +501,7 @@ export async function getGroupedAmmunitionDailyUsageLogs(): Promise<GroupedDaily
 
   const groupedResult: GroupedDailyUsageLog[] = [];
 
-  // Ensure scenarios with logs are added, even if they are empty or logs were filtered
   for (const scenario of allScenarios) {
-    // Add scenario group if it has logs OR just to list all defined scenarios
-    // For now, only add if it has logs to match current behavior
     if (logsByScenario[scenario.id] && logsByScenario[scenario.id].length > 0) {
          groupedResult.push({
             scenarioId: scenario.id,
@@ -463,7 +509,6 @@ export async function getGroupedAmmunitionDailyUsageLogs(): Promise<GroupedDaily
             logs: logsByScenario[scenario.id].sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
         });
     } else {
-        // Optionally, include scenarios even if they have no logs yet
          groupedResult.push({
             scenarioId: scenario.id,
             scenarioName: scenario.name,
@@ -479,8 +524,6 @@ export async function getGroupedAmmunitionDailyUsageLogs(): Promise<GroupedDaily
     });
   }
   
-  // Ensure consistent sorting of groups if needed, e.g., by scenario name
-  // For now, order is based on allScenarios and then logsWithoutScenario appended
   return groupedResult;
 }
 
@@ -568,7 +611,7 @@ export async function getDepotById(id: string): Promise<Depot | undefined> {
   return depots.find(d => d.id === id);
 }
 
-export async function addDepotAction(data: Omit<Depot, 'lastUpdated'> & {id: string}) { // id comes from form
+export async function addDepotAction(data: Omit<Depot, 'lastUpdated'> & {id: string}) { 
   const validatedData = depotFormSchema.safeParse(data);
   if (!validatedData.success) {
     throw new Error('Geçersiz depo verisi: ' + JSON.stringify(validatedData.error.format()));
@@ -590,7 +633,6 @@ export async function addDepotAction(data: Omit<Depot, 'lastUpdated'> & {id: str
 }
 
 export async function updateDepotAction(depot: Depot) {
-  // ID is not part of the values to be updated from the form, it's used for lookup.
   const { id, lastUpdated, ...updateData } = depot;
   const validatedData = depotFormSchema.omit({id: true}).safeParse(updateData);
 
@@ -606,8 +648,8 @@ export async function updateDepotAction(depot: Depot) {
   }
   
   const updatedDepot: Depot = {
-    ...depots[index], // Preserve existing fields like ID
-    ...validatedData.data, // Apply validated changes
+    ...depots[index], 
+    ...validatedData.data, 
     lastUpdated: new Date().toISOString(),
   };
 
@@ -620,7 +662,6 @@ export async function updateDepotAction(depot: Depot) {
 
 export async function deleteDepotAction(id: string): Promise<void> {
   let depots = await getDepots();
-  // TODO: Check if any inventory item uses this depot before deleting.
   depots = depots.filter(d => d.id !== id);
   await writeData('depots.json', depots);
   revalidatePath('/admin/depots');
@@ -632,7 +673,6 @@ export async function addMaintenanceLogToItemAction(
   itemType: 'firearm' | 'magazine',
   logData: Omit<MaintenanceLog, 'id'>
 ) {
-  // Validate basic log data structure (you might want a specific schema for logData itself if it were more complex)
   if (!itemId || !itemType || !logData.date || !logData.description || !logData.statusChangeFrom || !logData.statusChangeTo) {
     throw new Error('Bakım kaydı için eksik veri.');
   }
@@ -648,7 +688,7 @@ export async function addMaintenanceLogToItemAction(
     if (itemIndex === -1) throw new Error('Bakım yapılacak silah bulunamadı.');
     
     firearms[itemIndex].maintenanceHistory = [...(firearms[itemIndex].maintenanceHistory || []), newLog];
-    firearms[itemIndex].status = newLog.statusChangeTo as FirearmStatus; // Cast is okay here if form logic ensures correct status type
+    firearms[itemIndex].status = newLog.statusChangeTo as FirearmStatus; 
     firearms[itemIndex].lastUpdated = new Date().toISOString();
     await writeData('firearms.json', firearms);
     revalidatePath(`/inventory/firearms/${itemId}`);
@@ -660,10 +700,10 @@ export async function addMaintenanceLogToItemAction(
     if (itemIndex === -1) throw new Error('Bakım yapılacak şarjör bulunamadı.');
 
     magazines[itemIndex].maintenanceHistory = [...(magazines[itemIndex].maintenanceHistory || []), newLog];
-    magazines[itemIndex].status = newLog.statusChangeTo as MagazineStatus; // Cast
+    magazines[itemIndex].status = newLog.statusChangeTo as MagazineStatus; 
     magazines[itemIndex].lastUpdated = new Date().toISOString();
     await writeData('magazines.json', magazines);
-    revalidatePath(`/inventory/magazines/${itemId}`); // Assuming a detail page exists or will exist
+    revalidatePath(`/inventory/magazines/${itemId}`); 
     revalidatePath('/inventory/magazines');
   } else {
     throw new Error('Geçersiz öğe türü.');
