@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "name": "fff",
+    "caliber": "9x19mm",
+    "quantity": 4788888,
+    "depotId": "depotB",
+    "status": "Mevcut",
+    "lotNumber": "778888",
+    "purchaseDate": "2025-05-27T00:00:00.000Z",
+    "id": "767d910d-abd1-49f8-a0c9-09982e841434",
+    "itemType": "ammunition",
+    "lastUpdated": "2025-05-28T12:38:36.890Z"
+  }
+]
