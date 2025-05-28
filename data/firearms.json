@@ -1,1 +1,17 @@
-[]
+[
+  {
+    "definitionId": "fd_1",
+    "serialNumber": "112345",
+    "depotId": "depotA",
+    "status": "Hizmette",
+    "purchaseDate": "2025-05-28T00:00:00.000Z",
+    "id": "f772813a-26de-4455-a558-c875c6acc884",
+    "itemType": "firearm",
+    "name": "Sar 223 P",
+    "model": "Sar 223 P",
+    "manufacturer": "Sarsılmaz",
+    "caliber": "5.56x45mm",
+    "lastUpdated": "2025-05-28T09:26:46.918Z",
+    "maintenanceHistory": []
+  }
+]

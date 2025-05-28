@@ -47,12 +47,22 @@ export function FirearmForm({ firearm, firearmDefinitions }: FirearmFormProps) {
   const router = useRouter();
   const [selectedDefinition, setSelectedDefinition] = useState<FirearmDefinition | null>(null);
 
-  const defaultValues: Partial<FirearmFormValues> = firearm ? {
+  const defaultValues: FirearmFormValues = firearm ? {
     ...firearm,
     purchaseDate: firearm.purchaseDate ? format(new Date(firearm.purchaseDate), 'yyyy-MM-dd') : undefined,
+    notes: firearm.notes || "", // Ensure notes is a string
   } : {
+    definitionId: "", // Initialize for new firearm Select
+    serialNumber: "", // Initialize to empty string
     status: 'Hizmette',
     depotId: DEPOT_LOCATIONS[0].id,
+    purchaseDate: undefined,
+    notes: "", // Initialize to empty string
+    // Auto-filled fields will be set later, initialize as empty strings
+    name: "",
+    model: "",
+    manufacturer: "",
+    caliber: "",
   };
   
   const form = useForm<FirearmFormValues>({
@@ -69,7 +79,7 @@ export function FirearmForm({ firearm, firearmDefinitions }: FirearmFormProps) {
         // Set auto-filled fields in the form for display, they are not part of the submission data directly
         form.setValue('name', definition.name);
         form.setValue('model', definition.model);
-        form.setValue('manufacturer', definition.manufacturer);
+        form.setValue('manufacturer', definition.manufacturer || "");
         form.setValue('caliber', definition.caliber);
       }
     }
@@ -84,7 +94,7 @@ export function FirearmForm({ firearm, firearmDefinitions }: FirearmFormProps) {
       // Auto-fill display fields
       form.setValue('name', definition.name);
       form.setValue('model', definition.model);
-      form.setValue('manufacturer', definition.manufacturer);
+      form.setValue('manufacturer', definition.manufacturer || "");
       form.setValue('caliber', definition.caliber);
       form.clearErrors(['name', 'model', 'manufacturer', 'caliber']);
     } else {
@@ -311,3 +321,5 @@ export function FirearmForm({ firearm, firearmDefinitions }: FirearmFormProps) {
     </Form>
   );
 }
+
+    
