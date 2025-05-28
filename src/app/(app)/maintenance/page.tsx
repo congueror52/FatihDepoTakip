@@ -15,7 +15,7 @@ export default async function MaintenancePage() {
           <Wrench className="h-8 w-8" />
           <h1 className="text-3xl font-bold tracking-tight" suppressHydrationWarning>Bakım Merkezi</h1>
         </div>
-        <Link href="/maintenance/new-log">
+        <Link href="/maintenance/new">
           <Button>
             <PlusCircle className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>Bakım Kaydı Ekle</span>
           </Button>
