@@ -9,8 +9,8 @@ import { firearmDefinitionFormSchema } from '@/app/(app)/admin/firearms-definiti
 import { ammunitionDailyUsageFormSchema } from '@/app/(app)/daily-ammo-usage/_components/usage-log-form-schema';
 import { usageScenarioFormSchema } from '@/app/(app)/admin/usage-scenarios/_components/usage-scenario-form-schema';
 import { suggestRebalancing as suggestRebalancingAI } from '@/ai/flows/suggest-rebalancing';
-import { magazineFormSchema } from '@/app/(app)/inventory/magazines/_components/magazine-form-schema'; // Added
-import { ammunitionFormSchema } from '@/app/(app)/inventory/ammunition/_components/ammunition-form-schema'; // Added
+import { magazineFormSchema } from '@/app/(app)/inventory/magazines/_components/magazine-form-schema'; 
+import { ammunitionFormSchema } from '@/app/(app)/inventory/ammunition/_components/ammunition-form-schema'; 
 
 // Firearm Definitions
 export async function getFirearmDefinitions(): Promise<FirearmDefinition[]> {
@@ -89,7 +89,7 @@ export async function getFirearmById(id: string): Promise<Firearm | undefined> {
 export async function addFirearmAction(data: Omit<Firearm, 'id' | 'lastUpdated' | 'itemType' | 'maintenanceHistory' | 'name' | 'model' | 'manufacturer' | 'caliber'> & { definitionId: string }) {
   const validatedData = firearmFormSchema.safeParse(data);
   if (!validatedData.success) {
-    throw new Error('Geçersiz ateşli silah verisi: ' + JSON.stringify(validatedData.error.format()));
+    throw new Error('Geçersiz silah verisi: ' + JSON.stringify(validatedData.error.format()));
   }
 
   const definition = await getFirearmDefinitionById(validatedData.data.definitionId);
@@ -128,13 +128,13 @@ export async function updateFirearmAction(firearm: Firearm) {
 
   if (!validatedData.success) {
     console.error("Doğrulama hataları:", validatedData.error.format());
-    throw new Error('Güncelleme için geçersiz ateşli silah verisi.');
+    throw new Error('Güncelleme için geçersiz silah verisi.');
   }
 
   let firearms = await getFirearms();
   const index = firearms.findIndex(f => f.id === firearm.id);
   if (index === -1) {
-    throw new Error('Güncellenecek ateşli silah bulunamadı.');
+    throw new Error('Güncellenecek silah bulunamadı.');
   }
   
   const currentFirearm = firearms[index];
@@ -549,9 +549,9 @@ export async function getCurrentDepotInventoriesForAI(): Promise<{ depotA: Depot
   const allAmmunition = await getAmmunition();
 
   const createSnapshot = (depotId: 'depotA' | 'depotB'): DepotInventorySnapshot => ({
-    firearms: allFirearms.filter(i => i.depotId === depotId).map(f => ({ id: f.id, name: f.name, model: f.model, caliber: f.caliber, status: f.status })),
-    magazines: allMagazines.filter(i => i.depotId === depotId).map(m => ({ id: m.id, name: m.name, caliber: m.caliber, capacity: m.capacity, status: m.status })),
-    ammunition: allAmmunition.filter(i => i.depotId === depotId).map(a => ({ id: a.id, name: a.name, caliber: a.caliber, quantity: a.quantity, status: a.status })),
+    firearms: allFirearms.filter(i => i.depotId === depotId).map(f => ({ id: f.id, name: f.name, model: f.model, caliber: f.caliber, status: f.status, itemType: 'firearm' })),
+    magazines: allMagazines.filter(i => i.depotId === depotId).map(m => ({ id: m.id, name: m.name, caliber: m.caliber, capacity: m.capacity, status: m.status, itemType: 'magazine' })),
+    ammunition: allAmmunition.filter(i => i.depotId === depotId).map(a => ({ id: a.id, name: a.name, caliber: a.caliber, quantity: a.quantity, status: a.status, itemType: 'ammunition' })),
   });
   
   return {
@@ -566,4 +566,3 @@ export async function getHistoricalUsageForAI(): Promise<HistoricalUsageSnapshot
     ammunitionUsage: usageLogs.map(log => ({ ammunitionId: log.ammunitionId, quantityUsed: log.quantityUsed, date: log.date, depotId: log.depotId})),
   };
 }
-

@@ -139,7 +139,7 @@ export function AiBalancingForm({
 
   const itemTypeTranslations: { [key: string]: string } = {
     ammunition: "Mühimmat",
-    firearm: "Ateşli Silah",
+    firearm: "Silah",
     magazine: "Şarjör",
   };
 
@@ -381,5 +381,3 @@ export function AiBalancingForm({
     </div>
   );
 }
-
-    

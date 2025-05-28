@@ -110,7 +110,7 @@ export function FirearmForm({ firearm, firearmDefinitions }: FirearmFormProps) {
           notes: data.notes,
         };
         await updateFirearmAction(firearmToUpdate);
-        toast({ variant: "success", title: "Başarılı", description: "Ateşli silah başarıyla güncellendi." });
+        toast({ variant: "success", title: "Başarılı", description: "Silah başarıyla güncellendi." });
       } else {
         // For new firearms, we pass only definitionId and instance-specific fields.
         // The action will copy name, model etc from definition.
@@ -126,12 +126,12 @@ export function FirearmForm({ firearm, firearmDefinitions }: FirearmFormProps) {
           purchaseDate: data.purchaseDate ? new Date(data.purchaseDate).toISOString() : undefined,
           notes: data.notes,
         });
-        toast({ variant: "success", title: "Başarılı", description: "Ateşli silah başarıyla eklendi." });
+        toast({ variant: "success", title: "Başarılı", description: "Silah başarıyla eklendi." });
       }
       router.push("/inventory/firearms");
       router.refresh();
     } catch (error) {
-      toast({ variant: "destructive", title: "Hata", description: `Ateşli silah ${firearm ? 'güncellenirken' : 'eklenirken'} hata oluştu.` });
+      toast({ variant: "destructive", title: "Hata", description: `Silah ${firearm ? 'güncellenirken' : 'eklenirken'} hata oluştu.` });
       console.error("Form gönderme hatası:", error);
     }
   }
@@ -294,7 +294,7 @@ export function FirearmForm({ firearm, firearmDefinitions }: FirearmFormProps) {
               <FormLabel><span suppressHydrationWarning>Notlar (İsteğe Bağlı)</span></FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Ateşli silahla ilgili ek notlar..."
+                  placeholder="Silahla ilgili ek notlar..."
                   className="resize-none"
                   {...field}
                 />
@@ -305,7 +305,7 @@ export function FirearmForm({ firearm, firearmDefinitions }: FirearmFormProps) {
         />
         <Button type="submit" disabled={form.formState.isSubmitting}>
           {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {form.formState.isSubmitting ? <span suppressHydrationWarning>Kaydediliyor...</span> : (firearm ? <span suppressHydrationWarning>Ateşli Silahı Güncelle</span> : <span suppressHydrationWarning>Ateşli Silah Ekle</span>)}
+          {form.formState.isSubmitting ? <span suppressHydrationWarning>Kaydediliyor...</span> : (firearm ? <span suppressHydrationWarning>Silahı Güncelle</span> : <span suppressHydrationWarning>Silah Ekle</span>)}
         </Button>
       </form>
     </Form>

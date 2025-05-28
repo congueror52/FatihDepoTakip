@@ -1,3 +1,4 @@
+
 import { getFirearmById } from "@/lib/actions/inventory.actions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -34,7 +35,7 @@ export default async function FirearmDetailPage({ params }: { params: { id: stri
     <div className="max-w-4xl mx-auto">
       <Link href="/inventory/firearms" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4">
         <ArrowLeft className="mr-2 h-4 w-4" />
-        <span suppressHydrationWarning>Ateşli Silah Listesine Geri Dön</span>
+        <span suppressHydrationWarning>Silah Listesine Geri Dön</span>
       </Link>
 
       <Card className="mb-6">
@@ -93,7 +94,7 @@ export default async function FirearmDetailPage({ params }: { params: { id: stri
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><History className="h-5 w-5" /> <span suppressHydrationWarning>Bakım Geçmişi</span></CardTitle>
-          <CardDescription suppressHydrationWarning>Bu ateşli silah için tüm bakım faaliyetlerinin kaydı.</CardDescription>
+          <CardDescription suppressHydrationWarning>Bu silah için tüm bakım faaliyetlerinin kaydı.</CardDescription>
         </CardHeader>
         <CardContent>
           {firearm.maintenanceHistory && firearm.maintenanceHistory.length > 0 ? (

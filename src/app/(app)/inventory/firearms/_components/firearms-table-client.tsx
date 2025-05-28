@@ -45,9 +45,9 @@ export function FirearmsTableClient({ firearms: initialFirearms }: FirearmsTable
     try {
       await deleteFirearmAction(selectedFirearmId);
       setFirearms(firearms.filter(f => f.id !== selectedFirearmId));
-      toast({ variant: "success", title: "Başarılı", description: "Ateşli silah başarıyla silindi." });
+      toast({ variant: "success", title: "Başarılı", description: "Silah başarıyla silindi." });
     } catch (error) {
-      toast({ variant: "destructive", title: "Hata", description: "Ateşli silah silinemedi." });
+      toast({ variant: "destructive", title: "Hata", description: "Silah silinemedi." });
     } finally {
       setIsDeleteDialogOpen(false);
       setSelectedFirearmId(null);
@@ -94,7 +94,7 @@ export function FirearmsTableClient({ firearms: initialFirearms }: FirearmsTable
         <TableBody>
           {firearms.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={7} className="text-center" suppressHydrationWarning>Ateşli silah bulunamadı.</TableCell>
+              <TableCell colSpan={7} className="text-center" suppressHydrationWarning>Silah bulunamadı.</TableCell>
             </TableRow>
           ) : (
             firearms.map((firearm) => (
@@ -146,7 +146,7 @@ export function FirearmsTableClient({ firearms: initialFirearms }: FirearmsTable
           <AlertDialogHeader>
             <AlertDialogTitle><span suppressHydrationWarning>Emin misiniz?</span></AlertDialogTitle>
             <AlertDialogDescription>
-              <span suppressHydrationWarning>Bu işlem geri alınamaz. Bu, ateşli silahı ve ilgili tüm verileri kalıcı olarak silecektir.</span>
+              <span suppressHydrationWarning>Bu işlem geri alınamaz. Bu, silahı ve ilgili tüm verileri kalıcı olarak silecektir.</span>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

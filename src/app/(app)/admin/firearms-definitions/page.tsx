@@ -26,7 +26,7 @@ export default async function FirearmDefinitionsPage() {
       <Card>
         <CardHeader>
           <CardTitle suppressHydrationWarning>Tüm Silah Tanımları</CardTitle>
-          <CardDescription suppressHydrationWarning>Sistemde kullanılacak ateşli silah türlerini yönetin.</CardDescription>
+          <CardDescription suppressHydrationWarning>Sistemde kullanılacak silah türlerini yönetin.</CardDescription>
         </CardHeader>
         <CardContent>
           <FirearmDefinitionsTableClient definitions={definitions} />

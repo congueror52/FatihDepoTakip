@@ -24,7 +24,7 @@ export interface BaseItem {
 // Master definition for a firearm type
 export interface FirearmDefinition {
   id: string;
-  name: string; // e.g., "Piyade Tüfeği", "Tabanca"
+  name: string; // e.g., "Piyade Tüfeği", "Tabanca" -> "Tüfek", "Tabanca"
   model: string; // e.g., MPT-76, SAR9
   manufacturer?: string; // e.g., Sarsılmaz
   caliber: string; // e.g., 7.62x51mm, 9x19mm
@@ -138,11 +138,35 @@ export interface UsageScenario {
 
 
 // For AI balancing input
-export interface DepotInventorySnapshot {
-  firearms: Array<Pick<Firearm, 'id' | 'name' | 'model' | 'caliber' | 'status'>>;
-  magazines: Array<Pick<Magazine, 'id' | 'name' | 'caliber' | 'capacity' | 'status'>>;
-  ammunition: Array<Pick<Ammunition, 'id' | 'name' | 'caliber' | 'quantity' | 'status'>>;
+export interface DepotInventoryItemBase {
+  id: string;
+  name: string;
+  caliber: string;
 }
+export interface DepotFirearmSnapshot extends DepotInventoryItemBase {
+  itemType: 'firearm';
+  model: string;
+  status: FirearmStatus;
+}
+export interface DepotMagazineSnapshot extends DepotInventoryItemBase {
+  itemType: 'magazine';
+  capacity: number;
+  status: MagazineStatus;
+}
+export interface DepotAmmunitionSnapshot extends DepotInventoryItemBase {
+  itemType: 'ammunition';
+  quantity: number;
+  status: AmmunitionStatus;
+}
+
+export type DepotInventoryItemSnapshot = DepotFirearmSnapshot | DepotMagazineSnapshot | DepotAmmunitionSnapshot;
+
+export interface DepotInventorySnapshot {
+  firearms: Array<Omit<DepotFirearmSnapshot, 'itemType'>>;
+  magazines: Array<Omit<DepotMagazineSnapshot, 'itemType'>>;
+  ammunition: Array<Omit<DepotAmmunitionSnapshot, 'itemType'>>;
+}
+
 export interface HistoricalUsageSnapshot {
   ammunitionUsage: Array<Pick<AmmunitionUsageLog, 'ammunitionId' | 'quantityUsed' | 'date' | 'depotId'>>;
   // Could also include firearm/magazine repair frequency if relevant
@@ -163,4 +187,3 @@ export type AmmunitionUsageDb = AmmunitionUsageLog[];
 export type FirearmDefinitionsDb = FirearmDefinition[];
 export type AmmunitionDailyUsageDb = AmmunitionDailyUsageLog[];
 export type UsageScenariosDb = UsageScenario[];
-

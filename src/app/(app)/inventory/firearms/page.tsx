@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlusCircle, Target } from "lucide-react";
@@ -13,19 +14,19 @@ export default async function FirearmsPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Target className="h-8 w-8" />
-          <h1 className="text-3xl font-bold tracking-tight" suppressHydrationWarning>Ateşli Silah Envanteri</h1>
+          <h1 className="text-3xl font-bold tracking-tight" suppressHydrationWarning>Silah Envanteri</h1>
         </div>
         <Link href="/inventory/firearms/new">
           <Button>
-            <PlusCircle className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>Ateşli Silah Ekle</span>
+            <PlusCircle className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>Silah Ekle</span>
           </Button>
         </Link>
       </div>
       
       <Card>
         <CardHeader>
-          <CardTitle suppressHydrationWarning>Tüm Ateşli Silahlar</CardTitle>
-          <CardDescription suppressHydrationWarning>Envanterdeki tüm ateşli silahları yönetin ve takip edin.</CardDescription>
+          <CardTitle suppressHydrationWarning>Tüm Silahlar</CardTitle>
+          <CardDescription suppressHydrationWarning>Envanterdeki tüm silahları yönetin ve takip edin.</CardDescription>
         </CardHeader>
         <CardContent>
           <FirearmsTableClient firearms={firearms} />

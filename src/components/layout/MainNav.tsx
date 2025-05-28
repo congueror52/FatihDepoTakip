@@ -23,7 +23,6 @@ import {
   ChevronDown,
   ChevronUp,
   ClipboardList,
-  // Calculator, // No longer needed here
   FileCheck2 
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -31,7 +30,7 @@ import { cn } from '@/lib/utils';
 
 const menuItems = [
   { href: '/dashboard', label: 'Gösterge Paneli', icon: Gauge },
-  { href: '/inventory/firearms', label: 'Ateşli Silahlar', icon: Target },
+  { href: '/inventory/firearms', label: 'Silahlar', icon: Target },
   { href: '/inventory/magazines', label: 'Şarjörler', icon: ListChecks },
   { href: '/inventory/ammunition', label: 'Mühimmat', icon: Box },
   { href: '/daily-ammo-usage', label: 'Günlük Fişek Kullanımı', icon: ClipboardList },
@@ -46,7 +45,6 @@ const menuItems = [
     children: [
       { href: '/admin/firearms-definitions', label: 'Silah Tanımları', icon: Target },
       { href: '/admin/usage-scenarios', label: 'Kullanım Senaryoları', icon: FileCheck2 },
-      // { href: '/admin/consumption-rates', label: 'Fişek Sarfiyat Oranları', icon: Calculator }, // Removed
     ]
   }
 ];
