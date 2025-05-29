@@ -12,9 +12,9 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2 } from "lucide-react"; // Removed MoreHorizontal, DropdownMenu components
+import { Edit, Trash2 } from "lucide-react"; 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react"; // Added useEffect
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,6 +32,17 @@ interface AmmunitionTableClientProps {
   ammunition: Ammunition[];
   depots: Depot[]; 
 }
+
+const FormattedQuantity = ({ value }: { value: number }) => {
+  const [displayValue, setDisplayValue] = useState<string>(value.toString()); // Initial render: raw number as string
+
+  useEffect(() => {
+    // Runs only on client, after hydration, to apply 'tr-TR' formatting
+    setDisplayValue(value.toLocaleString('tr-TR'));
+  }, [value]);
+
+  return <>{displayValue}</>;
+};
 
 export function AmmunitionTableClient({ ammunition: initialAmmunition, depots }: AmmunitionTableClientProps) { 
   const [ammunitionList, setAmmunitionList] = useState<Ammunition[]>(initialAmmunition);
@@ -97,7 +108,9 @@ export function AmmunitionTableClient({ ammunition: initialAmmunition, depots }:
               <TableRow key={ammo.id}>
                 <TableCell className="font-medium">{ammo.name}</TableCell>
                 <TableCell>{ammo.caliber}</TableCell>
-                <TableCell>{ammo.quantity.toLocaleString()}</TableCell>
+                <TableCell>
+                  <FormattedQuantity value={ammo.quantity} />
+                </TableCell>
                 <TableCell>{getDepotName(ammo.depotId)}</TableCell>
                 <TableCell>
                   <Badge variant="secondary" className={`${getStatusColor(ammo.status)} text-primary-foreground`}>
