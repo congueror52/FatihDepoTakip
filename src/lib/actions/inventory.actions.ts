@@ -16,7 +16,7 @@ import { depotFormSchema } from '@/app/(app)/admin/depots/_components/depot-form
 import { maintenanceLogFormSchema } from '@/app/(app)/maintenance/_components/maintenance-log-form-schema';
 import { shipmentFormSchema } from '@/app/(app)/shipments/_components/shipment-form-schema';
 import { shipmentTypeDefinitionFormSchema } from '@/app/(app)/admin/shipment-types/_components/shipment-type-definition-form-schema';
-import { alertDefinitionFormSchema } from '@/app/(app)/admin/alert-definitions/_components/alert-definition-form-schema'; // Added
+import { alertDefinitionFormSchema } from '@/app/(app)/admin/alert-definitions/_components/alert-definition-form-schema'; 
 
 
 // Firearm Definitions
@@ -1207,6 +1207,8 @@ export async function addAlertDefinitionAction(data: Omit<AlertDefinition, 'id' 
     
     revalidatePath('/admin/alert-definitions');
     revalidatePath('/admin/alert-definitions', 'layout');
+    revalidatePath('/alerts'); // Revalidate alerts page as well
+    revalidatePath('/dashboard'); // Revalidate dashboard
     return newDefinition;
   } catch (error: any) {
     if (error.message.startsWith('Geçersiz uyarı tanımı verisi')) throw error;
@@ -1245,6 +1247,8 @@ export async function updateAlertDefinitionAction(definition: AlertDefinition) {
     revalidatePath('/admin/alert-definitions');
     revalidatePath(`/admin/alert-definitions/${definition.id}/edit`);
     revalidatePath('/admin/alert-definitions', 'layout');
+    revalidatePath('/alerts'); // Revalidate alerts page as well
+    revalidatePath('/dashboard'); // Revalidate dashboard
     return updatedDefinition;
   } catch (error: any) {
      if (error.message.startsWith('Güncelleme için geçersiz uyarı tanımı verisi') || error.message.startsWith('Güncellenecek uyarı tanımı bulunamadı')) throw error;
@@ -1262,11 +1266,23 @@ export async function deleteAlertDefinitionAction(id: string): Promise<void> {
     
     revalidatePath('/admin/alert-definitions');
     revalidatePath('/admin/alert-definitions', 'layout');
+    revalidatePath('/alerts'); // Revalidate alerts page as well
+    revalidatePath('/dashboard'); // Revalidate dashboard
   } catch (error: any) {
     await logAction({ actionType: "DELETE", entityType: "AlertDefinition", entityId: id, status: "FAILURE", errorMessage: error.message });
     throw error;
   }
 }
 
-
+// Placeholder for actual triggered alerts
+// In a real system, this would involve evaluating definitions against current inventory
+// and storing actual triggered alerts.
+export async function getTriggeredAlerts(): Promise<AlertDefinition[]> {
+  noStore();
+  // For now, this will simulate triggered alerts based on active definitions.
+  // This is NOT a full alert triggering system.
+  // const definitions = await getAlertDefinitions();
+  // return definitions.filter(def => def.isActive);
+  return []; // Returning empty array to simulate no triggered alerts
+}
     

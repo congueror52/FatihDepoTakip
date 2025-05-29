@@ -3,42 +3,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Briefcase, Boxes, DollarSign, Users, ShieldAlert, BarChart3, Activity, Target, ListChecks, BellRing } from 'lucide-react'; // Added BellRing
 import Image from 'next/image';
 import Link from 'next/link';
-import { getFirearms, getMagazines, getAmmunition, getAlertDefinitions } from '@/lib/actions/inventory.actions';
-import type { AlertDefinition } from '@/types/inventory'; // Added AlertDefinition
-import { Badge } from '@/components/ui/badge'; // Added Badge for severity
-
-// Helper function to simulate active alerts based on definitions (for prototype)
-// In a real system, this would come from a dedicated active alerts data source.
-const getSimulatedActiveAlerts = (definitions: AlertDefinition[]): AlertDefinition[] => {
-  // For now, let's assume all active definitions are "triggered" alerts
-  // You might want to add more complex logic here in a real app
-  return definitions.filter(def => def.isActive).map(def => ({
-    ...def,
-    // Simulate some dynamic parts of the message if needed for display
-    // This is highly dependent on how your messageTemplate is structured
-    // and what data would be available when an alert is actually triggered.
-    // For now, we'll just use the template as is or a generic message.
-    // message: def.messageTemplate
-    //   .replace('{itemName}', def.name) // Basic replacement
-    //   .replace('{depotName}', 'N/A')
-    //   .replace('{currentValue}', 'N/A')
-    //   .replace('{threshold}', String(def.thresholdValue || 'N/A'))
-    //   .replace('{status}', String(def.statusFilter || 'N/A'))
-    //   .replace('{caliber}', String(def.caliberFilter || 'N/A'))
-    //   .replace('{serialNumber}', 'N/A'),
-    // date: new Date().toISOString() // Simulate a date
-  })).sort((a,b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime());
-};
+import { getFirearms, getMagazines, getAmmunition, getTriggeredAlerts } from '@/lib/actions/inventory.actions'; // Changed to getTriggeredAlerts
+import type { AlertDefinition } from '@/types/inventory'; 
+import { Badge } from '@/components/ui/badge'; 
 
 
 export default async function DashboardPage() {
   const firearms = await getFirearms();
   const magazines = await getMagazines();
   const ammunition = await getAmmunition();
-  const alertDefinitions = await getAlertDefinitions();
+  const triggeredAlerts = await getTriggeredAlerts(); // Fetch triggered alerts
 
-  const simulatedActiveAlerts = getSimulatedActiveAlerts(alertDefinitions);
-  const latestAlerts = simulatedActiveAlerts.slice(0, 5);
+  const latestAlerts = triggeredAlerts.slice(0, 5); // Show latest 5 triggered alerts
 
 
   const summaryData = {
@@ -50,15 +26,6 @@ export default async function DashboardPage() {
       { id: 2, description: "SN:XG5523 seri numaralı silah bakım için bildirildi", time: "5 saat önce" },
       { id: 3, description: "9mm HP fişekler için düşük stok uyarısı", time: "1 gün önce" },
     ]
-  };
-  
-  const getSeverityBadgeVariant = (severity: AlertDefinition['severity']) => {
-    switch (severity) {
-      case 'Yüksek': return 'destructive';
-      case 'Orta': return 'default';
-      case 'Düşük': return 'secondary';
-      default: return 'outline';
-    }
   };
   
   const getSeverityBadgeClasses = (severity: AlertDefinition['severity']) => {
@@ -116,12 +83,12 @@ export default async function DashboardPage() {
                 <span suppressHydrationWarning>Aktif Uyarılar</span>
               </CardTitle>
             </Link>
-            <ShieldAlert className={`h-4 w-4 ${simulatedActiveAlerts.length > 0 ? 'text-destructive' : 'text-muted-foreground'}`} />
+            <ShieldAlert className={`h-4 w-4 ${triggeredAlerts.length > 0 ? 'text-destructive' : 'text-muted-foreground'}`} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{simulatedActiveAlerts.length}</div>
+            <div className="text-2xl font-bold">{triggeredAlerts.length}</div>
             <p className="text-xs text-muted-foreground" suppressHydrationWarning>
-              {simulatedActiveAlerts.length === 0 ? "aktif uyarı bulunmuyor" : (simulatedActiveAlerts.length === 1 ? "aktif uyarı" : "aktif uyarılar")}
+              {triggeredAlerts.length === 0 ? "aktif uyarı bulunmuyor" : (triggeredAlerts.length === 1 ? "aktif uyarı" : "aktif uyarılar")}
             </p>
           </CardContent>
         </Card>
@@ -172,15 +139,16 @@ export default async function DashboardPage() {
                     <BellRing className="h-5 w-5 text-destructive" />
                     <span suppressHydrationWarning>Son Uyarılar</span>
                 </CardTitle>
-                <CardDescription suppressHydrationWarning>Sistemdeki en son 5 önemli uyarı.</CardDescription>
+                <CardDescription suppressHydrationWarning>Sistemdeki en son {latestAlerts.length} önemli uyarı.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
                 {latestAlerts.map(alert => (
                     <div key={alert.id} className="flex items-start justify-between p-3 border rounded-md shadow-sm">
                         <div>
                             <p className="font-medium text-sm" suppressHydrationWarning>{alert.name}</p>
+                             {/* In a real triggered alert system, this message would be pre-rendered from template */}
                             <p className="text-xs text-muted-foreground" suppressHydrationWarning>
-                                {alert.description || "Detay yok"} - <span suppressHydrationWarning>Son Güncelleme: {new Date(alert.lastUpdated).toLocaleDateString('tr-TR')}</span>
+                                {alert.messageTemplate.substring(0, 100) + '...'} - <span suppressHydrationWarning>Tetiklenme: {new Date(alert.lastUpdated).toLocaleDateString('tr-TR')}</span>
                             </p>
                         </div>
                         <Badge className={getSeverityBadgeClasses(alert.severity)}>{alert.severity}</Badge>
@@ -192,6 +160,23 @@ export default async function DashboardPage() {
             </CardContent>
         </Card>
       )}
+       {(latestAlerts.length === 0 && triggeredAlerts.length > 0) && ( // Case where there are alerts, but less than 5 (or 0 for "Son Uyarılar")
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <BellRing className="h-5 w-5 text-muted-foreground" />
+                        <span suppressHydrationWarning>Son Uyarılar</span>
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-muted-foreground"><span suppressHydrationWarning>Dikkate değer son uyarı bulunmamaktadır.</span></p>
+                     <Link href="/alerts" className="text-sm text-primary hover:underline float-right mt-2">
+                        <span suppressHydrationWarning>Tüm Uyarıları Gör</span>
+                    </Link>
+                </CardContent>
+            </Card>
+        )}
     </div>
   );
 }
+
