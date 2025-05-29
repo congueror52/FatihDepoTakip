@@ -178,7 +178,7 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
                     ))}
                   </SelectContent>
                 </Select>
-                {!watchedEntityType && <FormDescription className="text-xs">Lütfen önce varlık türü seçin.</FormDescription>}
+                {!watchedEntityType && <FormDescription className="text-xs"><span suppressHydrationWarning>Lütfen önce varlık türü seçin.</span></FormDescription>}
                 <FormMessage />
               </FormItem>
             )}
@@ -201,7 +201,7 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
                         field.onChange(value);
                       }
                     }} 
-                    value={field.value || ALL_CALIBERS_OPTION_VALUE} // Ensure value is set for Select
+                    value={field.value || ALL_CALIBERS_OPTION_VALUE} 
                   >
                     <FormControl><SelectTrigger><SelectValue placeholder="Tüm kalibreler" /></SelectTrigger></FormControl>
                     <SelectContent>
@@ -288,7 +288,7 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
                 />
               </FormControl>
               <FormDescription className="text-xs space-y-1">
-                Uyarı mesajınızda aşağıdaki yer tutucuları kullanabilirsiniz. Bunlar, uyarı oluştuğunda gerçek değerlerle değiştirilecektir:
+                <span suppressHydrationWarning>Uyarı mesajınızda aşağıdaki yer tutucuları kullanabilirsiniz. Bunlar, uyarı oluştuğunda gerçek değerlerle değiştirilecektir:</span>
                 <ul className="list-disc list-inside text-muted-foreground">
                     <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{itemName}'}</code>: Öğenin adı (örn. "9mm Fişek", "Sar 223 P").</li>
                     <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{depotName}'}</code>: Öğenin bulunduğu depo.</li>
@@ -300,7 +300,7 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
                 </ul>
                 <p className="font-semibold" suppressHydrationWarning>Örnek Şablon Kullanımı:</p>
                 <code className="block text-xs bg-muted p-1 rounded-sm w-full" suppressHydrationWarning>
-                  Dikkat! {depotName} deposundaki "{itemName}" ({'{caliber}'}) stok miktarı ({'{currentValue}'} adet), belirlenen eşik ({'{threshold}'} adet) altına düştü.
+                  Dikkat! {"{depotName}"} deposundaki {"{itemName}"} ({'{caliber}'}) stok miktarı ({'{currentValue}'} adet), belirlenen eşik ({'{threshold}'} adet) altına düştü.
                 </code>
               </FormDescription>
               <FormMessage />
@@ -330,3 +330,5 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
     </Form>
   );
 }
+
+    
