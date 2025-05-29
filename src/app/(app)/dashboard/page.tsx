@@ -1,9 +1,9 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Briefcase, Boxes, DollarSign, Users, ShieldAlert, BarChart3, Activity, Target, ListChecks, BellRing } from 'lucide-react'; // Added BellRing
+import { Briefcase, Boxes, DollarSign, Users, ShieldAlert, BarChart3, Activity, Target, ListChecks, BellRing } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getFirearms, getMagazines, getAmmunition, getTriggeredAlerts } from '@/lib/actions/inventory.actions'; // Changed to getTriggeredAlerts
+import { getFirearms, getMagazines, getAmmunition, getTriggeredAlerts } from '@/lib/actions/inventory.actions';
 import type { AlertDefinition } from '@/types/inventory'; 
 import { Badge } from '@/components/ui/badge'; 
 
@@ -12,9 +12,10 @@ export default async function DashboardPage() {
   const firearms = await getFirearms();
   const magazines = await getMagazines();
   const ammunition = await getAmmunition();
-  const triggeredAlerts = await getTriggeredAlerts(); // Fetch triggered alerts
+  const triggeredAlerts = await getTriggeredAlerts(); 
 
-  const latestAlerts = triggeredAlerts.slice(0, 5); // Show latest 5 triggered alerts
+  // For "Diğer Malzemeler" (Other Items) - Placeholder count for now
+  const totalOtherItems = 0; 
 
 
   const summaryData = {
@@ -22,7 +23,7 @@ export default async function DashboardPage() {
     totalMagazines: magazines.length,
     totalAmmunitionRounds: ammunition.reduce((sum, ammo) => sum + ammo.quantity, 0),
     recentActivity: [
-      { id: 1, description: "5.56mm mühimmat sevkiyatı alındı", time: "2 saat önce" },
+      { id: 1, description: "5.56mm mühimmat malzeme kaydı girildi", time: "2 saat önce" },
       { id: 2, description: "SN:XG5523 seri numaralı silah bakım için bildirildi", time: "5 saat önce" },
       { id: 3, description: "9mm HP fişekler için düşük stok uyarısı", time: "1 gün önce" },
     ]
@@ -76,6 +77,19 @@ export default async function DashboardPage() {
             <div className="text-2xl font-bold">{summaryData.totalAmmunitionRounds.toLocaleString()}</div>
           </CardContent>
         </Card>
+         <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            {/* Link to a future 'other items' page if it exists, otherwise just title */}
+            <CardTitle className="text-sm font-medium" suppressHydrationWarning>Toplam Diğer Malzemeler</CardTitle>
+            <Briefcase className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{totalOtherItems}</div>
+          </CardContent>
+        </Card>
+      </div>
+      
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <Link href="/alerts" className="hover:underline">
@@ -92,7 +106,9 @@ export default async function DashboardPage() {
             </p>
           </CardContent>
         </Card>
+        {/* Placeholder for more summary cards if needed */}
       </div>
+
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <Card className="lg:col-span-4">
@@ -132,21 +148,20 @@ export default async function DashboardPage() {
         </Card>
       </div>
       
-      {latestAlerts.length > 0 && (
+      {triggeredAlerts.length > 0 && (
         <Card>
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     <BellRing className="h-5 w-5 text-destructive" />
                     <span suppressHydrationWarning>Son Uyarılar</span>
                 </CardTitle>
-                <CardDescription suppressHydrationWarning>Sistemdeki en son {latestAlerts.length} önemli uyarı.</CardDescription>
+                <CardDescription suppressHydrationWarning>Sistemdeki en son {Math.min(triggeredAlerts.length, 5)} önemli uyarı.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-                {latestAlerts.map(alert => (
+                {triggeredAlerts.slice(0, 5).map(alert => (
                     <div key={alert.id} className="flex items-start justify-between p-3 border rounded-md shadow-sm">
                         <div>
                             <p className="font-medium text-sm" suppressHydrationWarning>{alert.name}</p>
-                             {/* In a real triggered alert system, this message would be pre-rendered from template */}
                             <p className="text-xs text-muted-foreground" suppressHydrationWarning>
                                 {alert.messageTemplate.substring(0, 100) + '...'} - <span suppressHydrationWarning>Tetiklenme: {new Date(alert.lastUpdated).toLocaleDateString('tr-TR')}</span>
                             </p>
@@ -160,7 +175,7 @@ export default async function DashboardPage() {
             </CardContent>
         </Card>
       )}
-       {(latestAlerts.length === 0 && triggeredAlerts.length > 0) && ( // Case where there are alerts, but less than 5 (or 0 for "Son Uyarılar")
+       {(triggeredAlerts.length === 0) && ( 
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -171,7 +186,7 @@ export default async function DashboardPage() {
                 <CardContent>
                     <p className="text-muted-foreground"><span suppressHydrationWarning>Dikkate değer son uyarı bulunmamaktadır.</span></p>
                      <Link href="/alerts" className="text-sm text-primary hover:underline float-right mt-2">
-                        <span suppressHydrationWarning>Tüm Uyarıları Gör</span>
+                        <span suppressHydrationWarning>Tanımlı Uyarılara Git</span>
                     </Link>
                 </CardContent>
             </Card>
