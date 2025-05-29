@@ -21,13 +21,16 @@ export interface BaseItem {
   manufacturer?: string; 
 }
 
+export const SUPPORTED_CALIBERS = ["9x19mm", "5.56x45mm", "7.62x39mm", "7.62x51mm"] as const;
+export type SupportedCaliber = typeof SUPPORTED_CALIBERS[number];
+
 // Master definition for a firearm type
 export interface FirearmDefinition {
   id: string;
   name: string; 
   model: string; 
   manufacturer?: string; 
-  caliber: string; 
+  caliber: SupportedCaliber; // Updated from string
   description?: string;
   lastUpdated: string;
 }
@@ -37,14 +40,14 @@ export interface Firearm extends BaseItem {
   definitionId: string; // Links to FirearmDefinition
   serialNumber: string;
   model: string; // Copied from definition
-  caliber: string; // Copied from definition
+  caliber: SupportedCaliber; // Copied from definition
   status: FirearmStatus;
   maintenanceHistory?: MaintenanceLog[];
 }
 
 export interface Magazine extends BaseItem {
   itemType: 'magazine';
-  caliber: string;
+  caliber: SupportedCaliber;
   capacity: number;
   status: MagazineStatus;
   compatibleFirearmDefinitionId?: string; 
@@ -54,7 +57,7 @@ export interface Magazine extends BaseItem {
 
 export interface Ammunition extends BaseItem {
   itemType: 'ammunition';
-  caliber: string;
+  caliber: SupportedCaliber;
   quantity: number;
   bulletType?: string; 
   lotNumber?: string;
@@ -70,7 +73,7 @@ export interface ShipmentItem {
   itemType: InventoryItemType;
   quantity: number;
   // Optional details, relevant based on itemType
-  caliber?: string;
+  caliber?: SupportedCaliber;
   model?: string; // For firearms
   serialNumber?: string; // For individual firearms, if applicable in shipment
   capacity?: number; // For magazines
@@ -134,8 +137,6 @@ export interface AmmunitionDailyUsageLog {
   notes?: string;
 }
 
-export const SUPPORTED_CALIBERS = ["9x19mm", "5.56x45mm", "7.62x39mm", "7.62x51mm"] as const;
-export type SupportedCaliber = typeof SUPPORTED_CALIBERS[number];
 
 export const INVENTORY_ITEM_TYPES: {value: InventoryItemType, label: string}[] = [
     {value: 'firearm', label: 'Silah'},
@@ -166,46 +167,6 @@ export interface Depot {
   lastUpdated: string; 
 }
 
-
-// For AI balancing input - Can be removed if AI balancing is not used
-export interface DepotInventoryItemBase {
-  id: string;
-  name: string;
-  caliber: string;
-}
-export interface DepotFirearmSnapshot extends DepotInventoryItemBase {
-  itemType: 'firearm';
-  model: string;
-  status: FirearmStatus;
-}
-export interface DepotMagazineSnapshot extends DepotInventoryItemBase {
-  itemType: 'magazine';
-  capacity: number;
-  status: MagazineStatus;
-}
-export interface DepotAmmunitionSnapshot extends DepotInventoryItemBase {
-  itemType: 'ammunition';
-  quantity: number;
-  status: AmmunitionStatus;
-}
-
-export type DepotInventoryItemSnapshot = DepotFirearmSnapshot | DepotMagazineSnapshot | DepotAmmunitionSnapshot;
-
-export interface DepotInventorySnapshot {
-  firearms: Array<Omit<DepotFirearmSnapshot, 'itemType'>>;
-  magazines: Array<Omit<DepotMagazineSnapshot, 'itemType'>>;
-  ammunition: Array<Omit<DepotAmmunitionSnapshot, 'itemType'>>;
-}
-
-export interface HistoricalUsageSnapshot {
-  ammunitionUsage: Array<Pick<AmmunitionUsageLog, 'ammunitionId' | 'quantityUsed' | 'date' | 'depotId'>>;
-}
-export interface UpcomingRequirementsSnapshot {
-  description: string; 
-  requiredItems: Array<{ nameOrCaliber: string; quantity: number; itemType: InventoryItem['itemType'] }>;
-  depotId?: DepotId; 
-  dateRange: { start: string; end: string }; 
-}
 
 // Alert Definitions
 export type AlertEntityType = 'ammunition' | 'firearm' | 'magazine';
@@ -258,4 +219,4 @@ export type AmmunitionDailyUsageDb = AmmunitionDailyUsageLog[];
 export type UsageScenariosDb = UsageScenario[];
 export type DepotsDb = Depot[];
 export type ShipmentTypeDefinitionsDb = ShipmentTypeDefinition[];
-export type AlertDefinitionsDb = AlertDefinition[]; // New DB type
+export type AlertDefinitionsDb = AlertDefinition[];
