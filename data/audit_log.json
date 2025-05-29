@@ -4936,5 +4936,103 @@
       "partsUsed": ""
     },
     "errorMessage": "Bakım kaydı için geçersiz veri: {\"_errors\":[],\"statusChangeFrom\":{\"_errors\":[\"Geçerli bir önceki durum seçin.\",\"Invalid literal value, expected \\\"\\\"\"]},\"statusChangeTo\":{\"_errors\":[\"Geçerli bir yeni durum seçin.\"]}}"
+  },
+  {
+    "id": "64cde3d8-1d0b-43f1-a2fd-3ce104188a44",
+    "timestamp": "2025-05-29T20:06:25.145Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "UPDATE",
+    "entityType": "Firearm",
+    "entityId": "f772813a-26de-4455-a558-c875c6acc884",
+    "status": "SUCCESS",
+    "details": {
+      "definitionId": "fd_1",
+      "serialNumber": "112345",
+      "depotId": "depotA",
+      "status": "Destekte",
+      "purchaseDate": "2025-05-28T00:00:00.000Z",
+      "id": "f772813a-26de-4455-a558-c875c6acc884",
+      "itemType": "firearm",
+      "name": "Sar 223 P",
+      "model": "Sar 223 P",
+      "manufacturer": "Sarsılmaz",
+      "caliber": "5.56x45mm",
+      "lastUpdated": "2025-05-29T20:06:25.114Z",
+      "maintenanceHistory": [
+        {
+          "date": "2025-05-28T00:00:00.000Z",
+          "description": "arıza raporu yazıldı",
+          "statusChangeFrom": "Hizmette",
+          "statusChangeTo": "Arızalı",
+          "technician": "",
+          "partsUsed": "",
+          "cost": 0,
+          "id": "82449aa9-2414-4924-ab9c-6f07b57fbf51"
+        }
+      ],
+      "notes": ""
+    }
+  },
+  {
+    "id": "25eebbd3-7b34-420e-a1b4-d087b6b2506d",
+    "timestamp": "2025-05-29T20:06:43.137Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "UPDATE",
+    "entityType": "Firearm",
+    "entityId": "e03ae53d-3a78-48dc-991a-d178d85f48ea",
+    "status": "SUCCESS",
+    "details": {
+      "definitionId": "fd_1",
+      "serialNumber": "12122323",
+      "depotId": "depotA",
+      "status": "Rapor Bekliyor",
+      "purchaseDate": "2025-05-27T00:00:00.000Z",
+      "notes": "dgdf",
+      "id": "e03ae53d-3a78-48dc-991a-d178d85f48ea",
+      "itemType": "firearm",
+      "name": "Sar 223 P",
+      "model": "Sar 223 P",
+      "manufacturer": "Sarsılmaz",
+      "caliber": "5.56x45mm",
+      "lastUpdated": "2025-05-29T20:06:43.095Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "ad05a77f-781d-43c3-8a53-f8bd31252d67",
+    "timestamp": "2025-05-29T20:07:10.965Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "UPDATE",
+    "entityType": "Firearm",
+    "entityId": "307dfd2c-47dc-4e84-a3af-f7574a2f79ff",
+    "status": "SUCCESS",
+    "details": {
+      "definitionId": "fd_3",
+      "serialNumber": "4477888",
+      "depotId": "depotA",
+      "status": "Poligonda",
+      "purchaseDate": "2025-05-26T00:00:00.000Z",
+      "notes": "",
+      "id": "307dfd2c-47dc-4e84-a3af-f7574a2f79ff",
+      "itemType": "firearm",
+      "name": "AK-47 ",
+      "model": "AK47",
+      "manufacturer": "BELLİ DEĞİL",
+      "caliber": "7.62X39",
+      "lastUpdated": "2025-05-29T20:07:10.927Z",
+      "maintenanceHistory": []
+    }
   }
 ]

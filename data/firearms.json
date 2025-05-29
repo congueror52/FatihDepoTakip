@@ -3,7 +3,7 @@
     "definitionId": "fd_1",
     "serialNumber": "112345",
     "depotId": "depotA",
-    "status": "Arızalı",
+    "status": "Destekte",
     "purchaseDate": "2025-05-28T00:00:00.000Z",
     "id": "f772813a-26de-4455-a558-c875c6acc884",
     "itemType": "firearm",
@@ -11,7 +11,7 @@
     "model": "Sar 223 P",
     "manufacturer": "Sarsılmaz",
     "caliber": "5.56x45mm",
-    "lastUpdated": "2025-05-28T10:45:27.515Z",
+    "lastUpdated": "2025-05-29T20:06:25.114Z",
     "maintenanceHistory": [
       {
         "date": "2025-05-28T00:00:00.000Z",
@@ -23,13 +23,14 @@
         "cost": 0,
         "id": "82449aa9-2414-4924-ab9c-6f07b57fbf51"
       }
-    ]
+    ],
+    "notes": ""
   },
   {
     "definitionId": "fd_1",
     "serialNumber": "12122323",
     "depotId": "depotA",
-    "status": "Arızalı",
+    "status": "Rapor Bekliyor",
     "purchaseDate": "2025-05-27T00:00:00.000Z",
     "notes": "dgdf",
     "id": "e03ae53d-3a78-48dc-991a-d178d85f48ea",
@@ -38,14 +39,14 @@
     "model": "Sar 223 P",
     "manufacturer": "Sarsılmaz",
     "caliber": "5.56x45mm",
-    "lastUpdated": "2025-05-28T10:13:33.661Z",
+    "lastUpdated": "2025-05-29T20:06:43.095Z",
     "maintenanceHistory": []
   },
   {
     "definitionId": "fd_3",
     "serialNumber": "4477888",
     "depotId": "depotA",
-    "status": "Hizmette",
+    "status": "Poligonda",
     "purchaseDate": "2025-05-26T00:00:00.000Z",
     "notes": "",
     "id": "307dfd2c-47dc-4e84-a3af-f7574a2f79ff",
@@ -54,7 +55,7 @@
     "model": "AK47",
     "manufacturer": "BELLİ DEĞİL",
     "caliber": "7.62X39",
-    "lastUpdated": "2025-05-28T11:19:56.934Z",
+    "lastUpdated": "2025-05-29T20:07:10.927Z",
     "maintenanceHistory": []
   },
   {
