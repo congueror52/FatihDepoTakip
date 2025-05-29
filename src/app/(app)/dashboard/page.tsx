@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Briefcase, DollarSign, Users, ShieldAlert, BarChart3, Activity, Target, ListChecks, BellRing, ListTree } from 'lucide-react';
+import { Briefcase, Users, ShieldAlert, BarChart3, Activity, Target, ListChecks, BellRing, ListTree, LineChart as LineChartIcon } from 'lucide-react';
 import Link from 'next/link';
 import { 
   getFirearms, 
@@ -8,22 +8,25 @@ import {
   getAmmunition, 
   getTriggeredAlerts, 
   getRecentAuditLogs,
-  getAmmunitionDailyUsageLogs // Yeni eklenen fonksiyon
+  getAmmunitionDailyUsageLogs,
+  getMonthlyScenarioUsageForChart // Yeni eklenen fonksiyon
 } from '@/lib/actions/inventory.actions';
 import type { AlertDefinition, SupportedCaliber } from '@/types/inventory'; 
-import { SUPPORTED_CALIBERS } from '@/types/inventory'; // Desteklenen kalibreleri almak için
+import { SUPPORTED_CALIBERS } from '@/types/inventory'; 
 import { Badge } from '@/components/ui/badge'; 
 import type { AuditLogEntry } from '@/types/audit';
-import { AmmunitionUsageSummaryChart } from './_components/ammunition-usage-summary-chart'; // Yeni grafik bileşeni
+import { AmmunitionUsageSummaryChart } from './_components/ammunition-usage-summary-chart'; 
+import { MonthlyScenarioUsageChart } from './_components/monthly-scenario-usage-chart'; // Yeni grafik bileşeni
 
 
 export default async function DashboardPage() {
   const firearms = await getFirearms();
   const magazines = await getMagazines();
-  const ammunitionStock = await getAmmunition(); // Stoktaki mühimmat
+  const ammunitionStock = await getAmmunition(); 
   const triggeredAlerts = await getTriggeredAlerts(); 
   const recentAuditLogs = await getRecentAuditLogs(5);
-  const dailyUsageLogs = await getAmmunitionDailyUsageLogs(); // Günlük kullanım logları
+  const dailyUsageLogs = await getAmmunitionDailyUsageLogs(); 
+  const monthlyScenarioUsageData = await getMonthlyScenarioUsageForChart(); // Veri çekme
 
   const totalOtherItems = 0; 
 
@@ -89,7 +92,6 @@ export default async function DashboardPage() {
     }
   };
 
-  // Process data for the ammunition usage chart
   const usageByCaliber = dailyUsageLogs.reduce((acc, log) => {
     acc['9x19mm'] = (acc['9x19mm'] || 0) + log.used_9x19mm;
     acc['5.56x45mm'] = (acc['5.56x45mm'] || 0) + log.used_5_56x45mm;
@@ -172,10 +174,22 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1">
+         <Card className="lg:col-span-1">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2"><LineChartIcon className="h-5 w-5" /> <span suppressHydrationWarning>Aylık Senaryo Bazlı Mühimmat Kullanımı</span></CardTitle>
+            <CardDescription suppressHydrationWarning>Seçilen senaryolara göre aylık toplam mühimmat tüketim trendleri.</CardDescription>
+          </CardHeader>
+          <CardContent className="pl-2">
+            <MonthlyScenarioUsageChart data={monthlyScenarioUsageData} />
+          </CardContent>
+        </Card>
+      </div>
+      
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <Card className="lg:col-span-4">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><BarChart3 className="h-5 w-5" /> <span suppressHydrationWarning>Mühimmat Kullanım Özeti</span></CardTitle>
+            <CardTitle className="flex items-center gap-2"><BarChart3 className="h-5 w-5" /> <span suppressHydrationWarning>Mühimmat Kullanım Özeti (Kalibre Bazlı)</span></CardTitle>
             <CardDescription suppressHydrationWarning>Kaydedilen tüm günlük kullanımlara göre kalibre bazlı toplam tüketim.</CardDescription>
           </CardHeader>
           <CardContent className="pl-2">

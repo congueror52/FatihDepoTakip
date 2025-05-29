@@ -17,6 +17,8 @@ import { maintenanceLogFormSchema } from '@/app/(app)/maintenance/_components/ma
 import { shipmentFormSchema } from '@/app/(app)/shipments/_components/shipment-form-schema';
 import { alertDefinitionFormSchema } from '@/app/(app)/admin/alert-definitions/_components/alert-definition-form-schema'; 
 import type { AuditLogEntry } from '@/types/audit';
+import { format, parseISO, getMonth, getYear } from 'date-fns';
+import { tr } from 'date-fns/locale';
 
 
 // Firearm Definitions
@@ -876,6 +878,53 @@ export async function getGroupedAmmunitionDailyUsageLogs(): Promise<GroupedDaily
   }
 
   return groupedResult;
+}
+
+export interface MonthlyUsageDataPoint {
+  month: string; // "Ocak 2024"
+  [scenarioName: string]: number | string; // Scenario name as key, total usage as value
+}
+
+export async function getMonthlyScenarioUsageForChart(): Promise<MonthlyUsageDataPoint[]> {
+  noStore();
+  const dailyLogs = await getAmmunitionDailyUsageLogs();
+  const scenarios = await getUsageScenarios();
+  const scenarioMap = new Map(scenarios.map(s => [s.id, s.name]));
+
+  const monthlyData: Record<string, Record<string, number>> = {}; // Key: "YYYY-MM", Value: { scenarioName: totalUsage }
+
+  dailyLogs.forEach(log => {
+    const date = parseISO(log.date);
+    const monthYearKey = format(date, "yyyy-MM");
+    const monthDisplay = format(date, "MMMM yyyy", { locale: tr });
+
+    if (!monthlyData[monthYearKey]) {
+      monthlyData[monthYearKey] = { monthDisplay }; // Store display month name
+    }
+
+    const scenarioName = log.usageScenarioId ? scenarioMap.get(log.usageScenarioId) || "Bilinmeyen Senaryo" : "Senaryo Belirtilmeyen";
+    
+    const totalUsedInLog = 
+      (log.used_9x19mm || 0) +
+      (log.used_5_56x45mm || 0) +
+      (log.used_7_62x39mm || 0) +
+      (log.used_7_62x51mm || 0);
+
+    monthlyData[monthYearKey][scenarioName] = (monthlyData[monthYearKey][scenarioName] || 0) + totalUsedInLog;
+  });
+
+  const chartData: MonthlyUsageDataPoint[] = Object.keys(monthlyData)
+    .sort() // Sort by YYYY-MM
+    .map(monthYearKey => {
+      const dataForMonth = monthlyData[monthYearKey];
+      const { monthDisplay, ...scenarioUsages } = dataForMonth;
+      return {
+        month: monthDisplay as string,
+        ...scenarioUsages,
+      };
+    });
+  
+  return chartData;
 }
 
 
