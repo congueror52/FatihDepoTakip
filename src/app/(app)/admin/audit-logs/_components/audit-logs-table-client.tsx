@@ -44,6 +44,17 @@ const actionTypeTranslations: Record<AuditLogEntry['actionType'], string> = {
     LOG_MAINTENANCE: "Bakım Kaydı",
 };
 
+const FormattedTimestamp = ({ timestamp }: { timestamp: string }) => {
+  const [formattedDate, setFormattedDate] = useState(timestamp); // Initial render with ISO string
+
+  useEffect(() => {
+    // Format the date on the client side after hydration
+    setFormattedDate(format(new Date(timestamp), "PPP HH:mm:ss", { locale: tr }));
+  }, [timestamp]);
+
+  return <>{formattedDate}</>;
+};
+
 
 export function AuditLogsTableClient({ logs: initialLogs }: AuditLogsTableClientProps) {
   const [logs, setLogs] = useState<AuditLogEntry[]>(initialLogs);
@@ -83,7 +94,7 @@ export function AuditLogsTableClient({ logs: initialLogs }: AuditLogsTableClient
     ];
     
     const rows = logs.map(log => [
-      format(new Date(log.timestamp), "yyyy-MM-dd HH:mm:ss", { locale: tr }),
+      format(new Date(log.timestamp), "yyyy-MM-dd HH:mm:ss", { locale: tr }), // For CSV, consistent formatting is fine
       log.actor.id,
       log.actor.name,
       actionTypeTranslations[log.actionType] || log.actionType,
@@ -96,9 +107,9 @@ export function AuditLogsTableClient({ logs: initialLogs }: AuditLogsTableClient
 
     // Construct the CSV data string
     const csvData = [
-      headers.join(";"), // Changed comma to semicolon
+      headers.join(";"), 
       ...rows.map(row => 
-        row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(";") // Changed comma to semicolon
+        row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(";") 
       )
     ].join("\n");
 
@@ -144,7 +155,7 @@ export function AuditLogsTableClient({ logs: initialLogs }: AuditLogsTableClient
           ) : (
             logs.map((log) => (
               <TableRow key={log.id}>
-                <TableCell>{format(new Date(log.timestamp), "PPP HH:mm:ss", { locale: tr })}</TableCell>
+                <TableCell><FormattedTimestamp timestamp={log.timestamp} /></TableCell>
                 <TableCell>{log.actor.name} ({log.actor.id})</TableCell>
                 <TableCell>{actionTypeTranslations[log.actionType] || log.actionType}</TableCell>
                 <TableCell>{entityTypeTranslations[log.entityType] || log.entityType}</TableCell>
@@ -166,4 +177,3 @@ export function AuditLogsTableClient({ logs: initialLogs }: AuditLogsTableClient
     </>
   );
 }
-
