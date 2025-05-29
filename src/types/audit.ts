@@ -11,7 +11,8 @@ export type LogEntityType =
   | "Shipment" 
   | "ShipmentTypeDefinition"
   | "MaintenanceLog"
-  | "AmmunitionUsage"; // General usage, might be deprecated
+  | "AmmunitionUsage" // General usage, might be deprecated
+  | "AlertDefinition"; // New Entity Type
 
 export interface AuditLogEntry {
   id: string;
@@ -29,3 +30,5 @@ export interface AuditLogEntry {
   previousDetails?: any; // For updates, if needed, though can be complex
   errorMessage?: string; 
 }
+
+    

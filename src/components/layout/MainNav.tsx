@@ -24,7 +24,8 @@ import {
   ClipboardList,
   FileCheck2,
   Warehouse,
-  ListOrdered
+  ListOrdered,
+  BellCog // New Icon for Alert Definitions
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
@@ -37,7 +38,7 @@ const menuItems = [
   { href: '/daily-ammo-usage', label: 'Günlük Fişek Kullanımı', icon: ClipboardList },
   { href: '/shipments', label: 'Malzeme Kaydı', icon: Truck },
   { href: '/maintenance', label: 'Bakım', icon: Wrench },
-  { href: '/alerts', label: 'Uyarılar', icon: ShieldAlert },
+  { href: '/alerts', label: 'Sistem Uyarıları', icon: ShieldAlert },
   {
     label: 'Yönetim Paneli',
     icon: Settings,
@@ -47,6 +48,7 @@ const menuItems = [
       { href: '/admin/usage-scenarios', label: 'Kullanım Senaryoları', icon: FileCheck2 },
       { href: '/admin/depots', label: 'Depo Tanımları', icon: Warehouse },
       { href: '/admin/shipment-types', label: 'Malzeme Kayıt Türleri', icon: ListOrdered },
+      { href: '/admin/alert-definitions', label: 'Uyarı Tanımları', icon: BellCog },
     ]
   }
 ];
@@ -122,3 +124,5 @@ export function MainNav() {
     </SidebarMenu>
   );
 }
+
+    

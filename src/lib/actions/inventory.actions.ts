@@ -3,7 +3,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { unstable_noStore as noStore } from 'next/cache'; 
-import type { Firearm, Magazine, Ammunition, Shipment, ShipmentItem, AmmunitionUsageLog, FirearmDefinition, AmmunitionDailyUsageLog, UsageScenario, ScenarioCaliberConsumption, SupportedCaliber, MagazineStatus, AmmunitionStatus, Depot, MaintenanceLog, MaintenanceItemStatus, FirearmStatus, InventoryItemType, ShipmentTypeDefinition, DepotInventorySnapshot, HistoricalUsageSnapshot, UpcomingRequirementsSnapshot } from '@/types/inventory';
+import type { Firearm, Magazine, Ammunition, Shipment, ShipmentItem, AmmunitionUsageLog, FirearmDefinition, AmmunitionDailyUsageLog, UsageScenario, ScenarioCaliberConsumption, SupportedCaliber, MagazineStatus, AmmunitionStatus, Depot, MaintenanceLog, MaintenanceItemStatus, FirearmStatus, InventoryItemType, ShipmentTypeDefinition, DepotInventorySnapshot, HistoricalUsageSnapshot, UpcomingRequirementsSnapshot, AlertDefinition } from '@/types/inventory'; // Added AlertDefinition
 import { readData, writeData, generateId } from '@/lib/data-utils';
 import { logAction } from '@/lib/log-service'; // Import logAction
 import { firearmFormSchema } from '@/app/(app)/inventory/firearms/_components/firearm-form-schema';
@@ -16,6 +16,7 @@ import { depotFormSchema } from '@/app/(app)/admin/depots/_components/depot-form
 import { maintenanceLogFormSchema } from '@/app/(app)/maintenance/_components/maintenance-log-form-schema';
 import { shipmentFormSchema } from '@/app/(app)/shipments/_components/shipment-form-schema';
 import { shipmentTypeDefinitionFormSchema } from '@/app/(app)/admin/shipment-types/_components/shipment-type-definition-form-schema';
+import { alertDefinitionFormSchema } from '@/app/(app)/admin/alert-definitions/_components/alert-definition-form-schema'; // Added
 
 
 // Firearm Definitions
@@ -773,6 +774,7 @@ export async function getGroupedAmmunitionDailyUsageLogs(): Promise<GroupedDaily
             logs: logsByScenario[scenario.id].sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
         });
     } else {
+         // Senaryo için kayıt olmasa bile başlığı göstermek için ekle
          groupedResult.push({
             scenarioId: scenario.id,
             scenarioName: scenario.name,
@@ -781,6 +783,7 @@ export async function getGroupedAmmunitionDailyUsageLogs(): Promise<GroupedDaily
     }
   }
 
+  // Senaryosu olmayan kayıtları en sona ekle
   if (logsWithoutScenario.length > 0) {
     groupedResult.push({
       scenarioName: "Senaryo Belirtilmeyen Kullanımlar",
@@ -1170,3 +1173,100 @@ export async function deleteShipmentTypeDefinitionAction(id: string): Promise<vo
     throw error;
   }
 }
+
+// Alert Definitions
+export async function getAlertDefinitions(): Promise<AlertDefinition[]> {
+  noStore();
+  return readData<AlertDefinition>('alert_definitions.json');
+}
+
+export async function getAlertDefinitionById(id: string): Promise<AlertDefinition | undefined> {
+  noStore();
+  const definitions = await getAlertDefinitions();
+  return definitions.find(d => d.id === id);
+}
+
+export async function addAlertDefinitionAction(data: Omit<AlertDefinition, 'id' | 'lastUpdated'>) {
+  try {
+    const validatedData = alertDefinitionFormSchema.safeParse(data);
+    if (!validatedData.success) {
+      const errorMsg = 'Geçersiz uyarı tanımı verisi: ' + JSON.stringify(validatedData.error.format());
+      await logAction({ actionType: "CREATE", entityType: "AlertDefinition", status: "FAILURE", details: data, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
+
+    const definitions = await getAlertDefinitions();
+    const newDefinition: AlertDefinition = {
+      ...validatedData.data,
+      id: await generateId(),
+      lastUpdated: new Date().toISOString(),
+    };
+    definitions.push(newDefinition);
+    await writeData('alert_definitions.json', definitions);
+    await logAction({ actionType: "CREATE", entityType: "AlertDefinition", entityId: newDefinition.id, status: "SUCCESS", details: newDefinition });
+    
+    revalidatePath('/admin/alert-definitions');
+    revalidatePath('/admin/alert-definitions', 'layout');
+    return newDefinition;
+  } catch (error: any) {
+    if (error.message.startsWith('Geçersiz uyarı tanımı verisi')) throw error;
+    await logAction({ actionType: "CREATE", entityType: "AlertDefinition", status: "FAILURE", details: data, errorMessage: error.message });
+    throw error;
+  }
+}
+
+export async function updateAlertDefinitionAction(definition: AlertDefinition) {
+  try {
+    const validatedData = alertDefinitionFormSchema.safeParse(definition);
+    if (!validatedData.success) {
+      const errorMsg = 'Güncelleme için geçersiz uyarı tanımı verisi: ' + JSON.stringify(validatedData.error.format());
+      await logAction({ actionType: "UPDATE", entityType: "AlertDefinition", entityId: definition.id, status: "FAILURE", details: definition, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
+
+    let definitions = await getAlertDefinitions();
+    const index = definitions.findIndex(d => d.id === definition.id);
+    if (index === -1) {
+      const errorMsg = 'Güncellenecek uyarı tanımı bulunamadı.';
+      await logAction({ actionType: "UPDATE", entityType: "AlertDefinition", entityId: definition.id, status: "FAILURE", details: definition, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
+
+    const updatedDefinition = {
+      ...definitions[index],
+      ...validatedData.data,
+      lastUpdated: new Date().toISOString(),
+    };
+
+    definitions[index] = updatedDefinition;
+    await writeData('alert_definitions.json', definitions);
+    await logAction({ actionType: "UPDATE", entityType: "AlertDefinition", entityId: updatedDefinition.id, status: "SUCCESS", details: updatedDefinition });
+    
+    revalidatePath('/admin/alert-definitions');
+    revalidatePath(`/admin/alert-definitions/${definition.id}/edit`);
+    revalidatePath('/admin/alert-definitions', 'layout');
+    return updatedDefinition;
+  } catch (error: any) {
+     if (error.message.startsWith('Güncelleme için geçersiz uyarı tanımı verisi') || error.message.startsWith('Güncellenecek uyarı tanımı bulunamadı')) throw error;
+    await logAction({ actionType: "UPDATE", entityType: "AlertDefinition", entityId: definition.id, status: "FAILURE", details: definition, errorMessage: error.message });
+    throw error;
+  }
+}
+
+export async function deleteAlertDefinitionAction(id: string): Promise<void> {
+  try {
+    let definitions = await getAlertDefinitions();
+    definitions = definitions.filter(d => d.id !== id);
+    await writeData('alert_definitions.json', definitions);
+    await logAction({ actionType: "DELETE", entityType: "AlertDefinition", entityId: id, status: "SUCCESS" });
+    
+    revalidatePath('/admin/alert-definitions');
+    revalidatePath('/admin/alert-definitions', 'layout');
+  } catch (error: any) {
+    await logAction({ actionType: "DELETE", entityType: "AlertDefinition", entityId: id, status: "FAILURE", errorMessage: error.message });
+    throw error;
+  }
+}
+
+
+    

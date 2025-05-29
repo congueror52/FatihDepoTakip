@@ -1,10 +1,7 @@
 
 export type DepotId = string; 
 
-export const DEPOT_LOCATIONS: { id: DepotId; name: string }[] = [
-  { id: 'depotA', name: 'Depo Alfa' },
-  { id: 'depotB', name: 'Depo Bravo' },
-];
+// DEPOT_LOCATIONS sabitini kaldırıyoruz, depolar artık dinamik olarak yönetilecek.
 
 export type FirearmStatus = 'Hizmette' | 'Bakımda' | 'Arızalı' | 'Onarım Bekliyor' | 'Onarıldı' | 'Hizmet Dışı';
 export type MagazineStatus = 'Hizmette' | 'Bakımda' | 'Arızalı' | 'Kayıp' | 'Hizmet Dışı';
@@ -170,7 +167,7 @@ export interface Depot {
 }
 
 
-// For AI balancing input
+// For AI balancing input - Can be removed if AI balancing is not used
 export interface DepotInventoryItemBase {
   id: string;
   name: string;
@@ -210,6 +207,45 @@ export interface UpcomingRequirementsSnapshot {
   dateRange: { start: string; end: string }; 
 }
 
+// Alert Definitions
+export type AlertEntityType = 'ammunition' | 'firearm' | 'magazine';
+export type AlertConditionType = 'low_stock' | 'maintenance_due_soon' | 'status_is';
+export type AlertSeverity = 'Yüksek' | 'Orta' | 'Düşük';
+
+export const ALERT_ENTITY_TYPES: { value: AlertEntityType; label: string }[] = [
+  { value: 'ammunition', label: 'Mühimmat' },
+  { value: 'firearm', label: 'Silah' },
+  { value: 'magazine', label: 'Şarjör' },
+];
+
+export const ALERT_CONDITION_TYPES: { value: AlertConditionType; label: string; applicableTo: AlertEntityType[] }[] = [
+  { value: 'low_stock', label: 'Düşük Stok', applicableTo: ['ammunition'] },
+  // { value: 'maintenance_due_soon', label: 'Bakım Tarihi Yaklaşıyor', applicableTo: ['firearm', 'magazine'] }, // Future: Requires maintenance scheduling
+  { value: 'status_is', label: 'Durumu Şöyle Olduğunda', applicableTo: ['firearm', 'magazine'] },
+];
+
+export const ALERT_SEVERITIES: AlertSeverity[] = ['Yüksek', 'Orta', 'Düşük'];
+
+
+export interface AlertDefinition {
+  id: string;
+  name: string;
+  description?: string;
+  entityType: AlertEntityType;
+  conditionType: AlertConditionType;
+  // Fields specific to conditionType
+  caliberFilter?: SupportedCaliber; // For ammunition + low_stock
+  thresholdValue?: number; // For low_stock
+  statusFilter?: FirearmStatus | MagazineStatus; // For status_is
+  daysBeforeMaintenance?: number; // For maintenance_due_soon (future)
+  
+  severity: AlertSeverity;
+  messageTemplate: string; // e.g., "{itemName} için stok kritik seviyede ({currentValue}/{thresholdValue})"
+  isActive: boolean;
+  lastUpdated: string; // ISO date string
+}
+
+
 // Schema for individual JSON files
 export type FirearmsDb = Firearm[];
 export type MagazinesDb = Magazine[];
@@ -221,4 +257,7 @@ export type AmmunitionDailyUsageDb = AmmunitionDailyUsageLog[];
 export type UsageScenariosDb = UsageScenario[];
 export type DepotsDb = Depot[];
 export type ShipmentTypeDefinitionsDb = ShipmentTypeDefinition[];
+export type AlertDefinitionsDb = AlertDefinition[]; // New DB type
 
+
+    
