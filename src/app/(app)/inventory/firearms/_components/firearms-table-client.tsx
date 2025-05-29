@@ -66,13 +66,12 @@ export function FirearmsTableClient({ firearms: initialFirearms, depots, onRefre
   
   const getStatusColor = (status: Firearm['status']) => {
     switch (status) {
-      case 'Hizmette': return 'bg-green-500 hover:bg-green-600';
-      case 'Bakımda': return 'bg-yellow-500 hover:bg-yellow-600';
-      case 'Arızalı': return 'bg-red-500 hover:bg-red-600';
-      case 'Onarım Bekliyor': return 'bg-orange-500 hover:bg-orange-600';
-      case 'Onarıldı': return 'bg-blue-500 hover:bg-blue-600';
-      case 'Hizmet Dışı': return 'bg-gray-500 hover:bg-gray-600';
-      default: return 'bg-primary';
+      case 'Depoda': return 'bg-green-500 hover:bg-green-600'; // Green
+      case 'Poligonda': return 'bg-green-500 hover:bg-green-600'; // Green
+      case 'Depoda Arızalı': return 'bg-red-500 hover:bg-red-600'; // Red
+      case 'Destekte': return 'bg-red-500 hover:bg-red-600'; // Red
+      case 'Rapor Bekliyor': return 'bg-blue-500 hover:bg-blue-600'; // Blue
+      default: return 'bg-gray-500 hover:bg-gray-600'; // Default/fallback
     }
   };
   
@@ -89,7 +88,6 @@ export function FirearmsTableClient({ firearms: initialFirearms, depots, onRefre
         return;
       }
       const BOM = "\uFEFF"; 
-      // Prepend BOM, then sep=; for Excel compatibility
       const blob = new Blob([BOM + "sep=;\n" + csvString], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement("a");
       if (link.download !== undefined) { 

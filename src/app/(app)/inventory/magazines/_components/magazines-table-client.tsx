@@ -1,7 +1,7 @@
 
 'use client';
 
-import type { Magazine, Depot } from "@/types/inventory"; // Added Depot
+import type { Magazine, Depot } from "@/types/inventory"; 
 import {
   Table,
   TableBody,
@@ -36,14 +36,12 @@ interface MagazinesTableClientProps {
 }
 
 const FormattedTimestamp = ({ timestamp }: { timestamp: string }) => {
-  const [formattedDate, setFormattedDate] = useState(timestamp); // Initial render with ISO string or whatever server sends
+  const [formattedDate, setFormattedDate] = useState(timestamp); 
 
   useEffect(() => {
     try {
-      // Format the date on the client side after hydration
-      setFormattedDate(format(new Date(timestamp), "P", { locale: tr })); // Using "P" for short date
+      setFormattedDate(format(new Date(timestamp), "P", { locale: tr })); 
     } catch (e) {
-      // If timestamp is invalid, keep the original string
       console.warn("Invalid date for formatting:", timestamp);
       setFormattedDate(timestamp);
     }
@@ -84,12 +82,12 @@ export function MagazinesTableClient({ magazines: initialMagazines, depots }: Ma
   
   const getStatusColor = (status: Magazine['status']) => {
     switch (status) {
-      case 'Hizmette': return 'bg-green-500 hover:bg-green-600';
-      case 'Bakımda': return 'bg-yellow-500 hover:bg-yellow-600';
-      case 'Arızalı': return 'bg-red-500 hover:bg-red-600';
-      case 'Kayıp': return 'bg-purple-500 hover:bg-purple-600';
-      case 'Hizmet Dışı': return 'bg-gray-500 hover:bg-gray-600';
-      default: return 'bg-primary';
+      case 'Depoda': return 'bg-green-500 hover:bg-green-600'; // Green
+      case 'Poligonda': return 'bg-purple-500 hover:bg-purple-600'; // Purple
+      case 'Depoda Arızalı': return 'bg-red-500 hover:bg-red-600'; // Red
+      case 'Destekte': return 'bg-yellow-500 hover:bg-yellow-600'; // Yellow
+      case 'Rapor Bekliyor': return 'bg-blue-500 hover:bg-blue-600'; // Blue
+      default: return 'bg-gray-500 hover:bg-gray-600'; // Default/fallback
     }
   };
   
