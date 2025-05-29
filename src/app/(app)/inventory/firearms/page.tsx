@@ -4,7 +4,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { PlusCircle, Target, ShieldX, Wrench, ShieldCheck, Construction, ServerCrash, Info, Download, FileText, Warehouse } from "lucide-react"; 
+import { PlusCircle, Target, ShieldX, Wrench, ShieldCheck, Construction, ServerCrash, Info, Download } from "lucide-react"; 
 import Link from "next/link";
 import { getFirearms, getFirearmDefinitions, getDepots } from "@/lib/actions/inventory.actions"; 
 import { FirearmsTableClient } from "./_components/firearms-table-client";
@@ -43,52 +43,18 @@ export default function FirearmsPage() {
     fetchData();
   }, []);
 
-  const kadroAtisiDepot = depots.find(d => d.name === "Kadro Atışı");
-  const acmDepot = depots.find(d => d.name === "ACM");
+  const statusCounts = firearms.reduce((acc, firearm) => {
+    acc[firearm.status] = (acc[firearm.status] || 0) + 1;
+    return acc;
+  }, {} as Record<FirearmStatus, number>);
 
-  const customSummaryCards = [
-    {
-      title: "Kadro Atışı Deposu Silahları",
-      count: kadroAtisiDepot ? firearms.filter(f => f.depotId === kadroAtisiDepot.id).length : 0,
-      icon: Warehouse,
-      bgColor: 'bg-sky-50 dark:bg-sky-900/30',
-      textColor: 'text-sky-700 dark:text-sky-400',
-      borderColor: 'border-sky-200 dark:border-sky-700',
-    },
-    {
-      title: "ACM Deposu Silahları",
-      count: acmDepot ? firearms.filter(f => f.depotId === acmDepot.id).length : 0,
-      icon: Target,
-      bgColor: 'bg-teal-50 dark:bg-teal-900/30',
-      textColor: 'text-teal-700 dark:text-teal-400',
-      borderColor: 'border-teal-200 dark:border-teal-700',
-    },
-    {
-      title: "Hizmet Dışı (Destek/Servis)", // Mapping "desteğe teslim edilen arızalı silahlar"
-      count: firearms.filter(f => f.status === 'Hizmet Dışı').length,
-      icon: ServerCrash, 
-      bgColor: 'bg-slate-50 dark:bg-slate-700/30',
-      textColor: 'text-slate-700 dark:text-slate-400',
-      borderColor: 'border-slate-200 dark:border-slate-600',
-    },
-    {
-      title: "Depolarda Arızalı Silahlar", // "Depoda arızalı olanlar"
-      count: firearms.filter(f => f.status === 'Arızalı' && ( (kadroAtisiDepot && f.depotId === kadroAtisiDepot.id) || (acmDepot && f.depotId === acmDepot.id) )).length,
-      icon: ShieldX,
-      bgColor: 'bg-red-50 dark:bg-red-900/30',
-      textColor: 'text-red-700 dark:text-red-400',
-      borderColor: 'border-red-200 dark:border-red-700',
-    },
-    {
-      title: "Onarım Bekleyen (Rapor Yazılacak)", // "Rapor Yazılacaklar"
-      count: firearms.filter(f => f.status === 'Onarım Bekliyor').length,
-      icon: FileText,
-      bgColor: 'bg-amber-50 dark:bg-amber-900/30',
-      textColor: 'text-amber-700 dark:text-amber-400',
-      borderColor: 'border-amber-200 dark:border-amber-700',
-    },
+  const summaryCards: { title: string; count: number; icon: React.ElementType; statusKey: FirearmStatus, bgColor?: string, textColor?: string, borderColor?: string }[] = [
+    { title: "Hizmetteki Silahlar", count: statusCounts['Hizmette'] || 0, icon: ShieldCheck, statusKey: 'Hizmette', bgColor: 'bg-green-50 dark:bg-green-900/30', textColor: 'text-green-700 dark:text-green-400', borderColor: 'border-green-200 dark:border-green-700' },
+    { title: "Arızalı Silahlar", count: statusCounts['Arızalı'] || 0, icon: ShieldX, statusKey: 'Arızalı', bgColor: 'bg-red-50 dark:bg-red-900/30', textColor: 'text-red-700 dark:text-red-400', borderColor: 'border-red-200 dark:border-red-700' },
+    { title: "Bakımdaki Silahlar", count: statusCounts['Bakımda'] || 0, icon: Wrench, statusKey: 'Bakımda', bgColor: 'bg-yellow-50 dark:bg-yellow-900/30', textColor: 'text-yellow-700 dark:text-yellow-400', borderColor: 'border-yellow-200 dark:border-yellow-700' },
+    { title: "Onarım Bekleyen Silahlar", count: statusCounts['Onarım Bekliyor'] || 0, icon: Construction, statusKey: 'Onarım Bekliyor', bgColor: 'bg-orange-50 dark:bg-orange-900/30', textColor: 'text-orange-700 dark:text-orange-400', borderColor: 'border-orange-200 dark:border-orange-700' },
+    { title: "Hizmet Dışı Silahlar", count: statusCounts['Hizmet Dışı'] || 0, icon: ServerCrash, statusKey: 'Hizmet Dışı', bgColor: 'bg-slate-50 dark:bg-slate-700/30', textColor: 'text-slate-700 dark:text-slate-400', borderColor: 'border-slate-200 dark:border-slate-600' },
   ];
-
 
   const summaryByDefinition = firearmDefinitions.map(definition => {
     const instances = firearms.filter(f => f.definitionId === definition.id);
@@ -125,8 +91,8 @@ export default function FirearmsPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 mb-6">
-        {customSummaryCards.map((card) => (
-          <Card key={card.title} className={`${card.bgColor} ${card.borderColor}`}>
+        {summaryCards.map((card) => (
+          <Card key={card.statusKey} className={`${card.bgColor} ${card.borderColor}`}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className={`text-sm font-medium ${card.textColor}`} suppressHydrationWarning>{card.title}</CardTitle>
               <card.icon className={`h-5 w-5 ${card.textColor} opacity-80`} />
