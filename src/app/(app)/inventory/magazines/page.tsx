@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, ListChecks, Warehouse, ShieldX, PackageCheck, MapPin, ClipboardEdit, Info } from "lucide-react"; 
+import { PlusCircle, ListChecks, Warehouse, ShieldX, PackageCheck, MapPin, ClipboardEdit, Info, Loader2 } from "lucide-react"; 
 import Link from "next/link";
 import { MagazinesTableClient } from "./_components/magazines-table-client"; 
 import { getMagazines, getDepots, getFirearmDefinitions } from "@/lib/actions/inventory.actions"; 
