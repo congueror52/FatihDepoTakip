@@ -1,6 +1,5 @@
 
-'use client'; // Keep client for potential future client-side interactions if any, or remove if not needed.
-// However, to ensure summary cards update, we'll make the page dynamically rendered on the server.
+// 'use client'; // Removed this line
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,24 +9,13 @@ import { MagazinesTableClient } from "./_components/magazines-table-client";
 import { getMagazines, getDepots, getFirearmDefinitions } from "@/lib/actions/inventory.actions"; 
 import type { MagazineStatus, FirearmDefinition, Magazine, Depot } from "@/types/inventory"; 
 import { magazineStatuses } from "./_components/magazine-form-schema";
-import { useEffect, useState } from "react";
-import { useToast } from "@/hooks/use-toast";
+// useEffect, useState, and useToast are no longer needed here if it's a Server Component
+// import { useEffect, useState } from "react";
+// import { useToast } from "@/hooks/use-toast";
 
 export const dynamic = 'force-dynamic'; // Ensures the page is re-rendered dynamically
 
 export default async function MagazinesPage() {
-  // const [magazines, setMagazines] = useState<Magazine[]>([]);
-  // const [depots, setDepots] = useState<Depot[]>([]);
-  // const [firearmDefinitions, setFirearmDefinitions] = useState<FirearmDefinition[]>([]);
-  // const [isLoading, setIsLoading] = useState(true);
-  // const { toast } = useToast();
-
-  // Since we made the page dynamic, we can fetch data directly.
-  // Client-side state and useEffect for fetching are not strictly necessary here anymore
-  // unless we want client-side filtering or interactions that don't involve a full page reload.
-  // For the summary cards to update correctly after a server action + revalidatePath + router.refresh(),
-  // the page itself fetching fresh data is key.
-
   let magazines: Magazine[] = [];
   let depots: Depot[] = [];
   let firearmDefinitions: FirearmDefinition[] = [];
@@ -40,8 +28,6 @@ export default async function MagazinesPage() {
   } catch (error) {
     console.error("Şarjör envanteri verileri yüklenirken hata:", error);
     errorLoadingData = true;
-    // We can't use useToast here directly in an async Server Component.
-    // Error handling for data fetching in Server Components is typically done by showing an error UI.
   }
 
 
@@ -138,7 +124,7 @@ export default async function MagazinesPage() {
                 <CardContent className="space-y-1 text-sm">
                   <p><strong><span suppressHydrationWarning>Toplam Uyumlu Şarjör:</span></strong> {summary.totalCount}</p>
                   {Object.entries(summary.statusCounts).map(([status, count]) => (
-                    <p key={status}><span suppressHydrationWarning>{status}:</span> {count}</p>
+                    <p key={status}><span suppressHydrationWarning>{status as string}:</span> {count}</p>
                   ))}
                 </CardContent>
               </Card>
