@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, ListChecks, CheckCircle, XCircle, Wrench, AlertTriangle, ServerCrash, Info } from "lucide-react"; 
+import { PlusCircle, ListChecks, Warehouse, ShieldX, PackageCheck, AlertTriangle, ClipboardEdit, Info } from "lucide-react"; 
 import Link from "next/link";
 import { MagazinesTableClient } from "./_components/magazines-table-client"; 
 import { getMagazines, getDepots, getFirearmDefinitions } from "@/lib/actions/inventory.actions"; 
@@ -37,11 +37,11 @@ export default async function MagazinesPage() {
   }, {} as Record<MagazineStatus, number>);
 
   const summaryCards: { title: string; count: number; icon: React.ElementType; statusKey: MagazineStatus, bgColor?: string, textColor?: string, borderColor?: string }[] = [
-    { title: "Hizmetteki Şarjörler", count: statusCounts['Hizmette'] || 0, icon: CheckCircle, statusKey: 'Hizmette', bgColor: 'bg-green-50 dark:bg-green-900/30', textColor: 'text-green-700 dark:text-green-400', borderColor: 'border-green-200 dark:border-green-700' },
-    { title: "Arızalı Şarjörler", count: statusCounts['Arızalı'] || 0, icon: XCircle, statusKey: 'Arızalı', bgColor: 'bg-red-50 dark:bg-red-900/30', textColor: 'text-red-700 dark:text-red-400', borderColor: 'border-red-200 dark:border-red-700' },
-    { title: "Bakımdaki Şarjörler", count: statusCounts['Bakımda'] || 0, icon: Wrench, statusKey: 'Bakımda', bgColor: 'bg-yellow-50 dark:bg-yellow-900/30', textColor: 'text-yellow-700 dark:text-yellow-400', borderColor: 'border-yellow-200 dark:border-yellow-700' },
+    { title: "Depodaki Şarjörler", count: statusCounts['Hizmette'] || 0, icon: Warehouse, statusKey: 'Hizmette', bgColor: 'bg-green-50 dark:bg-green-900/30', textColor: 'text-green-700 dark:text-green-400', borderColor: 'border-green-200 dark:border-green-700' },
+    { title: "Depoda Arızalı Şarjörler", count: statusCounts['Arızalı'] || 0, icon: ShieldX, statusKey: 'Arızalı', bgColor: 'bg-red-50 dark:bg-red-900/30', textColor: 'text-red-700 dark:text-red-400', borderColor: 'border-red-200 dark:border-red-700' },
+    { title: "Desteğe Teslim Edilenler", count: statusCounts['Bakımda'] || 0, icon: PackageCheck, statusKey: 'Bakımda', bgColor: 'bg-yellow-50 dark:bg-yellow-900/30', textColor: 'text-yellow-700 dark:text-yellow-400', borderColor: 'border-yellow-200 dark:border-yellow-700' },
     { title: "Kayıp Şarjörler", count: statusCounts['Kayıp'] || 0, icon: AlertTriangle, statusKey: 'Kayıp', bgColor: 'bg-purple-50 dark:bg-purple-900/30', textColor: 'text-purple-700 dark:text-purple-400', borderColor: 'border-purple-200 dark:border-purple-700' },
-    { title: "Hizmet Dışı Şarjörler", count: statusCounts['Hizmet Dışı'] || 0, icon: ServerCrash, statusKey: 'Hizmet Dışı', bgColor: 'bg-slate-50 dark:bg-slate-700/30', textColor: 'text-slate-700 dark:text-slate-400', borderColor: 'border-slate-200 dark:border-slate-600' },
+    { title: "Rapor Yazılacaklar", count: statusCounts['Hizmet Dışı'] || 0, icon: ClipboardEdit, statusKey: 'Hizmet Dışı', bgColor: 'bg-slate-50 dark:bg-slate-700/30', textColor: 'text-slate-700 dark:text-slate-400', borderColor: 'border-slate-200 dark:border-slate-600' },
   ];
 
   const summaryByFirearmDefinition = firearmDefinitions.map(definition => {
@@ -70,7 +70,7 @@ export default async function MagazinesPage() {
   if (errorLoadingData) {
     return (
       <div className="flex flex-col gap-6 items-center justify-center h-full">
-        <XCircle className="h-12 w-12 text-destructive" />
+        <ShieldX className="h-12 w-12 text-destructive" />
         <h1 className="text-2xl font-semibold" suppressHydrationWarning>Veri Yüklenemedi</h1>
         <p className="text-muted-foreground" suppressHydrationWarning>Şarjör envanteri verileri yüklenirken bir sorun oluştu. Lütfen daha sonra tekrar deneyin.</p>
       </div>
@@ -145,3 +145,4 @@ export default async function MagazinesPage() {
     </div>
   );
 }
+
