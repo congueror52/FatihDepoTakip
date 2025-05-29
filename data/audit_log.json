@@ -282,5 +282,2245 @@
       "id": "273cc3be-c02b-4858-b74b-e789afaa33cf",
       "lastUpdated": "2025-05-29T16:07:48.943Z"
     }
+  },
+  {
+    "id": "52708f54-1145-430d-90b6-49590deaa12f",
+    "timestamp": "2025-05-29T17:40:43.263Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "223428bd-9705-412f-ba72-e74880e9535f",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "223428bd-9705-412f-ba72-e74880e9535f",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.258Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "4020a8b4-12c2-4c95-ac5c-c6a37ce3bf52",
+    "timestamp": "2025-05-29T17:40:43.281Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "e499d31f-54c8-4aef-ac4a-9bddeead7a88",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "e499d31f-54c8-4aef-ac4a-9bddeead7a88",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.269Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "7e9e84f8-87bd-4730-b184-b220c8604632",
+    "timestamp": "2025-05-29T17:40:43.319Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "03663f54-de59-4909-81d1-578fcc2f14e2",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "03663f54-de59-4909-81d1-578fcc2f14e2",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.293Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "264ebd83-1c17-47a3-ad94-1c2de3daf1db",
+    "timestamp": "2025-05-29T17:40:43.335Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "5f0a82a3-087b-4fed-aba9-e21d8abfb5be",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "5f0a82a3-087b-4fed-aba9-e21d8abfb5be",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.324Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "e653cc7e-874a-400d-a01a-d28f22d923ef",
+    "timestamp": "2025-05-29T17:40:43.355Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "a3575d0d-ee96-44b7-8763-c213d953950b",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "a3575d0d-ee96-44b7-8763-c213d953950b",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.343Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "2976eb23-f837-4b42-b3ff-0ba5314de22a",
+    "timestamp": "2025-05-29T17:40:43.379Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "3ff0f645-2b16-458d-8781-14b7a8e8052d",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "3ff0f645-2b16-458d-8781-14b7a8e8052d",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.364Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "fca5a225-754b-4f20-940e-cff66ea39483",
+    "timestamp": "2025-05-29T17:40:43.415Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "aa7dd4c5-a471-43eb-8268-0c4ee4365e7d",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "aa7dd4c5-a471-43eb-8268-0c4ee4365e7d",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.388Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "cfeccb75-d9f1-407c-916f-b6146804c048",
+    "timestamp": "2025-05-29T17:40:43.426Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "8e36856c-3813-45d4-bef7-23b64936a85a",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "8e36856c-3813-45d4-bef7-23b64936a85a",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.418Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "a5eb6b58-9524-4925-a245-190ce1305b36",
+    "timestamp": "2025-05-29T17:40:43.442Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "ca1cbd2e-5db4-49fa-8364-0ed417de7cbb",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "ca1cbd2e-5db4-49fa-8364-0ed417de7cbb",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.434Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "f4da7d7b-f674-49d8-89f1-35e31b664468",
+    "timestamp": "2025-05-29T17:40:43.456Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "bfeca75f-eee5-464f-ba18-a822e9006957",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "bfeca75f-eee5-464f-ba18-a822e9006957",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.449Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "4b743c37-a96f-4891-9351-45a3067fb87f",
+    "timestamp": "2025-05-29T17:40:43.476Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "e353ed34-1f56-4b04-a5a0-fe8d2a116c7d",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "e353ed34-1f56-4b04-a5a0-fe8d2a116c7d",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.464Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "9d020157-8514-4beb-9e32-ee1834751e53",
+    "timestamp": "2025-05-29T17:40:43.492Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "be56b518-e284-4835-9a3d-1ef921cd4fb9",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "be56b518-e284-4835-9a3d-1ef921cd4fb9",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.482Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "ac09ec9a-7eac-4679-a072-03dd1cb94e6e",
+    "timestamp": "2025-05-29T17:40:43.505Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "b8f3dee7-c488-41da-b269-5d8e7acc0fbd",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "b8f3dee7-c488-41da-b269-5d8e7acc0fbd",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.498Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "36ec932a-324e-48ed-9329-2d8efbf01f32",
+    "timestamp": "2025-05-29T17:40:43.534Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "e3484d1b-31cd-497d-afec-4fe35269c2fe",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "e3484d1b-31cd-497d-afec-4fe35269c2fe",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.528Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "a44cf5f4-30eb-4ef2-b752-47a1a6ae765f",
+    "timestamp": "2025-05-29T17:40:43.545Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "941b2a26-ac22-42ca-8ae1-c438cfb22b23",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "941b2a26-ac22-42ca-8ae1-c438cfb22b23",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.538Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "cbdddabb-a4a8-40f4-9784-2e6051f3d7de",
+    "timestamp": "2025-05-29T17:40:43.562Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "86fb629f-9114-4f9f-8e3b-e5aee7008b3c",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "86fb629f-9114-4f9f-8e3b-e5aee7008b3c",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.553Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "15b0965b-44c1-4168-bfa7-a6e68ceb902b",
+    "timestamp": "2025-05-29T17:40:43.584Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "16f0db7c-daac-4379-97a1-491210387a27",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "16f0db7c-daac-4379-97a1-491210387a27",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.570Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "ec08fe2b-22a5-4cf1-8f68-5167f8540497",
+    "timestamp": "2025-05-29T17:40:43.600Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "b3f66d21-26d1-446c-a0ab-d8625e2ee376",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "b3f66d21-26d1-446c-a0ab-d8625e2ee376",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.591Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "915d1754-931c-4c40-8628-99ef4e825f9e",
+    "timestamp": "2025-05-29T17:40:43.614Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "9a410275-5654-42f1-9141-838dcc3512a6",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "9a410275-5654-42f1-9141-838dcc3512a6",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.606Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "b19d8be1-2e46-499b-aa01-265cc53a30b3",
+    "timestamp": "2025-05-29T17:40:43.637Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "91caf470-71c0-4be3-91cc-da0bdf06dbf4",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "91caf470-71c0-4be3-91cc-da0bdf06dbf4",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.630Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "8df05d8a-5208-42df-a136-d4ef1831e6fd",
+    "timestamp": "2025-05-29T17:40:43.662Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "cb45f442-9029-44c1-8203-91ef685f9048",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "cb45f442-9029-44c1-8203-91ef685f9048",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.644Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "a10c071a-934d-4ee0-a3dd-741a17741c08",
+    "timestamp": "2025-05-29T17:40:43.686Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "97ddc8d5-4be3-4807-b709-53dbf35c2a3b",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "97ddc8d5-4be3-4807-b709-53dbf35c2a3b",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.677Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "e92d4a41-c0e5-4519-913e-398baea6a38a",
+    "timestamp": "2025-05-29T17:40:43.702Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "259f0d7a-6ac1-4be8-b95f-0e501ac83b20",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "259f0d7a-6ac1-4be8-b95f-0e501ac83b20",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.693Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "ec691df6-7b3a-484d-99ae-1d9081008c84",
+    "timestamp": "2025-05-29T17:40:43.722Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "8511dfc7-d688-4ef8-82ca-3add2125c468",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "8511dfc7-d688-4ef8-82ca-3add2125c468",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.708Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "47a6cb5a-e426-4a24-a26e-7f085d77a92b",
+    "timestamp": "2025-05-29T17:40:43.738Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "2ff9c9da-7f24-46b3-b8da-bc6d6f296aa7",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "2ff9c9da-7f24-46b3-b8da-bc6d6f296aa7",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.730Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "42d35c78-0e3f-4575-8405-ae11a9ea4a96",
+    "timestamp": "2025-05-29T17:40:43.763Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "2cba9bba-b0dc-441d-9c57-9f930f81fa91",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "2cba9bba-b0dc-441d-9c57-9f930f81fa91",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.756Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "bc533dc8-b646-4b05-b14f-f462ad4665d1",
+    "timestamp": "2025-05-29T17:40:43.773Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "0d4a60ec-4c66-47f8-bc51-d330b8ce038d",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "0d4a60ec-4c66-47f8-bc51-d330b8ce038d",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.768Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "dba32e3c-6d09-40ef-930f-8901754d722b",
+    "timestamp": "2025-05-29T17:40:43.795Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "5e91e891-75fa-4fb9-83e8-cfc5f29ef4f5",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "5e91e891-75fa-4fb9-83e8-cfc5f29ef4f5",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.780Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "f66aeb66-295f-4ed7-af5f-a6bafe5fee94",
+    "timestamp": "2025-05-29T17:40:43.820Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "e8e85ff9-5839-4046-99fa-8aa065271b2d",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "e8e85ff9-5839-4046-99fa-8aa065271b2d",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.809Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "b763618c-525f-43de-b65b-75fbab475cbf",
+    "timestamp": "2025-05-29T17:40:43.833Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "5a20d89a-2d24-4c4b-aa0e-1c8b0385c288",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "5a20d89a-2d24-4c4b-aa0e-1c8b0385c288",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.827Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "cdb840de-383b-4c65-a943-de9fdcace6c1",
+    "timestamp": "2025-05-29T17:40:43.853Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "a2ea2ac2-4b74-403f-bdda-67580ac3bd44",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "a2ea2ac2-4b74-403f-bdda-67580ac3bd44",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.844Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "6bed5a06-20fb-4f53-b375-31d7f69c8d77",
+    "timestamp": "2025-05-29T17:40:43.878Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "a0fb9bc3-0844-4f9b-97f5-45687210f32e",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "a0fb9bc3-0844-4f9b-97f5-45687210f32e",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.864Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "9027e9a8-3103-4c24-9e32-ceefcd048a9b",
+    "timestamp": "2025-05-29T17:40:43.897Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "07fda0ec-98a4-4e8b-a7e9-88ac50660d0e",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "07fda0ec-98a4-4e8b-a7e9-88ac50660d0e",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.884Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "d949764b-cd37-4d13-99e6-1b1a2bef079e",
+    "timestamp": "2025-05-29T17:40:43.922Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "b9a47b58-8da5-42fb-8916-11409bde876c",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "b9a47b58-8da5-42fb-8916-11409bde876c",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.907Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "3c16be4e-d2de-4a87-abcb-d5a595de47f5",
+    "timestamp": "2025-05-29T17:40:43.942Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "ce7bfbcc-ec8b-4166-9092-fc33e379de4f",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "ce7bfbcc-ec8b-4166-9092-fc33e379de4f",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.932Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "384e5fa0-db6b-49ff-b3c8-58c1dd69840c",
+    "timestamp": "2025-05-29T17:40:43.980Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "90f0ff39-abb9-40ee-8be0-793e28f3a796",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "90f0ff39-abb9-40ee-8be0-793e28f3a796",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.958Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "75d1454e-bd2a-4f45-970c-c1c027c7cfcc",
+    "timestamp": "2025-05-29T17:40:44.002Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "ab24db07-54a2-4022-ac35-f811b5adfe5c",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "ab24db07-54a2-4022-ac35-f811b5adfe5c",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:43.996Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "3ef65778-f617-475b-8fae-869a8d5bfcaa",
+    "timestamp": "2025-05-29T17:40:44.031Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "57651033-d8b6-4419-8090-4b3d3d3409ae",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "57651033-d8b6-4419-8090-4b3d3d3409ae",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:44.019Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "e6fb865a-d7b5-4dc8-b731-2d6689d4a481",
+    "timestamp": "2025-05-29T17:40:44.051Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "13ce2b62-6d70-4740-bd37-4f2faf11efda",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "13ce2b62-6d70-4740-bd37-4f2faf11efda",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:44.040Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "bd05ccf8-8ab7-49e3-8e95-3e136462ff9c",
+    "timestamp": "2025-05-29T17:40:44.066Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "8f4f3abe-1535-4f05-9de9-8c564b1941d3",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "8f4f3abe-1535-4f05-9de9-8c564b1941d3",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:40:44.056Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "a668d0eb-8146-4a54-8db9-42bc6b7c9abf",
+    "timestamp": "2025-05-29T17:41:28.043Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "6ffe1cd9-c6c1-4988-9c4c-31d9046e74a8",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "6ffe1cd9-c6c1-4988-9c4c-31d9046e74a8",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.040Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "8940b4f9-b305-428b-92bd-7e5a46db9a68",
+    "timestamp": "2025-05-29T17:41:28.059Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "288b8d50-4337-4583-88b8-deca9653e408",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "288b8d50-4337-4583-88b8-deca9653e408",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.049Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "cb4c9234-5f60-4299-a012-86e52ca89870",
+    "timestamp": "2025-05-29T17:41:28.095Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "35cde860-f0d1-4a04-8a6b-a6f1a18e8554",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "35cde860-f0d1-4a04-8a6b-a6f1a18e8554",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.084Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "555aac94-f487-4432-b19d-c4875c7a086d",
+    "timestamp": "2025-05-29T17:41:28.117Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "cd572c1b-63ad-4b4d-8761-6de149fce04e",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "cd572c1b-63ad-4b4d-8761-6de149fce04e",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.103Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "09b2a969-adb0-4188-9e61-546ce206e581",
+    "timestamp": "2025-05-29T17:41:28.139Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "270bb580-37be-49c0-b862-cee333bfd278",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "270bb580-37be-49c0-b862-cee333bfd278",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.126Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "9c5b5a4b-34aa-4f3b-ae4f-648c66239798",
+    "timestamp": "2025-05-29T17:41:28.162Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "474ffa0a-5484-4400-9eec-8aefd1517ca2",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "474ffa0a-5484-4400-9eec-8aefd1517ca2",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.149Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "e2140a9b-0d3c-4ce2-97f4-482fd3b7c8e7",
+    "timestamp": "2025-05-29T17:41:28.181Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "343738cb-87d0-4dee-bde1-973f22cbd955",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "343738cb-87d0-4dee-bde1-973f22cbd955",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.169Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "dbeda711-efb2-4717-8c25-379e9781f5c6",
+    "timestamp": "2025-05-29T17:41:28.207Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "51044c3f-1da2-49fd-8c27-4d46e3e58059",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "51044c3f-1da2-49fd-8c27-4d46e3e58059",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.188Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "534771da-0ff0-4428-b89e-824aa2c2c330",
+    "timestamp": "2025-05-29T17:41:28.224Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "05fad5e7-e2cf-4ff4-beb2-847236c24559",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "05fad5e7-e2cf-4ff4-beb2-847236c24559",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.215Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "904de359-6cf4-4489-aa11-056cdf954fcf",
+    "timestamp": "2025-05-29T17:41:28.250Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "e02d3512-2436-4f87-92cf-86b1b03eac55",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "e02d3512-2436-4f87-92cf-86b1b03eac55",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.242Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "41dcffa7-51f9-49bd-82aa-83930a717ece",
+    "timestamp": "2025-05-29T17:41:28.268Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "a4340512-accd-4fc1-b6d4-f7b3164b4083",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "a4340512-accd-4fc1-b6d4-f7b3164b4083",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.256Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "c77446ff-44bb-45ad-a3f7-c3231ba73897",
+    "timestamp": "2025-05-29T17:41:28.298Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "bd18cc98-e5bc-4392-8ba6-1dc6fea2ebca",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "bd18cc98-e5bc-4392-8ba6-1dc6fea2ebca",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.285Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "57f22c11-339e-4875-95e9-9bd7bc20b8b9",
+    "timestamp": "2025-05-29T17:41:28.325Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "278fdc4e-1d82-44e7-b242-7976f5533540",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "278fdc4e-1d82-44e7-b242-7976f5533540",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.308Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "40e94d1a-e21f-4b8d-a61e-a84d94c7c656",
+    "timestamp": "2025-05-29T17:41:28.353Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "ea9f1de4-3a31-4bd7-b8df-1f96f1a15154",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "ea9f1de4-3a31-4bd7-b8df-1f96f1a15154",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.346Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "329bf6c6-305c-4f9b-b58e-761f69527329",
+    "timestamp": "2025-05-29T17:41:28.376Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "65a39be6-1bcc-4a17-aa26-ea3fe6605580",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "65a39be6-1bcc-4a17-aa26-ea3fe6605580",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.360Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "0b33003b-e80a-4269-9fa2-b337458e2f88",
+    "timestamp": "2025-05-29T17:41:28.395Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "f3b1bae3-3d6d-4665-8067-de4b772b39ff",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "f3b1bae3-3d6d-4665-8067-de4b772b39ff",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.384Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "8bc095d1-afda-4b50-96d0-418cb0ad724b",
+    "timestamp": "2025-05-29T17:41:28.412Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "732fa87f-dc59-413d-b6c0-d2642d4ff698",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "732fa87f-dc59-413d-b6c0-d2642d4ff698",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.401Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "af564f6e-1c54-498a-92bb-e096e6248113",
+    "timestamp": "2025-05-29T17:41:28.432Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "c4450f02-945c-499f-b0b7-200986b888f2",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "c4450f02-945c-499f-b0b7-200986b888f2",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.422Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "6d1ee2eb-47da-490f-ab69-eb48cbce9689",
+    "timestamp": "2025-05-29T17:41:28.458Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "95aecc5e-7c3c-48bc-8e7f-72942fba8538",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "95aecc5e-7c3c-48bc-8e7f-72942fba8538",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.439Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "baffd85c-9f57-449d-9605-4d3598260cb1",
+    "timestamp": "2025-05-29T17:41:28.477Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "e482eed1-b90a-486f-9a70-22d1721dab16",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "e482eed1-b90a-486f-9a70-22d1721dab16",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.464Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "e82872f6-1379-4c13-a047-9f653532bd02",
+    "timestamp": "2025-05-29T17:41:28.497Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "4fb3ac39-b3b0-4db9-85a8-a841743b8b5c",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "4fb3ac39-b3b0-4db9-85a8-a841743b8b5c",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.487Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "201db5a2-1c66-4844-bf2f-a59c842b2ad1",
+    "timestamp": "2025-05-29T17:41:28.513Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "d93225c3-e0c4-4ef1-8508-eed589d8d4a2",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "d93225c3-e0c4-4ef1-8508-eed589d8d4a2",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.503Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "ac88dd00-a7d9-4616-8764-0008e81bbf30",
+    "timestamp": "2025-05-29T17:41:28.530Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "4aba3769-2477-469e-9461-711a019acc0c",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "4aba3769-2477-469e-9461-711a019acc0c",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.521Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "db8c2ba5-9321-48f2-8302-9cfe8753fe8b",
+    "timestamp": "2025-05-29T17:41:28.547Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "1f22ef13-d26d-40c4-839a-c5c9c3b193bd",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "1f22ef13-d26d-40c4-839a-c5c9c3b193bd",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.538Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "1f55a37b-1a42-4ed8-bb88-d2c76fe9e3ed",
+    "timestamp": "2025-05-29T17:41:28.584Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "5b31929e-2dfa-4c1e-a660-40c5474cbc80",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "5b31929e-2dfa-4c1e-a660-40c5474cbc80",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.579Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "b364fd37-688b-4bb0-a4b6-3713ed0b1058",
+    "timestamp": "2025-05-29T17:41:28.602Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "0bf14c1f-84ff-401b-a35f-1305608933d2",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "0bf14c1f-84ff-401b-a35f-1305608933d2",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.589Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "74da621e-1eda-49dd-8caa-c03e599ef462",
+    "timestamp": "2025-05-29T17:41:28.620Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "2adc99ab-291f-4765-8bf1-bc885483416c",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "2adc99ab-291f-4765-8bf1-bc885483416c",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.610Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "c861fff9-6e0b-42f2-9798-84a012099756",
+    "timestamp": "2025-05-29T17:41:28.640Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "d98b5607-e559-403c-83f5-ca1b5ef3cff9",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "d98b5607-e559-403c-83f5-ca1b5ef3cff9",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.628Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "13c1c26e-5f1c-4152-b8f5-572efd53f47e",
+    "timestamp": "2025-05-29T17:41:28.658Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "c11980c8-4008-43c0-8f0d-a43a59ae1b4d",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "c11980c8-4008-43c0-8f0d-a43a59ae1b4d",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.647Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "0107f735-95ca-47db-9634-47602235206e",
+    "timestamp": "2025-05-29T17:41:28.685Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "561615e5-83d4-492c-9a31-720dea474dca",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "561615e5-83d4-492c-9a31-720dea474dca",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.668Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "8730d347-bd62-470e-909d-9b7e0f266260",
+    "timestamp": "2025-05-29T17:41:28.698Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "57f7cafe-c301-4633-9228-9576369a1940",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "57f7cafe-c301-4633-9228-9576369a1940",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.690Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "aafedc43-c769-417c-aaed-d90dcc307083",
+    "timestamp": "2025-05-29T17:41:28.721Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "42877756-c581-42a6-9acd-e83096022781",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "42877756-c581-42a6-9acd-e83096022781",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.704Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "67fbecee-ec04-4b1c-946e-6da8f53e6950",
+    "timestamp": "2025-05-29T17:41:28.742Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "2f554b55-29d3-4203-98d0-c2e0a3ba4fe2",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "2f554b55-29d3-4203-98d0-c2e0a3ba4fe2",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.728Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "03bb6973-6568-4918-a2c7-01d908be7042",
+    "timestamp": "2025-05-29T17:41:28.769Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "a9741467-1d52-4315-a92c-19ee66d32d50",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "a9741467-1d52-4315-a92c-19ee66d32d50",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.755Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "b2f86b09-30e9-4976-899a-3fa2f4d72626",
+    "timestamp": "2025-05-29T17:41:28.796Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "4b073ed5-6fde-46bb-8542-ce672c7fcbb1",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "4b073ed5-6fde-46bb-8542-ce672c7fcbb1",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.778Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "6591ae42-52ff-48ff-ae1a-b982b2a34065",
+    "timestamp": "2025-05-29T17:41:28.827Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "1da411c1-5605-497c-af92-3d51ddd4626c",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "1da411c1-5605-497c-af92-3d51ddd4626c",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.808Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "82e8bd1f-5185-4da6-9f64-770405c329b0",
+    "timestamp": "2025-05-29T17:41:28.854Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "1050c6da-c9a0-438c-91c4-fc7fa96e701a",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "1050c6da-c9a0-438c-91c4-fc7fa96e701a",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.842Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "675e5da5-b7d3-4c78-9641-06e8b1c7cbce",
+    "timestamp": "2025-05-29T17:41:28.877Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "3460ac13-dbda-4385-8603-e4112e6d08ca",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "3460ac13-dbda-4385-8603-e4112e6d08ca",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.863Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "17834e6b-c8e5-4ad7-a553-70f1fa11136d",
+    "timestamp": "2025-05-29T17:41:28.901Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "8d74fd0c-7568-4320-af6f-16d47e611c69",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "8d74fd0c-7568-4320-af6f-16d47e611c69",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.887Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "62268371-4629-400e-99af-a25b74dde0cd",
+    "timestamp": "2025-05-29T17:41:28.927Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "b8de5b45-5267-45c1-bebb-61ad44d2feea",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "b8de5b45-5267-45c1-bebb-61ad44d2feea",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-29T17:41:28.910Z",
+      "maintenanceHistory": []
+    }
   }
 ]

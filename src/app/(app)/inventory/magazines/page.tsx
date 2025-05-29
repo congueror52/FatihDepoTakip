@@ -1,17 +1,49 @@
 
+'use client'; // Keep client for potential future client-side interactions if any, or remove if not needed.
+// However, to ensure summary cards update, we'll make the page dynamically rendered on the server.
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlusCircle, ListChecks, CheckCircle, XCircle, Wrench, AlertTriangle, ServerCrash, Info } from "lucide-react"; 
 import Link from "next/link";
 import { MagazinesTableClient } from "./_components/magazines-table-client"; 
-import { getMagazines, getDepots, getFirearmDefinitions } from "@/lib/actions/inventory.actions"; // Added getFirearmDefinitions
-import type { MagazineStatus, FirearmDefinition, Magazine } from "@/types/inventory"; // Added FirearmDefinition, Magazine
+import { getMagazines, getDepots, getFirearmDefinitions } from "@/lib/actions/inventory.actions"; 
+import type { MagazineStatus, FirearmDefinition, Magazine, Depot } from "@/types/inventory"; 
 import { magazineStatuses } from "./_components/magazine-form-schema";
+import { useEffect, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+
+export const dynamic = 'force-dynamic'; // Ensures the page is re-rendered dynamically
 
 export default async function MagazinesPage() {
-  const magazines = await getMagazines(); 
-  const depots = await getDepots(); 
-  const firearmDefinitions = await getFirearmDefinitions(); // Fetch firearm definitions
+  // const [magazines, setMagazines] = useState<Magazine[]>([]);
+  // const [depots, setDepots] = useState<Depot[]>([]);
+  // const [firearmDefinitions, setFirearmDefinitions] = useState<FirearmDefinition[]>([]);
+  // const [isLoading, setIsLoading] = useState(true);
+  // const { toast } = useToast();
+
+  // Since we made the page dynamic, we can fetch data directly.
+  // Client-side state and useEffect for fetching are not strictly necessary here anymore
+  // unless we want client-side filtering or interactions that don't involve a full page reload.
+  // For the summary cards to update correctly after a server action + revalidatePath + router.refresh(),
+  // the page itself fetching fresh data is key.
+
+  let magazines: Magazine[] = [];
+  let depots: Depot[] = [];
+  let firearmDefinitions: FirearmDefinition[] = [];
+  let errorLoadingData = false;
+
+  try {
+    magazines = await getMagazines(); 
+    depots = await getDepots(); 
+    firearmDefinitions = await getFirearmDefinitions();
+  } catch (error) {
+    console.error("Şarjör envanteri verileri yüklenirken hata:", error);
+    errorLoadingData = true;
+    // We can't use useToast here directly in an async Server Component.
+    // Error handling for data fetching in Server Components is typically done by showing an error UI.
+  }
+
 
   const statusCounts = magazines.reduce((acc, magazine) => {
     acc[magazine.status] = (acc[magazine.status] || 0) + 1;
@@ -48,6 +80,16 @@ export default async function MagazinesPage() {
     };
   }).filter(summary => summary.totalCount > 0);
 
+
+  if (errorLoadingData) {
+    return (
+      <div className="flex flex-col gap-6 items-center justify-center h-full">
+        <XCircle className="h-12 w-12 text-destructive" />
+        <h1 className="text-2xl font-semibold" suppressHydrationWarning>Veri Yüklenemedi</h1>
+        <p className="text-muted-foreground" suppressHydrationWarning>Şarjör envanteri verileri yüklenirken bir sorun oluştu. Lütfen daha sonra tekrar deneyin.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-6">
