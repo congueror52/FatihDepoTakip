@@ -115,5 +115,18 @@
     "entityType": "DailyAmmunitionUsage",
     "entityId": "72553fd1-a6b0-4ac4-b05e-986e9f25d52a",
     "status": "SUCCESS"
+  },
+  {
+    "id": "b6553928-8275-4fcb-a23b-b948d112b102",
+    "timestamp": "2025-05-29T15:25:08.288Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "DailyAmmunitionUsage",
+    "entityId": "161d6273-8af8-43cc-9775-e65b78cc8df6",
+    "status": "SUCCESS"
   }
 ]

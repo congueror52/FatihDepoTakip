@@ -25,7 +25,8 @@ import {
   FileCheck2,
   Warehouse,
   ListOrdered,
-  BellDot 
+  BellDot,
+  FileText // Icon for Audit Logs
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
@@ -49,6 +50,7 @@ const menuItems = [
       { href: '/admin/depots', label: 'Depo Tanımları', icon: Warehouse },
       { href: '/admin/shipment-types', label: 'Malzeme Kayıt Türleri', icon: ListOrdered },
       { href: '/admin/alert-definitions', label: 'Uyarı Tanımları', icon: BellDot }, 
+      { href: '/admin/audit-logs', label: 'Denetim Kayıtları', icon: FileText },
     ]
   }
 ];

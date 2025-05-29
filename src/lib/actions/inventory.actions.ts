@@ -1289,13 +1289,23 @@ export async function getTriggeredAlerts(): Promise<AlertDefinition[]> {
 
 
 // Audit Log Actions
-export async function getRecentAuditLogs(limit: number = 5): Promise<AuditLogEntry[]> {
+export async function getAuditLogs(): Promise<AuditLogEntry[]> {
   noStore();
   try {
     const allLogs = await readData<AuditLogEntry>('audit_log.json');
     // Sort by timestamp, newest first
-    const sortedLogs = allLogs.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-    return sortedLogs.slice(0, limit);
+    return allLogs.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  } catch (error) {
+    console.error("Denetim günlükleri okunurken hata oluştu:", error);
+    return [];
+  }
+}
+
+export async function getRecentAuditLogs(limit: number = 5): Promise<AuditLogEntry[]> {
+  noStore();
+  try {
+    const allLogs = await getAuditLogs(); // Use the new getAuditLogs function
+    return allLogs.slice(0, limit);
   } catch (error) {
     console.error("Son denetim günlükleri okunurken hata oluştu:", error);
     return []; // Hata durumunda boş dizi döndür
