@@ -243,5 +243,44 @@
       "notes": "",
       "id": "c0d9d06e-9f2d-4113-af54-17b4d8774ff5"
     }
+  },
+  {
+    "id": "3663eda2-1878-4106-9a22-81a2980040dd",
+    "timestamp": "2025-05-29T16:06:48.339Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "AlertDefinition",
+    "entityId": "30cec792-5cda-49f5-97ee-e5d7954cf54f",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "43f522f1-a9f9-4d61-b686-0b393465b719",
+    "timestamp": "2025-05-29T16:07:48.966Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "AlertDefinition",
+    "entityId": "273cc3be-c02b-4858-b74b-e789afaa33cf",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Düşük fişek uyarısı",
+      "description": "",
+      "entityType": "ammunition",
+      "conditionType": "low_stock",
+      "caliberFilter": "9x19mm",
+      "thresholdValue": 5555555555,
+      "severity": "Yüksek",
+      "messageTemplate": "{itemName}{depotName}{currentValue}{threshold}{status}{caliber}",
+      "isActive": true,
+      "id": "273cc3be-c02b-4858-b74b-e789afaa33cf",
+      "lastUpdated": "2025-05-29T16:07:48.943Z"
+    }
   }
 ]

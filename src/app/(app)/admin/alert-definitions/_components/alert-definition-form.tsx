@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { AlertDefinition, AlertEntityType, AlertConditionType, SupportedCaliber } from "@/types/inventory";
+import type { AlertDefinition, AlertEntityType, AlertConditionType, SupportedCaliber, Depot, DepotId } from "@/types/inventory";
 import { 
     ALERT_ENTITY_TYPES, 
     ALERT_CONDITION_TYPES, 
@@ -32,14 +32,16 @@ import { addAlertDefinitionAction, updateAlertDefinitionAction } from "@/lib/act
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { useEffect, useState, useRef } from "react"; // Added useRef
+import { useEffect, useState, useRef } from "react";
 import { cn } from "@/lib/utils";
 
 interface AlertDefinitionFormProps {
   definition?: AlertDefinition;
+  depots: Depot[];
 }
 
 const ALL_CALIBERS_OPTION_VALUE = "__ALL_CALIBERS__"; 
+const ALL_DEPOTS_OPTION_VALUE = "__ALL_DEPOTS__";
 
 const availablePlaceholders = [
   { label: "Öğe Adı", value: "{itemName}" },
@@ -51,7 +53,7 @@ const availablePlaceholders = [
   { label: "Seri Numarası", value: "{serialNumber}" },
 ];
 
-export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
+export function AlertDefinitionForm({ definition, depots }: AlertDefinitionFormProps) {
   const { toast } = useToast();
   const router = useRouter();
   const isEditing = !!definition;
@@ -62,11 +64,13 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
 
   const defaultValues: Partial<AlertDefinitionFormValues> = definition ? {
     ...definition,
+    depotId: definition.depotId || undefined, // Ensure undefined if not set
   } : {
     name: "",
     description: "",
     entityType: undefined,
     conditionType: undefined,
+    depotId: undefined,
     caliberFilter: undefined,
     thresholdValue: 0,
     statusFilter: undefined,
@@ -91,6 +95,7 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
         form.resetField("caliberFilter");
         form.resetField("thresholdValue");
         form.resetField("statusFilter");
+        form.resetField("depotId");
     }
   }, [watchedEntityType, currentEntityType, form]);
 
@@ -99,11 +104,15 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
     if (watchedConditionType !== 'low_stock') {
         form.setValue('caliberFilter', undefined); 
         form.setValue('thresholdValue', undefined);
+        // Keep depotId as is unless explicitly reset logic is needed
     }
     if (watchedConditionType !== 'status_is') {
         form.setValue('statusFilter', undefined);
     }
-  }, [watchedConditionType, form]);
+     if (watchedEntityType === 'firearm' || watchedEntityType === 'magazine') {
+        form.setValue('depotId', undefined); // Depot filter not applicable for firearm/magazine status alerts
+    }
+  }, [watchedConditionType, watchedEntityType, form]);
 
   const handleInsertPlaceholder = (placeholder: string) => {
     const textarea = messageTemplateTextareaRef.current;
@@ -116,7 +125,6 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
 
     form.setValue("messageTemplate", newValue, { shouldValidate: true, shouldDirty: true });
 
-    // Set focus and cursor position after state update
     setTimeout(() => {
       textarea.focus();
       textarea.selectionStart = textarea.selectionEnd = start + placeholder.length;
@@ -125,11 +133,19 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
 
   async function onSubmit(data: AlertDefinitionFormValues) {
     try {
+      const payload = { ...data };
+      if (payload.depotId === ALL_DEPOTS_OPTION_VALUE) {
+        payload.depotId = undefined;
+      }
+       if (payload.caliberFilter === ALL_CALIBERS_OPTION_VALUE) {
+        payload.caliberFilter = undefined;
+      }
+
       if (isEditing && definition) {
-        await updateAlertDefinitionAction({ ...definition, ...data });
+        await updateAlertDefinitionAction({ ...definition, ...payload });
         toast({ variant: "success", title: "Başarılı", description: "Uyarı tanımı başarıyla güncellendi." });
       } else {
-        await addAlertDefinitionAction(data);
+        await addAlertDefinitionAction(payload);
         toast({ variant: "success", title: "Başarılı", description: "Uyarı tanımı başarıyla eklendi." });
       }
       router.push("/admin/alert-definitions");
@@ -150,6 +166,8 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
     if (watchedEntityType === 'magazine') return magazineStatuses;
     return [];
   }
+
+  const showDepotFilter = watchedEntityType === 'ammunition' && watchedConditionType === 'low_stock';
 
   return (
     <Form {...form}>
@@ -216,8 +234,41 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
           />
         </div>
 
+        {showDepotFilter && (
+            <FormField
+                control={form.control}
+                name="depotId"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel><span suppressHydrationWarning>Depo Filtresi (İsteğe Bağlı)</span></FormLabel>
+                    <Select
+                        onValueChange={(value) => {
+                            if (value === ALL_DEPOTS_OPTION_VALUE) {
+                                field.onChange(undefined);
+                            } else {
+                                field.onChange(value as DepotId);
+                            }
+                        }}
+                        value={field.value || ALL_DEPOTS_OPTION_VALUE}
+                    >
+                    <FormControl><SelectTrigger><SelectValue placeholder="Tüm depolar" /></SelectTrigger></FormControl>
+                    <SelectContent>
+                        <SelectItem value={ALL_DEPOTS_OPTION_VALUE}><span suppressHydrationWarning>-- Tüm Depolar --</span></SelectItem>
+                        {depots.map(depot => (
+                        <SelectItem key={depot.id} value={depot.id}><span suppressHydrationWarning>{depot.name}</span></SelectItem>
+                        ))}
+                    </SelectContent>
+                    </Select>
+                    <FormDescription className="text-xs"><span suppressHydrationWarning>Belirli bir depo için uyarı. Boş bırakırsanız tümü için geçerli olur.</span></FormDescription>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+        )}
+
         {watchedConditionType === 'low_stock' && watchedEntityType === 'ammunition' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 border rounded-md">
+          <div className={cn("grid grid-cols-1 gap-6 p-4 border rounded-md", showDepotFilter ? "md:grid-cols-2" : "md:grid-cols-2")}>
+             {!showDepotFilter && <div></div>} {/* Placeholder if depot filter is not shown for alignment */}
             <FormField
               control={form.control}
               name="caliberFilter"
@@ -341,20 +392,20 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
                   ))}
                 </div>
                 <div id={formDescriptionId} className={cn("text-xs text-muted-foreground space-y-1 mt-2")}>
-                  <span suppressHydrationWarning>Yukarıdaki butonlarla veya manuel olarak mesajınızda aşağıdaki yer tutucuları kullanabilirsiniz. Bunlar, uyarı oluştuğunda gerçek değerlerle değiştirilecektir:</span>
-                  <ul className="list-disc list-inside text-muted-foreground">
-                      <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{itemName}'}</code>: Öğenin adı (örn. "9mm Fişek", "Sar 223 P").</li>
-                      <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{depotName}'}</code>: Öğenin bulunduğu depo.</li>
-                      <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{currentValue}'}</code>: Koşulu tetikleyen mevcut değer (örn. stok için "50", durum için "Arızalı").</li>
-                      <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{threshold}'}</code>: Tanımlanan eşik değer (örn. "100", sadece düşük stok uyarısı için).</li>
-                      <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{status}'}</code>: Öğenin mevcut durumu (durum uyarısı için).</li>
-                      <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{caliber}'}</code>: Kalibre (mühimmat, şarjör veya silah için).</li>
-                      <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{serialNumber}'}</code>: Seri numarası (silah için).</li>
-                  </ul>
-                  <p className="font-semibold" suppressHydrationWarning>Örnek Şablon Kullanımı:</p>
-                  <code className="block text-xs bg-muted p-1 rounded-sm w-full" suppressHydrationWarning>
-                    Dikkat! {"{depotName}"} deposundaki {"{itemName}"} ({'{caliber}'}) stok miktarı ({'{currentValue}'} adet), belirlenen eşik ({'{threshold}'} adet) altına düştü.
-                  </code>
+                    <span suppressHydrationWarning>Uyarı mesajınızda aşağıdaki yer tutucuları kullanabilirsiniz. Bunlar, uyarı oluştuğunda gerçek değerlerle değiştirilecektir:</span>
+                    <ul className="list-disc list-inside text-muted-foreground">
+                        <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{"{itemName}"}</code>: Öğenin adı (örn. "9mm Fişek", "Sar 223 P").</li>
+                        <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{"{depotName}"}</code>: Öğenin bulunduğu depo.</li>
+                        <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{"{currentValue}"}</code>: Koşulu tetikleyen mevcut değer (örn. stok için "50", durum için "Arızalı").</li>
+                        <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{"{threshold}"}</code>: Tanımlanan eşik değer (örn. "100", sadece düşük stok uyarısı için).</li>
+                        <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{"{status}"}</code>: Öğenin mevcut durumu (durum uyarısı için).</li>
+                        <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{"{caliber}"}</code>: Kalibre (mühimmat, şarjör veya silah için).</li>
+                        <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{"{serialNumber}"}</code>: Seri numarası (silah için).</li>
+                    </ul>
+                    <p className="font-semibold" suppressHydrationWarning>Örnek Şablon Kullanımı:</p>
+                    <code className="block text-xs bg-muted p-1 rounded-sm w-full" suppressHydrationWarning>
+                        Dikkat! {"{depotName}"} deposundaki {"{itemName}"} ({'{caliber}'}) stok miktarı ({'{currentValue}'} adet), belirlenen eşik ({'{threshold}'} adet) altına düştü.
+                    </code>
                 </div>
                 <FormMessage />
               </FormItem>
@@ -384,4 +435,3 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
     </Form>
   );
 }
-    

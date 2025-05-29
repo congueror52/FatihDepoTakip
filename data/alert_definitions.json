@@ -1,15 +1,15 @@
 [
   {
-    "name": "fişek düşük",
-    "description": "fişek düşk ayarı",
+    "name": "Düşük fişek uyarısı",
+    "description": "",
     "entityType": "ammunition",
     "conditionType": "low_stock",
     "caliberFilter": "9x19mm",
-    "thresholdValue": 300,
-    "severity": "Orta",
-    "messageTemplate": "{itemName}{depotName}{currentValue}{threshold}{status}{caliber} {status} değer altına düştü",
+    "thresholdValue": 5555555555,
+    "severity": "Yüksek",
+    "messageTemplate": "{itemName}{depotName}{currentValue}{threshold}{status}{caliber}",
     "isActive": true,
-    "id": "30cec792-5cda-49f5-97ee-e5d7954cf54f",
-    "lastUpdated": "2025-05-29T12:46:06.852Z"
+    "id": "273cc3be-c02b-4858-b74b-e789afaa33cf",
+    "lastUpdated": "2025-05-29T16:07:48.943Z"
   }
 ]

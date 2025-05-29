@@ -1,5 +1,5 @@
 
-import { getAlertDefinitionById } from "@/lib/actions/inventory.actions"; 
+import { getAlertDefinitionById, getDepots } from "@/lib/actions/inventory.actions"; 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertDefinitionForm } from "../../_components/alert-definition-form";
 import { BellDot, ArrowLeft } from "lucide-react"; 
@@ -8,6 +8,7 @@ import { notFound } from "next/navigation";
 
 export default async function EditAlertDefinitionPage({ params }: { params: { id: string } }) {
   const definition = await getAlertDefinitionById(params.id); 
+  const depots = await getDepots(); // Fetch depots
 
   if (!definition) {
     notFound();
@@ -29,11 +30,9 @@ export default async function EditAlertDefinitionPage({ params }: { params: { id
           <CardDescription><span suppressHydrationWarning>Uyarı tanımı için bilgileri değiştirin: {definition.name}.</span></CardDescription>
         </CardHeader>
         <CardContent>
-          <AlertDefinitionForm definition={definition} />
+          <AlertDefinitionForm definition={definition} depots={depots} /> {/* Pass depots to the form */}
         </CardContent>
       </Card>
     </div>
   );
 }
-
-    

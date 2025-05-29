@@ -1,7 +1,7 @@
 
 'use client';
 
-import type { AlertDefinition } from "@/types/inventory";
+import type { AlertDefinition, Depot } from "@/types/inventory";
 import {
   Table,
   TableBody,
@@ -12,9 +12,9 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, XCircle, Edit, Trash2 } from "lucide-react";
+import { CheckCircle, XCircle, Edit, Trash2, Warehouse, Globe } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,13 +30,18 @@ import { deleteAlertDefinitionAction } from "@/lib/actions/inventory.actions";
 
 interface AlertDefinitionsTableClientProps {
   definitions: AlertDefinition[];
+  depots: Depot[]; // To resolve depot names
 }
 
-export function AlertDefinitionsTableClient({ definitions: initialDefinitions }: AlertDefinitionsTableClientProps) {
+export function AlertDefinitionsTableClient({ definitions: initialDefinitions, depots }: AlertDefinitionsTableClientProps) {
   const [definitions, setDefinitions] = useState<AlertDefinition[]>(initialDefinitions);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedDefinitionId, setSelectedDefinitionId] = useState<string | null>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    setDefinitions(initialDefinitions);
+  }, [initialDefinitions]);
 
   const handleDelete = async () => {
     if (!selectedDefinitionId) return;
@@ -56,15 +61,6 @@ export function AlertDefinitionsTableClient({ definitions: initialDefinitions }:
     setSelectedDefinitionId(id);
     setIsDeleteDialogOpen(true);
   };
-
-  const getSeverityBadgeVariant = (severity: AlertDefinition['severity']) => {
-    switch (severity) {
-      case 'Yüksek': return 'destructive';
-      case 'Orta': return 'default'; // Or 'secondary' if you prefer less emphasis
-      case 'Düşük': return 'secondary'; // Or 'outline'
-      default: return 'outline';
-    }
-  };
   
   const getSeverityBadgeClasses = (severity: AlertDefinition['severity']) => {
     switch (severity) {
@@ -75,6 +71,12 @@ export function AlertDefinitionsTableClient({ definitions: initialDefinitions }:
     }
   };
 
+  const getDepotName = (depotId?: string) => {
+    if (!depotId) return <span className="flex items-center gap-1 text-muted-foreground text-xs"><Globe className="h-3 w-3" /> <span suppressHydrationWarning>Tüm Depolar</span></span>;
+    const depot = depots.find(d => d.id === depotId);
+    return depot ? <span className="flex items-center gap-1"><Warehouse className="h-3 w-3 text-muted-foreground" /> {depot.name}</span> : depotId;
+  };
+
   return (
     <>
       <Table>
@@ -83,6 +85,7 @@ export function AlertDefinitionsTableClient({ definitions: initialDefinitions }:
             <TableHead><span suppressHydrationWarning>Uyarı Adı</span></TableHead>
             <TableHead><span suppressHydrationWarning>Varlık Türü</span></TableHead>
             <TableHead><span suppressHydrationWarning>Koşul</span></TableHead>
+            <TableHead><span suppressHydrationWarning>Depo</span></TableHead>
             <TableHead><span suppressHydrationWarning>Ciddiyet</span></TableHead>
             <TableHead className="text-center"><span suppressHydrationWarning>Aktif mi?</span></TableHead>
             <TableHead><span suppressHydrationWarning>Son Güncelleme</span></TableHead>
@@ -92,7 +95,7 @@ export function AlertDefinitionsTableClient({ definitions: initialDefinitions }:
         <TableBody>
           {definitions.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={7} className="text-center" suppressHydrationWarning>Uyarı tanımı bulunamadı.</TableCell>
+              <TableCell colSpan={8} className="text-center" suppressHydrationWarning>Uyarı tanımı bulunamadı.</TableCell>
             </TableRow>
           ) : (
             definitions.map((definition) => (
@@ -100,6 +103,7 @@ export function AlertDefinitionsTableClient({ definitions: initialDefinitions }:
                 <TableCell className="font-medium">{definition.name}</TableCell>
                 <TableCell>{definition.entityType}</TableCell>
                 <TableCell>{definition.conditionType}</TableCell>
+                <TableCell>{getDepotName(definition.depotId)}</TableCell>
                 <TableCell>
                   <Badge className={getSeverityBadgeClasses(definition.severity)}>{definition.severity}</Badge>
                 </TableCell>
@@ -141,5 +145,3 @@ export function AlertDefinitionsTableClient({ definitions: initialDefinitions }:
     </>
   );
 }
-
-    

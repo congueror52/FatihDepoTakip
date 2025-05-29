@@ -3,11 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlusCircle, BellDot } from "lucide-react"; 
 import Link from "next/link";
-import { getAlertDefinitions } from "@/lib/actions/inventory.actions"; 
+import { getAlertDefinitions, getDepots } from "@/lib/actions/inventory.actions"; 
 import { AlertDefinitionsTableClient } from "./_components/alert-definitions-table-client";
 
 export default async function AlertDefinitionsPage() {
   const definitions = await getAlertDefinitions(); 
+  const depots = await getDepots();
 
   return (
     <div className="flex flex-col gap-6">
@@ -26,14 +27,12 @@ export default async function AlertDefinitionsPage() {
       <Card>
         <CardHeader>
           <CardTitle suppressHydrationWarning>Tanımlı Uyarı Kuralları</CardTitle>
-          <CardDescription suppressHydrationWarning>Sistemde otomatik uyarılar oluşturmak için kuralları yönetin.</CardDescription>
+          <CardDescription suppressHydrationWarning>Sistemde otomatik uyarılar oluşturmak için kuralları yönetin. Uyarılar depo bazlı veya genel olarak tanımlanabilir.</CardDescription>
         </CardHeader>
         <CardContent>
-          <AlertDefinitionsTableClient definitions={definitions} />
+          <AlertDefinitionsTableClient definitions={definitions} depots={depots} />
         </CardContent>
       </Card>
     </div>
   );
 }
-
-    

@@ -233,6 +233,7 @@ export interface AlertDefinition {
   description?: string;
   entityType: AlertEntityType;
   conditionType: AlertConditionType;
+  depotId?: DepotId; // For depot-specific alerts
   // Fields specific to conditionType
   caliberFilter?: SupportedCaliber; // For ammunition + low_stock
   thresholdValue?: number; // For low_stock
@@ -258,6 +259,3 @@ export type UsageScenariosDb = UsageScenario[];
 export type DepotsDb = Depot[];
 export type ShipmentTypeDefinitionsDb = ShipmentTypeDefinition[];
 export type AlertDefinitionsDb = AlertDefinition[]; // New DB type
-
-
-    

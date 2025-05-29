@@ -3,8 +3,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { AlertDefinitionForm } from "../_components/alert-definition-form";
 import { BellDot, ArrowLeft } from "lucide-react"; 
 import Link from "next/link";
+import { getDepots } from "@/lib/actions/inventory.actions"; // Import getDepots
 
-export default function NewAlertDefinitionPage() {
+export default async function NewAlertDefinitionPage() {
+  const depots = await getDepots(); // Fetch depots
   return (
     <div className="max-w-2xl mx-auto">
        <Link href="/admin/alert-definitions" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4">
@@ -21,11 +23,9 @@ export default function NewAlertDefinitionPage() {
           <CardDescription suppressHydrationWarning>Yeni bir uyarı kuralı için bilgileri girin.</CardDescription>
         </CardHeader>
         <CardContent>
-          <AlertDefinitionForm />
+          <AlertDefinitionForm depots={depots} /> {/* Pass depots to the form */}
         </CardContent>
       </Card>
     </div>
   );
 }
-
-    
