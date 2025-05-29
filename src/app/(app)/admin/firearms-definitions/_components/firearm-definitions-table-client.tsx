@@ -11,9 +11,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2, Download } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react"; // Added useEffect
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,26 +25,31 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { deleteFirearmDefinitionAction } from "@/lib/actions/inventory.actions";
+import { deleteFirearmDefinitionAction, exportFirearmDefinitionsToCsvAction } from "@/lib/actions/inventory.actions";
 
 interface FirearmDefinitionsTableClientProps {
   definitions: FirearmDefinition[];
+  onRefresh: () => Promise<void>;
 }
 
-export function FirearmDefinitionsTableClient({ definitions: initialDefinitions }: FirearmDefinitionsTableClientProps) {
+export function FirearmDefinitionsTableClient({ definitions: initialDefinitions, onRefresh }: FirearmDefinitionsTableClientProps) {
   const [definitions, setDefinitions] = useState<FirearmDefinition[]>(initialDefinitions);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedDefinitionId, setSelectedDefinitionId] = useState<string | null>(null);
   const { toast } = useToast();
 
+  useEffect(() => { // Ensures table updates if the prop changes from parent
+    setDefinitions(initialDefinitions);
+  }, [initialDefinitions]);
+
   const handleDelete = async () => {
     if (!selectedDefinitionId) return;
     try {
       await deleteFirearmDefinitionAction(selectedDefinitionId);
-      setDefinitions(definitions.filter(d => d.id !== selectedDefinitionId));
+      await onRefresh();
       toast({ variant: "success", title: "Başarılı", description: "Silah tanımı başarıyla silindi." });
-    } catch (error) {
-      toast({ variant: "destructive", title: "Hata", description: "Silah tanımı silinemedi. Bu tanımı kullanan envanter öğeleri olabilir." });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Hata", description: error.message || "Silah tanımı silinemedi. Bu tanımı kullanan envanter öğeleri olabilir." });
     } finally {
       setIsDeleteDialogOpen(false);
       setSelectedDefinitionId(null);
@@ -56,8 +61,40 @@ export function FirearmDefinitionsTableClient({ definitions: initialDefinitions 
     setIsDeleteDialogOpen(true);
   };
 
+  const handleExportToCsv = async () => {
+    try {
+      const csvString = await exportFirearmDefinitionsToCsvAction();
+      if (!csvString) {
+        toast({ variant: "default", title: "Bilgi", description: "Dışa aktarılacak silah tanımı bulunmamaktadır." });
+        return;
+      }
+      // Prepend BOM for UTF-8 CSVs to be correctly opened by Excel
+      const BOM = "\uFEFF"; 
+      const blob = new Blob([BOM + csvString], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      if (link.download !== undefined) { 
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", "silah_tanimlari.csv");
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+      toast({ variant: "success", title: "Başarılı", description: "Silah tanımları CSV olarak dışa aktarıldı." });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Hata", description: error.message || "CSV dışa aktarılırken bir hata oluştu." });
+    }
+  };
+
   return (
     <>
+      <div className="mb-4 flex justify-end">
+        <Button onClick={handleExportToCsv} variant="outline">
+          <Download className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>CSV'ye Aktar</span>
+        </Button>
+      </div>
       <Table>
         <TableHeader>
           <TableRow>

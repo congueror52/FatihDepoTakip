@@ -3,11 +3,11 @@
 
 import { revalidatePath } from 'next/cache';
 import { unstable_noStore as noStore } from 'next/cache'; 
-import type { Firearm, Magazine, Ammunition, Shipment, ShipmentItem, AmmunitionUsageLog, FirearmDefinition, AmmunitionDailyUsageLog, UsageScenario, ScenarioCaliberConsumption, SupportedCaliber, MagazineStatus, AmmunitionStatus, Depot, MaintenanceLog, MaintenanceItemStatus, FirearmStatus, InventoryItemType, ShipmentTypeDefinition, DepotInventorySnapshot, HistoricalUsageSnapshot, UpcomingRequirementsSnapshot, AlertDefinition } from '@/types/inventory'; // Added AlertDefinition
+import type { Firearm, Magazine, Ammunition, Shipment, ShipmentItem, AmmunitionUsageLog, FirearmDefinition, AmmunitionDailyUsageLog, UsageScenario, ScenarioCaliberConsumption, SupportedCaliber, MagazineStatus, AmmunitionStatus, Depot, MaintenanceLog, MaintenanceItemStatus, FirearmStatus, InventoryItemType, ShipmentTypeDefinition, AlertDefinition } from '@/types/inventory';
 import { readData, writeData, generateId } from '@/lib/data-utils';
-import { logAction } from '@/lib/log-service'; // Import logAction
+import { logAction } from '@/lib/log-service'; 
 import { firearmFormSchema } from '@/app/(app)/inventory/firearms/_components/firearm-form-schema';
-import { firearmDefinitionFormSchema } from '@/app/(app)/admin/firearms-definitions/_components/firearm-definition-form-schema';
+import { firearmDefinitionFormSchema, type FirearmDefinitionFormValues } from '@/app/(app)/admin/firearms-definitions/_components/firearm-definition-form-schema';
 import { ammunitionDailyUsageFormSchema } from '@/app/(app)/daily-ammo-usage/_components/usage-log-form-schema';
 import { usageScenarioFormSchema } from '@/app/(app)/admin/usage-scenarios/_components/usage-scenario-form-schema';
 import { magazineFormSchema, type MagazineFormValues } from '@/app/(app)/inventory/magazines/_components/magazine-form-schema';
@@ -32,7 +32,7 @@ export async function getFirearmDefinitionById(id: string): Promise<FirearmDefin
   return definitions.find(d => d.id === id);
 }
 
-export async function addFirearmDefinitionAction(data: Omit<FirearmDefinition, 'id' | 'lastUpdated'>) {
+export async function addFirearmDefinitionAction(data: FirearmDefinitionFormValues): Promise<FirearmDefinition> {
   try {
     const validatedData = firearmDefinitionFormSchema.safeParse(data);
     if (!validatedData.success) {
@@ -56,7 +56,7 @@ export async function addFirearmDefinitionAction(data: Omit<FirearmDefinition, '
     revalidatePath('/dashboard');
     return newDefinition;
   } catch (error: any) {
-    if (error.message.startsWith('Geçersiz silah tanımı verisi')) throw error; // Already logged
+    if (error.message.startsWith('Geçersiz silah tanımı verisi')) throw error; 
     await logAction({ actionType: "CREATE", entityType: "FirearmDefinition", status: "FAILURE", details: data, errorMessage: error.message });
     throw error;
   }
@@ -90,12 +90,12 @@ export async function updateFirearmDefinitionAction(definition: FirearmDefinitio
     await logAction({ actionType: "UPDATE", entityType: "FirearmDefinition", entityId: updatedDefinition.id, status: "SUCCESS", details: updatedDefinition });
 
     revalidatePath('/admin/firearms-definitions');
-    revalidatePath(`/admin/firearms-definitions/${definition.id}/edit`);
     revalidatePath('/admin/firearms-definitions', 'layout');
+    revalidatePath(`/admin/firearms-definitions/${definition.id}/edit`);
     revalidatePath('/dashboard');
     return updatedDefinition;
   } catch (error: any) {
-     if (error.message.startsWith('Güncelleme için geçersiz silah tanımı verisi') || error.message.startsWith('Güncellenecek silah tanımı bulunamadı')) throw error; // Already logged
+     if (error.message.startsWith('Güncelleme için geçersiz silah tanımı verisi') || error.message.startsWith('Güncellenecek silah tanımı bulunamadı')) throw error; 
     await logAction({ actionType: "UPDATE", entityType: "FirearmDefinition", entityId: definition.id, status: "FAILURE", details: definition, errorMessage: error.message });
     throw error;
   }
@@ -104,6 +104,12 @@ export async function updateFirearmDefinitionAction(definition: FirearmDefinitio
 export async function deleteFirearmDefinitionAction(id: string): Promise<void> {
   try {
     let definitions = await getFirearmDefinitions();
+    const firearms = await getFirearms();
+    if (firearms.some(f => f.definitionId === id)) {
+      const errorMsg = 'Bu silah tanımını kullanan silahlar mevcut. Önce bu silahları silin veya farklı bir tanıma taşıyın.';
+      await logAction({ actionType: "DELETE", entityType: "FirearmDefinition", entityId: id, status: "FAILURE", errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
     definitions = definitions.filter(d => d.id !== id);
     await writeData('firearm_definitions.json', definitions);
     await logAction({ actionType: "DELETE", entityType: "FirearmDefinition", entityId: id, status: "SUCCESS" });
@@ -112,9 +118,142 @@ export async function deleteFirearmDefinitionAction(id: string): Promise<void> {
     revalidatePath('/admin/firearms-definitions', 'layout');
     revalidatePath('/dashboard');
   } catch (error: any) {
+    if (error.message.startsWith('Bu silah tanımını kullanan silahlar mevcut')) throw error;
     await logAction({ actionType: "DELETE", entityType: "FirearmDefinition", entityId: id, status: "FAILURE", errorMessage: error.message });
     throw error;
   }
+}
+
+interface CsvImportResult {
+  successCount: number;
+  errorCount: number;
+  errors: { row: number; message: string; data: any }[];
+}
+
+export async function importFirearmDefinitionsFromCsvAction(csvString: string): Promise<CsvImportResult> {
+  const result: CsvImportResult = { successCount: 0, errorCount: 0, errors: [] };
+  let definitions = await getFirearmDefinitions(); // Make it mutable
+  const lines = csvString.split(/\r\n|\n|\r/).filter(line => line.trim() !== ''); // Handle different line endings
+
+  if (lines.length < 2) {
+    result.errors.push({ row: 0, message: "CSV dosyası başlık satırını ve en az bir veri satırını içermelidir.", data: {} });
+    result.errorCount = 1;
+    return result;
+  }
+
+  const headerLine = lines[0].endsWith(';') ? lines[0].slice(0, -1) : lines[0]; // Remove trailing semicolon if present
+  const header = headerLine.split(';').map(h => h.trim().toLowerCase().replace(/"/g, '')); // Use semicolon, trim, lower, remove quotes
+
+  const expectedHeadersRequired = ["name", "model", "caliber"];
+  const optionalHeaders = ["id", "manufacturer", "description"];
+
+
+  if (!expectedHeadersRequired.every(eh => header.includes(eh))) {
+     result.errors.push({ row: 1, message: `CSV başlıkları eksik veya yanlış. Gerekli başlıklar: ${expectedHeadersRequired.join('; ')}`, data: header });
+     result.errorCount = 1;
+     return result;
+  }
+
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].endsWith(';') ? lines[i].slice(0, -1) : lines[i];
+    const values = line.split(';').map(v => v.trim().replace(/^"|"$/g, '')); // Use semicolon, trim, remove surrounding quotes
+    const rowData: any = {};
+    header.forEach((h, index) => {
+      if (values[index] !== undefined) { // Only add if value exists
+          rowData[h] = values[index];
+      }
+    });
+    
+    const definitionData: FirearmDefinitionFormValues & { id?: string } = {
+      name: rowData.name,
+      model: rowData.model,
+      manufacturer: rowData.manufacturer || "",
+      caliber: rowData.caliber,
+      description: rowData.description || "",
+      id: rowData.id || undefined, 
+    };
+    
+    const validation = firearmDefinitionFormSchema.safeParse(definitionData);
+
+    if (!validation.success) {
+      result.errorCount++;
+      result.errors.push({ row: i + 1, message: JSON.stringify(validation.error.format()), data: rowData });
+      continue;
+    }
+
+    try {
+      const validatedDefinition = validation.data;
+      if (validatedDefinition.id) {
+        const existingIndex = definitions.findIndex(d => d.id === validatedDefinition.id);
+        if (existingIndex !== -1) {
+          definitions[existingIndex] = { 
+            ...definitions[existingIndex], 
+            ...validatedDefinition, 
+            id: definitions[existingIndex].id, // Ensure original ID is kept
+            lastUpdated: new Date().toISOString() 
+          };
+          await logAction({ actionType: "UPDATE", entityType: "FirearmDefinition", entityId: definitions[existingIndex].id, status: "SUCCESS", details: definitions[existingIndex] });
+        } else {
+          // ID from CSV not found, create new with this ID
+          const newDef = { ...validatedDefinition, id: validatedDefinition.id, lastUpdated: new Date().toISOString() };
+          definitions.push(newDef);
+          await logAction({ actionType: "CREATE", entityType: "FirearmDefinition", entityId: newDef.id, status: "SUCCESS", details: newDef });
+        }
+      } else { 
+        const newDef = { ...validatedDefinition, id: await generateId(), lastUpdated: new Date().toISOString() };
+        definitions.push(newDef);
+        await logAction({ actionType: "CREATE", entityType: "FirearmDefinition", entityId: newDef.id, status: "SUCCESS", details: newDef });
+      }
+      result.successCount++;
+    } catch (e: any) {
+      result.errorCount++;
+      result.errors.push({ row: i + 1, message: e.message, data: rowData });
+      await logAction({ actionType: "CREATE", entityType: "FirearmDefinition", status: "FAILURE", details: rowData, errorMessage: e.message });
+    }
+  }
+
+  if (result.successCount > 0) {
+    await writeData('firearm_definitions.json', definitions);
+    revalidatePath('/admin/firearms-definitions');
+    revalidatePath('/admin/firearms-definitions', 'layout');
+  }
+  return result;
+}
+
+export async function exportFirearmDefinitionsToCsvAction(): Promise<string> {
+  noStore();
+  const definitions = await getFirearmDefinitions();
+  if (definitions.length === 0) {
+    return ""; 
+  }
+  const header = ["id", "name", "model", "manufacturer", "caliber", "description", "lastUpdated"];
+  
+  // Helper to quote CSV fields if they contain delimiter, quote, or newline
+  const escapeCsvField = (field: string | undefined | null): string => {
+    if (field === null || field === undefined) return "";
+    let strField = String(field);
+    // Replace all " with ""
+    strField = strField.replace(/"/g, '""');
+    // If field contains delimiter, quote, or newline, wrap in quotes
+    if (strField.includes(';') || strField.includes('"') || strField.includes('\n') || strField.includes('\r')) {
+      return `"${strField}"`;
+    }
+    return strField;
+  };
+
+  const rows = definitions.map(def =>
+    [
+      escapeCsvField(def.id),
+      escapeCsvField(def.name),
+      escapeCsvField(def.model),
+      escapeCsvField(def.manufacturer),
+      escapeCsvField(def.caliber),
+      escapeCsvField(def.description),
+      escapeCsvField(def.lastUpdated)
+    ].join(';') // Use semicolon as delimiter
+  );
+  
+  return ["sep=;", header.join(';'), ...rows].join('\n'); // Add sep=; for Excel (TR)
 }
 
 
@@ -182,7 +321,7 @@ export async function updateFirearmAction(firearm: Firearm) {
       status: firearm.status,
       purchaseDate: firearm.purchaseDate,
       notes: firearm.notes,
-      name: firearm.name,
+      name: firearm.name, // These are auto-filled but schema expects them
       model: firearm.model,
       manufacturer: firearm.manufacturer,
       caliber: firearm.caliber,
@@ -205,6 +344,7 @@ export async function updateFirearmAction(firearm: Firearm) {
     const currentFirearm = firearms[index];
     const updatedFirearm: Firearm = {
       ...currentFirearm,
+      // definitionId cannot be changed after creation, so it's not updated from validatedData
       serialNumber: validatedData.data.serialNumber,
       depotId: validatedData.data.depotId,
       status: validatedData.data.status,
@@ -218,9 +358,9 @@ export async function updateFirearmAction(firearm: Firearm) {
     await logAction({ actionType: "UPDATE", entityType: "Firearm", entityId: updatedFirearm.id, status: "SUCCESS", details: updatedFirearm });
 
     revalidatePath('/inventory/firearms');
+    revalidatePath('/inventory/firearms', 'layout');
     revalidatePath(`/inventory/firearms/${firearm.id}`);
     revalidatePath(`/inventory/firearms/${firearm.id}/edit`);
-    revalidatePath('/inventory/firearms', 'layout');
     revalidatePath('/dashboard');
     return updatedFirearm;
   } catch (error: any) {
@@ -245,6 +385,7 @@ export async function deleteFirearmAction(id: string): Promise<void> {
     throw error;
   }
 }
+
 
 // Magazines
 export async function getMagazines(): Promise<Magazine[]> {
@@ -298,7 +439,7 @@ export async function addMagazineAction(data: MagazineFormValues) {
     revalidatePath('/inventory/magazines');
     revalidatePath('/inventory/magazines', 'layout');
     revalidatePath('/dashboard');
-    return addedMagazines.length > 0 ? addedMagazines[0] : undefined; // Returns the first one for single add scenarios
+    return addedMagazines.length > 0 ? addedMagazines[0] : undefined; 
   } catch (error: any) {
      if (error.message.startsWith('Geçersiz şarjör verisi')) throw error;
     await logAction({ actionType: "CREATE", entityType: "Magazine", status: "FAILURE", details: data, errorMessage: error.message });
@@ -334,8 +475,8 @@ export async function updateMagazineAction(magazine: Magazine & { quantity?: num
     await logAction({ actionType: "UPDATE", entityType: "Magazine", entityId: magazines[index].id, status: "SUCCESS", details: magazines[index] });
 
     revalidatePath('/inventory/magazines');
-    revalidatePath(`/inventory/magazines/${magazine.id}/edit`);
     revalidatePath('/inventory/magazines', 'layout');
+    revalidatePath(`/inventory/magazines/${magazine.id}/edit`);
     revalidatePath('/dashboard');
     return magazines[index];
   } catch (error: any) {
@@ -431,8 +572,8 @@ export async function updateAmmunitionAction(ammunition: Ammunition) {
     await logAction({ actionType: "UPDATE", entityType: "Ammunition", entityId: allAmmunition[index].id, status: "SUCCESS", details: allAmmunition[index] });
 
     revalidatePath('/inventory/ammunition');
-    revalidatePath(`/inventory/ammunition/${ammunition.id}/edit`);
     revalidatePath('/inventory/ammunition', 'layout');
+    revalidatePath(`/inventory/ammunition/${ammunition.id}/edit`);
     revalidatePath('/dashboard');
     return allAmmunition[index];
   } catch (error: any) {
@@ -486,7 +627,6 @@ export async function addShipmentAction(data: Omit<Shipment, 'id' | 'lastUpdated
       await logAction({ actionType: "CREATE", entityType: "Shipment", status: "FAILURE", details: data, errorMessage: errorMsg });
       throw new Error(errorMsg);
     }
-    // Depot validation
     if (shipmentTypeDef.requiresSourceDepot && !validatedData.data.sourceDepotId) {
         const errorMsg = `'${shipmentTypeDef.name}' türü için kaynak depo gereklidir.`;
         await logAction({ actionType: "CREATE", entityType: "Shipment", status: "FAILURE", details: data, errorMessage: errorMsg });
@@ -546,7 +686,6 @@ export async function updateShipmentAction(shipment: Shipment): Promise<Shipment
       await logAction({ actionType: "UPDATE", entityType: "Shipment", entityId: shipment.id, status: "FAILURE", details: shipment, errorMessage: errorMsg });
       throw new Error(errorMsg);
     }
-    // Depot validation
     if (shipmentTypeDef.requiresSourceDepot && !validatedData.data.sourceDepotId) {
         const errorMsg = `'${shipmentTypeDef.name}' türü için kaynak depo gereklidir.`;
         await logAction({ actionType: "UPDATE", entityType: "Shipment", entityId: shipment.id, status: "FAILURE", details: shipment, errorMessage: errorMsg });
@@ -580,8 +719,8 @@ export async function updateShipmentAction(shipment: Shipment): Promise<Shipment
     await logAction({ actionType: "UPDATE", entityType: "Shipment", entityId: shipments[index].id, status: "SUCCESS", details: shipments[index] });
 
     revalidatePath('/shipments');
-    revalidatePath(`/shipments/${shipment.id}/edit`);
     revalidatePath('/shipments', 'layout');
+    revalidatePath(`/shipments/${shipment.id}/edit`);
     revalidatePath('/dashboard');
     return shipments[index];
   } catch (error: any) {
@@ -676,6 +815,7 @@ export async function addAmmunitionDailyUsageLogAction(data: Omit<AmmunitionDail
     revalidatePath('/daily-ammo-usage');
     revalidatePath('/daily-ammo-usage', 'layout');
     revalidatePath('/dashboard');
+    revalidatePath('/inventory/ammunition');
     return newLog;
   } catch (error: any) {
     if (error.message.startsWith('Geçersiz günlük fişek kullanımı verisi')) throw error;
@@ -711,9 +851,10 @@ export async function updateAmmunitionDailyUsageLogAction(logToUpdate: Ammunitio
     await logAction({ actionType: "UPDATE", entityType: "DailyAmmunitionUsage", entityId: logs[index].id, status: "SUCCESS", details: logs[index] });
 
     revalidatePath('/daily-ammo-usage');
-    revalidatePath(`/daily-ammo-usage/${logToUpdate.id}/edit`);
     revalidatePath('/daily-ammo-usage', 'layout');
+    revalidatePath(`/daily-ammo-usage/${logToUpdate.id}/edit`);
     revalidatePath('/dashboard');
+    revalidatePath('/inventory/ammunition');
     return logs[index];
   } catch (error: any) {
     if (error.message.startsWith('Güncelleme için geçersiz günlük fişek kullanımı verisi') || error.message.startsWith('Güncellenecek günlük fişek kullanım kaydı bulunamadı')) throw error;
@@ -732,6 +873,7 @@ export async function deleteAmmunitionDailyUsageLogAction(id: string): Promise<v
     revalidatePath('/daily-ammo-usage');
     revalidatePath('/daily-ammo-usage', 'layout');
     revalidatePath('/dashboard');
+    revalidatePath('/inventory/ammunition');
   } catch (error: any) {
     await logAction({ actionType: "DELETE", entityType: "DailyAmmunitionUsage", entityId: id, status: "FAILURE", errorMessage: error.message });
     throw error;
@@ -775,7 +917,6 @@ export async function getGroupedAmmunitionDailyUsageLogs(): Promise<GroupedDaily
             logs: logsByScenario[scenario.id].sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
         });
     } else {
-         // Senaryo için kayıt olmasa bile başlığı göstermek için ekle
          groupedResult.push({
             scenarioId: scenario.id,
             scenarioName: scenario.name,
@@ -784,7 +925,6 @@ export async function getGroupedAmmunitionDailyUsageLogs(): Promise<GroupedDaily
     }
   }
 
-  // Senaryosu olmayan kayıtları en sona ekle
   if (logsWithoutScenario.length > 0) {
     groupedResult.push({
       scenarioName: "Senaryo Belirtilmeyen Kullanımlar",
@@ -875,8 +1015,8 @@ export async function updateUsageScenarioAction(scenario: UsageScenario) {
     await logAction({ actionType: "UPDATE", entityType: "UsageScenario", entityId: updatedScenario.id, status: "SUCCESS", details: updatedScenario });
     
     revalidatePath('/admin/usage-scenarios');
-    revalidatePath(`/admin/usage-scenarios/${scenario.id}/edit`);
     revalidatePath('/admin/usage-scenarios', 'layout');
+    revalidatePath(`/admin/usage-scenarios/${scenario.id}/edit`);
     return updatedScenario;
   } catch (error: any) {
     if (error.message.startsWith('Güncelleme için geçersiz kullanım senaryosu verisi') || error.message.startsWith('Güncellenecek kullanım senaryosu bulunamadı')) throw error;
@@ -888,6 +1028,12 @@ export async function updateUsageScenarioAction(scenario: UsageScenario) {
 export async function deleteUsageScenarioAction(id: string): Promise<void> {
   try {
     let scenarios = await getUsageScenarios();
+    const dailyUsages = await getAmmunitionDailyUsageLogs();
+    if (dailyUsages.some(usage => usage.usageScenarioId === id)) {
+      const errorMsg = "Bu kullanım senaryosunu kullanan günlük fişek kullanım kayıtları mevcut. Önce bu kayıtları silin veya farklı bir senaryoya taşıyın.";
+      await logAction({ actionType: "DELETE", entityType: "UsageScenario", entityId: id, status: "FAILURE", errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
     scenarios = scenarios.filter(s => s.id !== id);
     await writeData('usage_scenarios.json', scenarios);
     await logAction({ actionType: "DELETE", entityType: "UsageScenario", entityId: id, status: "SUCCESS" });
@@ -895,6 +1041,7 @@ export async function deleteUsageScenarioAction(id: string): Promise<void> {
     revalidatePath('/admin/usage-scenarios');
     revalidatePath('/admin/usage-scenarios', 'layout');
   } catch (error: any) {
+    if (error.message.startsWith('Bu kullanım senaryosunu kullanan günlük fişek kullanım kayıtları mevcut')) throw error;
     await logAction({ actionType: "DELETE", entityType: "UsageScenario", entityId: id, status: "FAILURE", errorMessage: error.message });
     throw error;
   }
@@ -977,8 +1124,8 @@ export async function updateDepotAction(depot: Depot) {
     await logAction({ actionType: "UPDATE", entityType: "Depot", entityId: updatedDepot.id, status: "SUCCESS", details: updatedDepot });
     
     revalidatePath('/admin/depots');
-    revalidatePath(`/admin/depots/${id}/edit`);
     revalidatePath('/admin/depots', 'layout');
+    revalidatePath(`/admin/depots/${id}/edit`);
     return updatedDepot;
   } catch (error: any) {
     if (error.message.startsWith('Güncelleme için geçersiz depo verisi') || error.message.startsWith('Güncellenecek depo bulunamadı')) throw error;
@@ -990,6 +1137,23 @@ export async function updateDepotAction(depot: Depot) {
 export async function deleteDepotAction(id: string): Promise<void> {
   try {
     let depots = await getDepots();
+    const firearms = await getFirearms();
+    if (firearms.some(f => f.depotId === id)) {
+      throw new Error("Bu depo, silah envanterinde kullanılıyor.");
+    }
+    const magazines = await getMagazines();
+    if (magazines.some(m => m.depotId === id)) {
+      throw new Error("Bu depo, şarjör envanterinde kullanılıyor.");
+    }
+    const ammunition = await getAmmunition();
+    if (ammunition.some(a => a.depotId === id)) {
+      throw new Error("Bu depo, mühimmat envanterinde kullanılıyor.");
+    }
+    const shipments = await getShipments();
+    if (shipments.some(s => s.sourceDepotId === id || s.destinationDepotId === id)) {
+      throw new Error("Bu depo, malzeme kayıtlarında (sevkiyatlarda) kullanılıyor.");
+    }
+
     depots = depots.filter(d => d.id !== id);
     await writeData('depots.json', depots);
     await logAction({ actionType: "DELETE", entityType: "Depot", entityId: id, status: "SUCCESS" });
@@ -997,6 +1161,10 @@ export async function deleteDepotAction(id: string): Promise<void> {
     revalidatePath('/admin/depots');
     revalidatePath('/admin/depots', 'layout');
   } catch (error: any) {
+     if (error.message.startsWith('Bu depo,')) { 
+      await logAction({ actionType: "DELETE", entityType: "Depot", entityId: id, status: "FAILURE", errorMessage: error.message });
+      throw error;
+    }
     await logAction({ actionType: "DELETE", entityType: "Depot", entityId: id, status: "FAILURE", errorMessage: error.message });
     throw error;
   }
@@ -1010,17 +1178,26 @@ export async function addMaintenanceLogToItemAction(
 ) {
   let logEntryId: string | undefined = undefined;
   try {
-    if (!itemId || !itemType || !logData.date || !logData.description || !logData.statusChangeFrom || !logData.statusChangeTo) {
-      const errorMsg = 'Bakım kaydı için eksik veri.';
-      await logAction({ actionType: "LOG_MAINTENANCE", entityType: "MaintenanceLog", entityId: itemId, status: "FAILURE", details: logData, errorMessage: errorMsg });
-      throw new Error(errorMsg);
+    const validatedData = maintenanceLogFormSchema.safeParse({
+        itemId, itemType, ...logData
+    });
+    if(!validatedData.success) {
+        const errorMsg = 'Bakım kaydı için geçersiz veri: ' + JSON.stringify(validatedData.error.format());
+        await logAction({ actionType: "LOG_MAINTENANCE", entityType: "MaintenanceLog", entityId: itemId, status: "FAILURE", details: logData, errorMessage: errorMsg });
+        throw new Error(errorMsg);
     }
-
+    
     const newLog: MaintenanceLog = {
-      ...logData,
+      date: validatedData.data.date,
+      description: validatedData.data.description,
+      statusChangeFrom: validatedData.data.statusChangeFrom,
+      statusChangeTo: validatedData.data.statusChangeTo,
+      technician: validatedData.data.technician,
+      partsUsed: validatedData.data.partsUsed,
+      cost: validatedData.data.cost,
       id: await generateId(),
     };
-    logEntryId = newLog.id; // Capture for potential failure log
+    logEntryId = newLog.id; 
 
     if (itemType === 'firearm') {
       const firearms = await getFirearms();
@@ -1035,8 +1212,6 @@ export async function addMaintenanceLogToItemAction(
       firearms[itemIndex].status = newLog.statusChangeTo as FirearmStatus;
       firearms[itemIndex].lastUpdated = new Date().toISOString();
       await writeData('firearms.json', firearms);
-      
-      // Also log the update to the firearm itself
       await logAction({ actionType: "UPDATE", entityType: "Firearm", entityId: itemId, status: "SUCCESS", details: { status: newLog.statusChangeTo, maintenanceLogAdded: newLog.id } });
 
     } else if (itemType === 'magazine') {
@@ -1052,8 +1227,6 @@ export async function addMaintenanceLogToItemAction(
       magazines[itemIndex].status = newLog.statusChangeTo as MagazineStatus;
       magazines[itemIndex].lastUpdated = new Date().toISOString();
       await writeData('magazines.json', magazines);
-      
-      // Also log the update to the magazine itself
       await logAction({ actionType: "UPDATE", entityType: "Magazine", entityId: itemId, status: "SUCCESS", details: { status: newLog.statusChangeTo, maintenanceLogAdded: newLog.id } });
 
     } else {
@@ -1072,9 +1245,9 @@ export async function addMaintenanceLogToItemAction(
     revalidatePath('/dashboard');
     return newLog;
   } catch (error: any) {
-     if (error.message.startsWith('Bakım kaydı için eksik veri') || 
+     if (error.message.startsWith('Bakım kaydı için geçersiz veri') || 
         error.message.includes('bulunamadı') ||
-        error.message.startsWith('Geçersiz öğe türü')) throw error; // Already logged specific errors
+        error.message.startsWith('Geçersiz öğe türü')) throw error; 
     await logAction({ actionType: "LOG_MAINTENANCE", entityType: "MaintenanceLog", entityId: logEntryId || itemId, status: "FAILURE", details: logData, errorMessage: error.message });
     throw error;
   }
@@ -1150,8 +1323,8 @@ export async function updateShipmentTypeDefinitionAction(definition: ShipmentTyp
     await logAction({ actionType: "UPDATE", entityType: "ShipmentTypeDefinition", entityId: updatedDefinition.id, status: "SUCCESS", details: updatedDefinition });
     
     revalidatePath('/admin/shipment-types');
-    revalidatePath(`/admin/shipment-types/${definition.id}/edit`);
     revalidatePath('/admin/shipment-types', 'layout');
+    revalidatePath(`/admin/shipment-types/${definition.id}/edit`);
     return updatedDefinition;
   } catch (error: any) {
     if (error.message.startsWith('Güncelleme için geçersiz malzeme kayıt türü verisi') || error.message.startsWith('Güncellenecek malzeme kayıt türü bulunamadı')) throw error;
@@ -1163,6 +1336,12 @@ export async function updateShipmentTypeDefinitionAction(definition: ShipmentTyp
 export async function deleteShipmentTypeDefinitionAction(id: string): Promise<void> {
   try {
     let definitions = await getShipmentTypeDefinitions();
+    const shipments = await getShipments();
+    if (shipments.some(s => s.typeId === id)) {
+        const errorMsg = "Bu kayıt türünü kullanan malzeme kayıtları (sevkiyatlar) mevcut. Önce bu kayıtları silin veya farklı bir türe taşıyın.";
+        await logAction({ actionType: "DELETE", entityType: "ShipmentTypeDefinition", entityId: id, status: "FAILURE", errorMessage: errorMsg });
+        throw new Error(errorMsg);
+    }
     definitions = definitions.filter(d => d.id !== id);
     await writeData('shipment_types.json', definitions);
     await logAction({ actionType: "DELETE", entityType: "ShipmentTypeDefinition", entityId: id, status: "SUCCESS" });
@@ -1170,6 +1349,7 @@ export async function deleteShipmentTypeDefinitionAction(id: string): Promise<vo
     revalidatePath('/admin/shipment-types');
     revalidatePath('/admin/shipment-types', 'layout');
   } catch (error: any) {
+    if (error.message.startsWith('Bu kayıt türünü kullanan malzeme kayıtları')) throw error;
     await logAction({ actionType: "DELETE", entityType: "ShipmentTypeDefinition", entityId: id, status: "FAILURE", errorMessage: error.message });
     throw error;
   }
@@ -1208,8 +1388,8 @@ export async function addAlertDefinitionAction(data: Omit<AlertDefinition, 'id' 
     
     revalidatePath('/admin/alert-definitions');
     revalidatePath('/admin/alert-definitions', 'layout');
-    revalidatePath('/alerts'); // Revalidate alerts page as well
-    revalidatePath('/dashboard'); // Revalidate dashboard
+    revalidatePath('/alerts'); 
+    revalidatePath('/dashboard'); 
     return newDefinition;
   } catch (error: any) {
     if (error.message.startsWith('Geçersiz uyarı tanımı verisi')) throw error;
@@ -1246,10 +1426,10 @@ export async function updateAlertDefinitionAction(definition: AlertDefinition) {
     await logAction({ actionType: "UPDATE", entityType: "AlertDefinition", entityId: updatedDefinition.id, status: "SUCCESS", details: updatedDefinition });
     
     revalidatePath('/admin/alert-definitions');
-    revalidatePath(`/admin/alert-definitions/${definition.id}/edit`);
     revalidatePath('/admin/alert-definitions', 'layout');
-    revalidatePath('/alerts'); // Revalidate alerts page as well
-    revalidatePath('/dashboard'); // Revalidate dashboard
+    revalidatePath(`/admin/alert-definitions/${definition.id}/edit`);
+    revalidatePath('/alerts'); 
+    revalidatePath('/dashboard'); 
     return updatedDefinition;
   } catch (error: any) {
      if (error.message.startsWith('Güncelleme için geçersiz uyarı tanımı verisi') || error.message.startsWith('Güncellenecek uyarı tanımı bulunamadı')) throw error;
@@ -1267,24 +1447,18 @@ export async function deleteAlertDefinitionAction(id: string): Promise<void> {
     
     revalidatePath('/admin/alert-definitions');
     revalidatePath('/admin/alert-definitions', 'layout');
-    revalidatePath('/alerts'); // Revalidate alerts page as well
-    revalidatePath('/dashboard'); // Revalidate dashboard
+    revalidatePath('/alerts'); 
+    revalidatePath('/dashboard'); 
   } catch (error: any) {
     await logAction({ actionType: "DELETE", entityType: "AlertDefinition", entityId: id, status: "FAILURE", errorMessage: error.message });
     throw error;
   }
 }
 
-// Placeholder for actual triggered alerts
-// In a real system, this would involve evaluating definitions against current inventory
-// and storing actual triggered alerts.
+
 export async function getTriggeredAlerts(): Promise<AlertDefinition[]> {
   noStore();
-  // For now, this will simulate triggered alerts based on active definitions.
-  // This is NOT a full alert triggering system.
-  // const definitions = await getAlertDefinitions();
-  // return definitions.filter(def => def.isActive);
-  return []; // Returning empty array to simulate no triggered alerts
+  return []; 
 }
 
 
@@ -1293,7 +1467,6 @@ export async function getAuditLogs(): Promise<AuditLogEntry[]> {
   noStore();
   try {
     const allLogs = await readData<AuditLogEntry>('audit_log.json');
-    // Sort by timestamp, newest first
     return allLogs.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
   } catch (error) {
     console.error("Denetim günlükleri okunurken hata oluştu:", error);
@@ -1304,11 +1477,10 @@ export async function getAuditLogs(): Promise<AuditLogEntry[]> {
 export async function getRecentAuditLogs(limit: number = 5): Promise<AuditLogEntry[]> {
   noStore();
   try {
-    const allLogs = await getAuditLogs(); // Use the new getAuditLogs function
+    const allLogs = await getAuditLogs(); 
     return allLogs.slice(0, limit);
   } catch (error) {
     console.error("Son denetim günlükleri okunurken hata oluştu:", error);
-    return []; // Hata durumunda boş dizi döndür
+    return []; 
   }
 }
-    
