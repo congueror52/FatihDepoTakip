@@ -3,15 +3,15 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, Target, ShieldX, Wrench, ShieldCheck, Construction, ServerCrash, Info, Upload, Download } from "lucide-react";
+import { PlusCircle, Target, ShieldX, Wrench, ShieldCheck, Construction, ServerCrash, Info, Download } from "lucide-react"; // Upload kaldırıldı
 import Link from "next/link";
-import { getFirearms, getFirearmDefinitions, getDepots, importFirearmsFromCsvAction, exportFirearmsToCsvAction } from "@/lib/actions/inventory.actions";
+import { getFirearms, getFirearmDefinitions, getDepots, exportFirearmsToCsvAction } from "@/lib/actions/inventory.actions"; // importFirearmsFromCsvAction kaldırıldı
 import { FirearmsTableClient } from "./_components/firearms-table-client";
 import type { FirearmStatus, Firearm, Depot, FirearmDefinition } from "@/types/inventory";
 import { firearmStatuses } from "./_components/firearm-form-schema"; 
 import { useEffect, useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Input } from "@/components/ui/input";
+// Input kaldırıldı
 
 export default function FirearmsPage() {
   const [firearms, setFirearms] = useState<Firearm[]>([]);
@@ -19,7 +19,7 @@ export default function FirearmsPage() {
   const [depots, setDepots] = useState<Depot[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  // fileInputRef kaldırıldı
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -75,41 +75,7 @@ export default function FirearmsPage() {
     };
   }).filter(summary => summary.totalCount > 0); 
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const csvString = e.target?.result as string;
-      if (!csvString) {
-        toast({ variant: "destructive", title: "Hata", description: "Dosya okunamadı." });
-        return;
-      }
-      try {
-        setIsLoading(true);
-        const result = await importFirearmsFromCsvAction(csvString);
-        toast({
-          variant: result.errorCount > 0 ? "destructive" : "success",
-          title: "İçe Aktarma Sonucu",
-          description: `${result.successCount} silah başarıyla işlendi. ${result.errorCount} silahta hata oluştu. Detaylar için konsolu kontrol edin.`,
-          duration: result.errorCount > 0 ? 10000 : 5000,
-        });
-        if (result.errors && result.errors.length > 0) {
-          console.error("CSV İçe Aktarma Hataları (Silah Envanteri):", result.errors);
-        }
-        await fetchData(); 
-      } catch (error: any) {
-        toast({ variant: "destructive", title: "İçe Aktarma Hatası", description: error.message || "CSV içe aktarılırken bir hata oluştu." });
-      } finally {
-        setIsLoading(false);
-        if (fileInputRef.current) {
-          fileInputRef.current.value = ""; 
-        }
-      }
-    };
-    reader.readAsText(file, 'UTF-8'); // Specify encoding
-  };
+  // handleFileChange fonksiyonu kaldırıldı
 
   const handleExportToCsv = async () => {
     try {
@@ -131,6 +97,8 @@ export default function FirearmsPage() {
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
+      } else {
+         window.open('data:text/csv;charset=utf-8,' + BOM + encodeURIComponent(csvString));
       }
       toast({ variant: "success", title: "Başarılı", description: "Silah envanteri CSV olarak dışa aktarıldı." });
     } catch (error: any) {
@@ -149,17 +117,7 @@ export default function FirearmsPage() {
           <h1 className="text-3xl font-bold tracking-tight" suppressHydrationWarning>Silah Envanteri</h1>
         </div>
         <div className="flex items-center gap-2">
-          <Input
-            type="file"
-            accept=".csv"
-            ref={fileInputRef}
-            className="hidden"
-            onChange={handleFileChange}
-            id="csvUploadFirearmInventory" 
-          />
-          <Button onClick={() => fileInputRef.current?.click()} variant="outline" disabled={isLoading}>
-            <Upload className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>CSV'den Yükle</span>
-          </Button>
+          {/* CSV Yükleme Input ve Butonu kaldırıldı */}
           <Button onClick={handleExportToCsv} variant="outline" disabled={isLoading}>
             <Download className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>CSV'ye Aktar</span>
           </Button>
@@ -229,5 +187,3 @@ export default function FirearmsPage() {
     </div>
   );
 }
-
-    

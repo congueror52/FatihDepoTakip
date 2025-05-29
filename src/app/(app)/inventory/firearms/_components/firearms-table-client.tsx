@@ -32,7 +32,7 @@ import { deleteFirearmAction } from "@/lib/actions/inventory.actions";
 interface FirearmsTableClientProps {
   firearms: Firearm[];
   depots: Depot[]; 
-  onRefresh: () => Promise<void>; // Added onRefresh prop
+  onRefresh: () => Promise<void>;
 }
 
 export function FirearmsTableClient({ firearms: initialFirearms, depots, onRefresh }: FirearmsTableClientProps) { 
@@ -41,7 +41,7 @@ export function FirearmsTableClient({ firearms: initialFirearms, depots, onRefre
   const [selectedFirearmId, setSelectedFirearmId] = useState<string | null>(null);
   const { toast } = useToast();
 
-  useEffect(() => { // Ensures table updates if the prop changes from parent
+  useEffect(() => {
     setFirearms(initialFirearms);
   }, [initialFirearms]);
 
@@ -49,7 +49,6 @@ export function FirearmsTableClient({ firearms: initialFirearms, depots, onRefre
     if (!selectedFirearmId) return;
     try {
       await deleteFirearmAction(selectedFirearmId);
-      // setFirearms(firearms.filter(f => f.id !== selectedFirearmId)); // Refresh via prop now
       await onRefresh();
       toast({ variant: "success", title: "Başarılı", description: "Silah başarıyla silindi." });
     } catch (error: any) {
@@ -154,5 +153,3 @@ export function FirearmsTableClient({ firearms: initialFirearms, depots, onRefre
     </>
   );
 }
-
-    

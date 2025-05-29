@@ -130,93 +130,7 @@ interface CsvImportResult {
   errors: { row: number; message: string; data: any }[];
 }
 
-export async function importFirearmDefinitionsFromCsvAction(csvString: string): Promise<CsvImportResult> {
-  const result: CsvImportResult = { successCount: 0, errorCount: 0, errors: [] };
-  let definitions = await getFirearmDefinitions(); 
-  const lines = csvString.split(/\r\n|\n|\r/).filter(line => line.trim() !== ''); 
-
-  if (lines.length < 2) {
-    result.errors.push({ row: 0, message: "CSV dosyası başlık satırını ve en az bir veri satırını içermelidir.", data: {} });
-    result.errorCount = 1;
-    return result;
-  }
-
-  const headerLine = lines[0].trim().endsWith(';') ? lines[0].trim().slice(0, -1) : lines[0].trim();
-  const header = headerLine.split(';').map(h => h.trim().toLowerCase().replace(/"/g, '')); 
-
-  const expectedHeadersRequired = ["name", "model", "caliber"];
-  
-  if (!expectedHeadersRequired.every(eh => header.includes(eh))) {
-     result.errors.push({ row: 1, message: `CSV başlıkları eksik veya yanlış. Gerekli başlıklar: ${expectedHeadersRequired.join('; ')}`, data: header });
-     result.errorCount = 1;
-     return result;
-  }
-
-  for (let i = 1; i < lines.length; i++) {
-    const line = lines[i].trim().endsWith(';') ? lines[i].trim().slice(0, -1) : lines[i].trim();
-    if (!line) continue; // Skip empty lines
-    const values = line.split(';').map(v => v.trim().replace(/^"|"$/g, ''));
-    const rowData: any = {};
-    header.forEach((h, index) => {
-      if (values[index] !== undefined) { 
-          rowData[h] = values[index];
-      }
-    });
-    
-    const definitionData: FirearmDefinitionFormValues & { id?: string } = {
-      name: rowData.name,
-      model: rowData.model,
-      manufacturer: rowData.manufacturer || "",
-      caliber: rowData.caliber,
-      description: rowData.description || "",
-      id: rowData.id || undefined, 
-    };
-    
-    const validation = firearmDefinitionFormSchema.safeParse(definitionData);
-
-    if (!validation.success) {
-      result.errorCount++;
-      result.errors.push({ row: i + 1, message: JSON.stringify(validation.error.format()), data: rowData });
-      continue;
-    }
-
-    try {
-      const validatedDefinition = validation.data;
-      if (validatedDefinition.id) {
-        const existingIndex = definitions.findIndex(d => d.id === validatedDefinition.id);
-        if (existingIndex !== -1) {
-          definitions[existingIndex] = { 
-            ...definitions[existingIndex], 
-            ...validatedDefinition, 
-            id: definitions[existingIndex].id, 
-            lastUpdated: new Date().toISOString() 
-          };
-          await logAction({ actionType: "UPDATE", entityType: "FirearmDefinition", entityId: definitions[existingIndex].id, status: "SUCCESS", details: definitions[existingIndex] });
-        } else {
-          const newDef = { ...validatedDefinition, id: validatedDefinition.id, lastUpdated: new Date().toISOString() };
-          definitions.push(newDef);
-          await logAction({ actionType: "CREATE", entityType: "FirearmDefinition", entityId: newDef.id, status: "SUCCESS", details: newDef });
-        }
-      } else { 
-        const newDef = { ...validatedDefinition, id: await generateId(), lastUpdated: new Date().toISOString() };
-        definitions.push(newDef);
-        await logAction({ actionType: "CREATE", entityType: "FirearmDefinition", entityId: newDef.id, status: "SUCCESS", details: newDef });
-      }
-      result.successCount++;
-    } catch (e: any) {
-      result.errorCount++;
-      result.errors.push({ row: i + 1, message: e.message, data: rowData });
-      await logAction({ actionType: "CREATE", entityType: "FirearmDefinition", status: "FAILURE", details: rowData, errorMessage: e.message });
-    }
-  }
-
-  if (result.successCount > 0) {
-    await writeData('firearm_definitions.json', definitions);
-    revalidatePath('/admin/firearms-definitions');
-    revalidatePath('/admin/firearms-definitions', 'layout');
-  }
-  return result;
-}
+// importFirearmDefinitionsFromCsvAction fonksiyonu kaldırıldı
 
 export async function exportFirearmDefinitionsToCsvAction(): Promise<string> {
   noStore();
@@ -380,136 +294,7 @@ export async function deleteFirearmAction(id: string): Promise<void> {
   }
 }
 
-export async function importFirearmsFromCsvAction(csvString: string): Promise<CsvImportResult> {
-  noStore();
-  const result: CsvImportResult = { successCount: 0, errorCount: 0, errors: [] };
-  let firearms = await getFirearms();
-  const firearmDefinitions = await getFirearmDefinitions();
-  const depots = await getDepots();
-  const lines = csvString.split(/\r\n|\n|\r/).filter(line => line.trim() !== '');
-
-  if (lines.length < 2) {
-    result.errors.push({ row: 0, message: "CSV dosyası başlık satırını ve en az bir veri satırını içermelidir.", data: {} });
-    result.errorCount = 1;
-    return result;
-  }
-
-  const headerLine = lines[0].trim().endsWith(';') ? lines[0].trim().slice(0, -1) : lines[0].trim();
-  const header = headerLine.split(';').map(h => h.trim().toLowerCase().replace(/"/g, ''));
-
-  const requiredHeaders = ["definitionid", "serialnumber", "depotid", "status"];
-  if (!requiredHeaders.every(rh => header.includes(rh))) {
-    result.errors.push({ row: 1, message: `CSV başlıkları eksik veya yanlış. Gerekli başlıklar: ${requiredHeaders.join('; ')}`, data: header });
-    result.errorCount = 1;
-    return result;
-  }
-
-  for (let i = 1; i < lines.length; i++) {
-    const line = lines[i].trim().endsWith(';') ? lines[i].trim().slice(0, -1) : lines[i].trim();
-    if (!line) continue;
-    const values = line.split(';').map(v => v.trim().replace(/^"|"$/g, ''));
-    const rowData: any = {};
-    header.forEach((h, index) => {
-      if (values[index] !== undefined) {
-        rowData[h] = values[index];
-      }
-    });
-
-    const definition = firearmDefinitions.find(def => def.id === rowData.definitionid);
-    if (!definition) {
-      result.errorCount++;
-      result.errors.push({ row: i + 1, message: `Geçersiz definitionId: ${rowData.definitionid}. Bu ID ile bir silah tanımı bulunamadı.`, data: rowData });
-      continue;
-    }
-
-    if (!depots.some(depot => depot.id === rowData.depotid)) {
-      result.errorCount++;
-      result.errors.push({ row: i + 1, message: `Geçersiz depotId: ${rowData.depotid}. Bu ID ile bir depo bulunamadı.`, data: rowData });
-      continue;
-    }
-
-    if (!firearmStatusesArray.includes(rowData.status as FirearmStatus)) {
-        result.errorCount++;
-        result.errors.push({ row: i + 1, message: `Geçersiz durum: ${rowData.status}. İzin verilen durumlar: ${firearmStatusesArray.join(', ')}`, data: rowData });
-        continue;
-    }
-    
-    const firearmData = {
-      id: rowData.id || undefined,
-      definitionId: rowData.definitionid,
-      serialNumber: rowData.serialnumber,
-      depotId: rowData.depotid,
-      status: rowData.status as FirearmStatus,
-      purchaseDate: rowData.purchasedate ? new Date(rowData.purchasedate).toISOString() : undefined,
-      notes: rowData.notes || "",
-      name: definition.name, // Auto-filled from definition
-      model: definition.model, // Auto-filled
-      manufacturer: definition.manufacturer, // Auto-filled
-      caliber: definition.caliber, // Auto-filled
-    };
-
-    const validation = firearmFormSchema.safeParse(firearmData);
-    if (!validation.success) {
-      result.errorCount++;
-      result.errors.push({ row: i + 1, message: JSON.stringify(validation.error.format()), data: rowData });
-      continue;
-    }
-
-    try {
-      const validatedFirearm = validation.data;
-      if (validatedFirearm.id) { // Attempt to update
-        const existingIndex = firearms.findIndex(f => f.id === validatedFirearm.id);
-        if (existingIndex !== -1) {
-          firearms[existingIndex] = {
-            ...firearms[existingIndex],
-            ...validatedFirearm,
-            name: definition.name, // Ensure these are from definition
-            model: definition.model,
-            manufacturer: definition.manufacturer,
-            caliber: definition.caliber,
-            lastUpdated: new Date().toISOString(),
-          };
-          await logAction({ actionType: "UPDATE", entityType: "Firearm", entityId: firearms[existingIndex].id, status: "SUCCESS", details: firearms[existingIndex] });
-        } else { // ID provided but not found, create new with this ID if desired or throw error
-          // For now, let's create a new one if ID not found.
-          // Or: result.errors.push({ row: i + 1, message: `Güncellenecek silah ID'si (${validatedFirearm.id}) bulunamadı.`, data: rowData }); result.errorCount++; continue;
-          const newFirearm: Firearm = {
-            ...validatedFirearm,
-            id: validatedFirearm.id, // Use provided ID
-            itemType: 'firearm',
-            maintenanceHistory: [],
-            lastUpdated: new Date().toISOString(),
-          };
-          firearms.push(newFirearm);
-          await logAction({ actionType: "CREATE", entityType: "Firearm", entityId: newFirearm.id, status: "SUCCESS", details: newFirearm });
-        }
-      } else { // Create new
-        const newFirearm: Firearm = {
-          ...validatedFirearm,
-          id: await generateId(),
-          itemType: 'firearm',
-          maintenanceHistory: [],
-          lastUpdated: new Date().toISOString(),
-        };
-        firearms.push(newFirearm);
-        await logAction({ actionType: "CREATE", entityType: "Firearm", entityId: newFirearm.id, status: "SUCCESS", details: newFirearm });
-      }
-      result.successCount++;
-    } catch (e: any) {
-      result.errorCount++;
-      result.errors.push({ row: i + 1, message: e.message, data: rowData });
-       await logAction({ actionType: validatedFirearm.id ? "UPDATE" : "CREATE", entityType: "Firearm", entityId: validatedFirearm.id, status: "FAILURE", details: rowData, errorMessage: e.message });
-    }
-  }
-
-  if (result.successCount > 0) {
-    await writeData('firearms.json', firearms);
-    revalidatePath('/inventory/firearms');
-    revalidatePath('/inventory/firearms', 'layout');
-    revalidatePath('/dashboard');
-  }
-  return result;
-}
+// importFirearmsFromCsvAction fonksiyonu kaldırıldı
 
 export async function exportFirearmsToCsvAction(): Promise<string> {
   noStore();
@@ -982,6 +767,7 @@ export async function addAmmunitionDailyUsageLogAction(data: Omit<AmmunitionDail
     revalidatePath('/daily-ammo-usage', 'layout');
     revalidatePath('/dashboard');
     revalidatePath('/inventory/ammunition');
+    revalidatePath('/inventory/ammunition', 'layout');
     return newLog;
   } catch (error: any) {
     if (error.message.startsWith('Geçersiz günlük fişek kullanımı verisi')) throw error;
@@ -1021,6 +807,7 @@ export async function updateAmmunitionDailyUsageLogAction(logToUpdate: Ammunitio
     revalidatePath(`/daily-ammo-usage/${logToUpdate.id}/edit`);
     revalidatePath('/dashboard');
     revalidatePath('/inventory/ammunition');
+    revalidatePath('/inventory/ammunition', 'layout');
     return logs[index];
   } catch (error: any) {
     if (error.message.startsWith('Güncelleme için geçersiz günlük fişek kullanımı verisi') || error.message.startsWith('Güncellenecek günlük fişek kullanım kaydı bulunamadı')) throw error;
@@ -1040,6 +827,7 @@ export async function deleteAmmunitionDailyUsageLogAction(id: string): Promise<v
     revalidatePath('/daily-ammo-usage', 'layout');
     revalidatePath('/dashboard');
     revalidatePath('/inventory/ammunition');
+    revalidatePath('/inventory/ammunition', 'layout');
   } catch (error: any) {
     await logAction({ actionType: "DELETE", entityType: "DailyAmmunitionUsage", entityId: id, status: "FAILURE", errorMessage: error.message });
     throw error;
@@ -1403,7 +1191,7 @@ export async function addMaintenanceLogToItemAction(
     
     await logAction({ actionType: "CREATE", entityType: "MaintenanceLog", entityId: newLog.id, status: "SUCCESS", details: newLog });
 
-    revalidatePath(`/inventory/${itemType === 'firearm' ? 'firearms' : 'magazines'}/${itemId}`);
+    revalidatePath(`/inventory/${itemType === 'firearm' ? 'silahlar' : 'sarjorler'}/${itemId}`);
     revalidatePath(`/inventory/${itemType === 'firearm' ? 'firearms' : 'magazines'}`);
     revalidatePath(`/inventory/${itemType === 'firearm' ? 'firearms' : 'magazines'}`, 'layout');
     revalidatePath('/maintenance');
@@ -1655,6 +1443,3 @@ export async function getRecentAuditLogs(limit: number = 5): Promise<AuditLogEnt
     return []; 
   }
 }
-
-
-    

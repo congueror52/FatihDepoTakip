@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, Download } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect } from "react"; // Added useEffect
+import { useState, useEffect } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,7 +38,7 @@ export function FirearmDefinitionsTableClient({ definitions: initialDefinitions,
   const [selectedDefinitionId, setSelectedDefinitionId] = useState<string | null>(null);
   const { toast } = useToast();
 
-  useEffect(() => { // Ensures table updates if the prop changes from parent
+  useEffect(() => {
     setDefinitions(initialDefinitions);
   }, [initialDefinitions]);
 
@@ -68,10 +68,11 @@ export function FirearmDefinitionsTableClient({ definitions: initialDefinitions,
         toast({ variant: "default", title: "Bilgi", description: "Dışa aktarılacak silah tanımı bulunmamaktadır." });
         return;
       }
-      // Prepend BOM for UTF-8 CSVs to be correctly opened by Excel
-      const BOM = "\uFEFF"; 
+      
+      const BOM = "\uFEFF"; // UTF-8 Byte Order Mark for Excel
       const blob = new Blob([BOM + csvString], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement("a");
+      
       if (link.download !== undefined) { 
         const url = URL.createObjectURL(blob);
         link.setAttribute("href", url);
@@ -80,7 +81,10 @@ export function FirearmDefinitionsTableClient({ definitions: initialDefinitions,
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+        URL.revokeObjectURL(url); // Clean up
+      } else {
+        // Fallback for older browsers (though less common now)
+        window.open('data:text/csv;charset=utf-8,' + BOM + encodeURIComponent(csvString));
       }
       toast({ variant: "success", title: "Başarılı", description: "Silah tanımları CSV olarak dışa aktarıldı." });
     } catch (error: any) {
