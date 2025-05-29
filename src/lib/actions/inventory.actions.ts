@@ -17,6 +17,7 @@ import { maintenanceLogFormSchema } from '@/app/(app)/maintenance/_components/ma
 import { shipmentFormSchema } from '@/app/(app)/shipments/_components/shipment-form-schema';
 import { shipmentTypeDefinitionFormSchema } from '@/app/(app)/admin/shipment-types/_components/shipment-type-definition-form-schema';
 import { alertDefinitionFormSchema } from '@/app/(app)/admin/alert-definitions/_components/alert-definition-form-schema'; 
+import type { AuditLogEntry } from '@/types/audit';
 
 
 // Firearm Definitions
@@ -1061,7 +1062,7 @@ export async function addMaintenanceLogToItemAction(
       throw new Error(errorMsg);
     }
     
-    await logAction({ actionType: "LOG_MAINTENANCE", entityType: "MaintenanceLog", entityId: newLog.id, status: "SUCCESS", details: newLog });
+    await logAction({ actionType: "CREATE", entityType: "MaintenanceLog", entityId: newLog.id, status: "SUCCESS", details: newLog });
 
     revalidatePath(`/inventory/${itemType === 'firearm' ? 'firearms' : 'magazines'}/${itemId}`);
     revalidatePath(`/inventory/${itemType === 'firearm' ? 'firearms' : 'magazines'}`);
@@ -1284,5 +1285,20 @@ export async function getTriggeredAlerts(): Promise<AlertDefinition[]> {
   // const definitions = await getAlertDefinitions();
   // return definitions.filter(def => def.isActive);
   return []; // Returning empty array to simulate no triggered alerts
+}
+
+
+// Audit Log Actions
+export async function getRecentAuditLogs(limit: number = 5): Promise<AuditLogEntry[]> {
+  noStore();
+  try {
+    const allLogs = await readData<AuditLogEntry>('audit_log.json');
+    // Sort by timestamp, newest first
+    const sortedLogs = allLogs.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    return sortedLogs.slice(0, limit);
+  } catch (error) {
+    console.error("Son denetim günlükleri okunurken hata oluştu:", error);
+    return []; // Hata durumunda boş dizi döndür
+  }
 }
     
