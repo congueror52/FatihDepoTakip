@@ -37,7 +37,7 @@ interface AlertDefinitionFormProps {
   definition?: AlertDefinition;
 }
 
-const ALL_CALIBERS_OPTION_VALUE = "__ALL_CALIBERS__"; // Special value for "All Calibers"
+const ALL_CALIBERS_OPTION_VALUE = "__ALL_CALIBERS__"; 
 
 export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
   const { toast } = useToast();
@@ -73,7 +73,6 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
 
   useEffect(() => {
     setCurrentEntityType(watchedEntityType);
-    // Reset condition-specific fields when entityType changes
     if (watchedEntityType !== currentEntityType) {
         form.resetField("conditionType");
         form.resetField("caliberFilter");
@@ -84,9 +83,8 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
 
   useEffect(() => {
     setCurrentConditionType(watchedConditionType);
-    // Reset condition-specific fields when conditionType changes (except the one being set)
     if (watchedConditionType !== 'low_stock') {
-        form.setValue('caliberFilter', undefined); // Reset to undefined
+        form.setValue('caliberFilter', undefined); 
         form.setValue('thresholdValue', undefined);
     }
     if (watchedConditionType !== 'status_is') {
@@ -198,12 +196,12 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
                   <Select 
                     onValueChange={(value) => {
                       if (value === ALL_CALIBERS_OPTION_VALUE) {
-                        field.onChange(undefined); // Set form value to undefined
+                        field.onChange(undefined); 
                       } else {
                         field.onChange(value);
                       }
                     }} 
-                    value={field.value} // Use field.value directly; placeholder handles undefined
+                    value={field.value} 
                   >
                     <FormControl><SelectTrigger><SelectValue placeholder="Tüm kalibreler" /></SelectTrigger></FormControl>
                     <SelectContent>
@@ -281,8 +279,27 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel><span suppressHydrationWarning>Mesaj Şablonu</span></FormLabel>
-              <FormControl><Textarea placeholder="örn. {itemName} ({caliber}) için stok kritik seviyede: {quantity} adet kaldı." className="resize-none" {...field} rows={3} /></FormControl>
-              <FormDescription className="text-xs"><span suppressHydrationWarning>Kullanılabilir değişkenler: {`{itemName}, {caliber}, {quantity}, {thresholdValue}, {status}`}</span></FormDescription>
+              <FormControl>
+                <Textarea 
+                  placeholder="Örn: {itemName} için stok kritik seviyede ({currentValue} adet). Eşik: {threshold}." 
+                  className="resize-none" 
+                  {...field} 
+                  rows={3} 
+                />
+              </FormControl>
+              <FormDescription className="text-xs space-y-1">
+                <p suppressHydrationWarning>Uyarı mesajınızda aşağıdaki yer tutucuları kullanabilirsiniz. Bunlar, uyarı oluştuğunda gerçek değerlerle değiştirilecektir:</p>
+                <ul className="list-disc list-inside text-muted-foreground">
+                    <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{itemName}'}</code>: Öğenin adı (örn. "9mm Fişek").</li>
+                    <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{depotName}'}</code>: Öğenin bulunduğu depo.</li>
+                    <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{currentValue}'}</code>: Koşulu tetikleyen mevcut değer (örn. stok için "50", durum için "Arızalı").</li>
+                    <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{threshold}'}</code>: Tanımlanan eşik değer (örn. "100").</li>
+                    <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{status}'}</code>: Öğenin durumu (durum uyarısı için).</li>
+                    <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{caliber}'}</code>: Kalibre (mühimmat/şarjör için).</li>
+                    <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{serialNumber}'}</code>: Seri numarası (silah için).</li>
+                </ul>
+                 <p suppressHydrationWarning><strong>Örnek Şablon:</strong> <code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'Dikkat! {depotName} deposundaki "{itemName}" ({caliber}) stok miktarı ({currentValue} adet), belirlenen eşik ({threshold} adet) altına düştü.'}</code></p>
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -310,3 +327,5 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
     </Form>
   );
 }
+
+    
