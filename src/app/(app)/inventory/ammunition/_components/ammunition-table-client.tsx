@@ -12,8 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2 } from "lucide-react"; // Removed MoreHorizontal, DropdownMenu components
 import Link from "next/link";
 import { useState } from "react";
 import {
@@ -28,14 +27,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { deleteAmmunitionAction } from "@/lib/actions/inventory.actions";
-// Removed DEPOT_LOCATIONS import
 
 interface AmmunitionTableClientProps {
   ammunition: Ammunition[];
-  depots: Depot[]; // Added depots prop
+  depots: Depot[]; 
 }
 
-export function AmmunitionTableClient({ ammunition: initialAmmunition, depots }: AmmunitionTableClientProps) { // Added depots to props
+export function AmmunitionTableClient({ ammunition: initialAmmunition, depots }: AmmunitionTableClientProps) { 
   const [ammunitionList, setAmmunitionList] = useState<Ammunition[]>(initialAmmunition);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedAmmunitionId, setSelectedAmmunitionId] = useState<string | null>(null);
@@ -71,7 +69,7 @@ export function AmmunitionTableClient({ ammunition: initialAmmunition, depots }:
   };
   
   const getDepotName = (depotId: string) => {
-    const depot = depots.find(d => d.id === depotId); // Use passed depots prop
+    const depot = depots.find(d => d.id === depotId); 
     return depot ? depot.name : depotId;
   }
 
@@ -107,27 +105,15 @@ export function AmmunitionTableClient({ ammunition: initialAmmunition, depots }:
                   </Badge>
                 </TableCell>
                 <TableCell>{ammo.lotNumber || '-'}</TableCell>
-                <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
-                        <span className="sr-only" suppressHydrationWarning>Menüyü aç</span>
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel><span suppressHydrationWarning>Eylemler</span></DropdownMenuLabel>
-                      <DropdownMenuItem asChild>
-                        <Link href={`/inventory/ammunition/${ammo.id}/edit`} className="flex items-center">
-                           <Edit className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>Düzenle</span>
-                         </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => openDeleteDialog(ammo.id)} className="text-destructive flex items-center">
-                        <Trash2 className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>Sil</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                <TableCell className="text-right space-x-2">
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href={`/inventory/ammunition/${ammo.id}/edit`} className="flex items-center">
+                      <Edit className="mr-2 h-3 w-3" /> <span suppressHydrationWarning>Düzenle</span>
+                    </Link>
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => openDeleteDialog(ammo.id)} className="text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/50 hover:border-destructive">
+                    <Trash2 className="mr-2 h-3 w-3" /> <span suppressHydrationWarning>Sil</span>
+                  </Button>
                 </TableCell>
               </TableRow>
             ))
