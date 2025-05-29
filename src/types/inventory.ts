@@ -1,8 +1,9 @@
 
 export type DepotId = string; 
 
-export type FirearmStatus = 'Hizmette' | 'Bakımda' | 'Arızalı' | 'Onarım Bekliyor' | 'Onarıldı' | 'Hizmet Dışı';
-export type MagazineStatus = 'Hizmette' | 'Bakımda' | 'Arızalı' | 'Kayıp' | 'Hizmet Dışı';
+// Updated Status Types
+export type FirearmStatus = 'Depoda' | 'Destekte' | 'Depoda Arızalı' | 'Poligonda' | 'Onarıldı' | 'Rapor Bekliyor';
+export type MagazineStatus = 'Depoda' | 'Destekte' | 'Depoda Arızalı' | 'Poligonda' | 'Rapor Bekliyor'; // 'Kayıp' was mapped to 'Poligonda' based on card title change
 export type AmmunitionStatus = 'Mevcut' | 'Düşük Stok' | 'Kritik Stok' | 'Tükenmek Üzere';
 export type MaintenanceItemStatus = FirearmStatus | MagazineStatus;
 
@@ -213,3 +214,4 @@ export type UsageScenariosDb = UsageScenario[];
 export type DepotsDb = Depot[];
 export type ShipmentTypeDefinitionsDb = ShipmentTypeDefinition[];
 export type AlertDefinitionsDb = AlertDefinition[];
+

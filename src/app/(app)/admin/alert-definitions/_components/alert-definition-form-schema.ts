@@ -9,7 +9,8 @@ import {
 import { firearmStatuses } from "@/app/(app)/inventory/firearms/_components/firearm-form-schema";
 import { magazineStatuses } from "@/app/(app)/inventory/magazines/_components/magazine-form-schema";
 
-const allItemStatuses = [...new Set([...firearmStatuses, ...magazineStatuses])] as [string, ...string[]];
+// Combined and unique statuses for alert definition status filter
+const allItemDisplayStatuses = [...new Set([...firearmStatuses, ...magazineStatuses])] as [string, ...string[]];
 
 
 export const alertDefinitionFormSchema = z.object({
@@ -21,11 +22,10 @@ export const alertDefinitionFormSchema = z.object({
   conditionType: z.enum(ALERT_CONDITION_TYPES.map(ct => ct.value) as [string, ...string[]],{
     errorMap: () => ({ message: "Lütfen geçerli bir koşul türü seçin." }),
   }),
-  depotId: z.string().optional(), // New field for depot-specific alerts
+  depotId: z.string().optional(), 
   caliberFilter: z.enum(SUPPORTED_CALIBERS).optional(),
   thresholdValue: z.coerce.number().int().min(0).optional(),
-  statusFilter: z.enum(allItemStatuses).optional(),
-  // daysBeforeMaintenance: z.coerce.number().int().min(0).optional(), // Future
+  statusFilter: z.enum(allItemDisplayStatuses).optional(), // Use the combined list
   severity: z.enum(ALERT_SEVERITIES as [string, ...string[]], {
     errorMap: () => ({ message: "Lütfen geçerli bir ciddiyet seviyesi seçin." }),
   }),
@@ -48,7 +48,6 @@ export const alertDefinitionFormSchema = z.object({
     if (data.thresholdValue === undefined || data.thresholdValue < 0) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Düşük stok için eşik değer girilmelidir.", path: ["thresholdValue"] });
     }
-    // depotId and caliberFilter are optional for low_stock
   }
 
   if (data.conditionType === 'status_is') {
@@ -58,11 +57,10 @@ export const alertDefinitionFormSchema = z.object({
     if (!data.statusFilter) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Durum filtresi seçilmelidir.", path: ["statusFilter"] });
     }
-     if (data.depotId) { // Depot filter is not relevant for status_is as item itself has a depot
+     if (data.depotId) { 
         ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Durum koşulu için depo filtresi uygulanamaz.", path: ["depotId"] });
     }
   }
-  // Add more refinements as other condition types are implemented
 });
 
 
