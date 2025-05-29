@@ -15,9 +15,20 @@ export const firearmFormSchema = z.object({
   status: z.enum(firearmStatuses, {
     errorMap: () => ({ message: "Lütfen geçerli bir durum seçin." }),
   }),
-  purchaseDate: z.string().optional().refine(val => !val || !isNaN(Date.parse(val)), {
-    message: "Satın alma tarihi için geçersiz tarih formatı.",
-  }),
+  purchaseDate: z.string().optional().refine(
+    (val) => {
+      if (!val) return true; // Allow undefined or empty string if optional and no other rules apply before this
+      try {
+        // Check if the date string can be parsed into a valid Date object
+        return !isNaN(new Date(val).getTime());
+      } catch (e) {
+        return false;
+      }
+    },
+    {
+      message: "Satın alma tarihi için geçersiz tarih formatı. (YYYY-MM-DD bekleniyor)",
+    }
+  ),
   notes: z.string().max(500).optional(),
 });
 
