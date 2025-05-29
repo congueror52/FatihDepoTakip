@@ -214,7 +214,7 @@ export function MaintenanceLogForm({ firearms, magazines }: MaintenanceLogFormPr
                 render={({ field }) => (
                 <FormItem>
                     <FormLabel><span suppressHydrationWarning>Teknisyen (İsteğe Bağlı)</span></FormLabel>
-                    <FormControl><Input placeholder="örn. Ali Usta" {...field} /></FormControl>
+                    <FormControl><Input placeholder="örn. İlyas Usta" {...field} /></FormControl>
                     <FormMessage />
                 </FormItem>
                 )}
