@@ -201,7 +201,7 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
                         field.onChange(value);
                       }
                     }} 
-                    value={field.value} 
+                    value={field.value || ALL_CALIBERS_OPTION_VALUE} // Ensure value is set for Select
                   >
                     <FormControl><SelectTrigger><SelectValue placeholder="Tüm kalibreler" /></SelectTrigger></FormControl>
                     <SelectContent>
@@ -281,24 +281,27 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
               <FormLabel><span suppressHydrationWarning>Mesaj Şablonu</span></FormLabel>
               <FormControl>
                 <Textarea 
-                  placeholder="Örn: {itemName} için stok kritik seviyede ({currentValue} adet). Eşik: {threshold}." 
+                  placeholder="Örnek: {depotName} deposundaki {itemName} ({caliber}) stok miktarı ({currentValue} adet), belirlenen eşik ({threshold} adet) altına düştü." 
                   className="resize-none" 
                   {...field} 
                   rows={3} 
                 />
               </FormControl>
               <FormDescription className="text-xs space-y-1">
-                <p suppressHydrationWarning>Uyarı mesajınızda aşağıdaki yer tutucuları kullanabilirsiniz. Bunlar, uyarı oluştuğunda gerçek değerlerle değiştirilecektir:</p>
+                Uyarı mesajınızda aşağıdaki yer tutucuları kullanabilirsiniz. Bunlar, uyarı oluştuğunda gerçek değerlerle değiştirilecektir:
                 <ul className="list-disc list-inside text-muted-foreground">
-                    <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{itemName}'}</code>: Öğenin adı (örn. "9mm Fişek").</li>
+                    <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{itemName}'}</code>: Öğenin adı (örn. "9mm Fişek", "Sar 223 P").</li>
                     <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{depotName}'}</code>: Öğenin bulunduğu depo.</li>
                     <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{currentValue}'}</code>: Koşulu tetikleyen mevcut değer (örn. stok için "50", durum için "Arızalı").</li>
-                    <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{threshold}'}</code>: Tanımlanan eşik değer (örn. "100").</li>
-                    <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{status}'}</code>: Öğenin durumu (durum uyarısı için).</li>
-                    <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{caliber}'}</code>: Kalibre (mühimmat/şarjör için).</li>
+                    <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{threshold}'}</code>: Tanımlanan eşik değer (örn. "100", sadece düşük stok uyarısı için).</li>
+                    <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{status}'}</code>: Öğenin mevcut durumu (durum uyarısı için).</li>
+                    <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{caliber}'}</code>: Kalibre (mühimmat, şarjör veya silah için).</li>
                     <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{serialNumber}'}</code>: Seri numarası (silah için).</li>
                 </ul>
-                 <p suppressHydrationWarning><strong>Örnek Şablon:</strong> <code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'Dikkat! {depotName} deposundaki "{itemName}" ({caliber}) stok miktarı ({currentValue} adet), belirlenen eşik ({threshold} adet) altına düştü.'}</code></p>
+                <p className="font-semibold" suppressHydrationWarning>Örnek Şablon Kullanımı:</p>
+                <code className="block text-xs bg-muted p-1 rounded-sm w-full" suppressHydrationWarning>
+                  Dikkat! {depotName} deposundaki "{itemName}" ({'{caliber}'}) stok miktarı ({'{currentValue}'} adet), belirlenen eşik ({'{threshold}'} adet) altına düştü.
+                </code>
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -327,5 +330,3 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
     </Form>
   );
 }
-
-    
