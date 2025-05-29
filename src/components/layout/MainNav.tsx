@@ -15,7 +15,6 @@ import {
   Box,
   Truck,
   Wrench,
-  BrainCircuit,
   ShieldAlert,
   ListChecks,
   Target,
@@ -25,7 +24,7 @@ import {
   ClipboardList,
   FileCheck2,
   Warehouse,
-  ListOrdered // Added ListOrdered for Shipment Types
+  ListOrdered
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
@@ -38,7 +37,6 @@ const menuItems = [
   { href: '/daily-ammo-usage', label: 'Günlük Fişek Kullanımı', icon: ClipboardList },
   { href: '/shipments', label: 'Malzeme Kaydı', icon: Truck },
   { href: '/maintenance', label: 'Bakım', icon: Wrench },
-  { href: '/ai-balancing', label: 'Yapay Zeka Stok Dengeleme', icon: BrainCircuit },
   { href: '/alerts', label: 'Uyarılar', icon: ShieldAlert },
   {
     label: 'Yönetim Paneli',

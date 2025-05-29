@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'AmmoTrack - Depo Yönetim Sistemi',
-  description: 'Depolar arası ateşli silahları, şarjörleri ve mühimmatı takip edin ve yönetin.',
+  title: 'Fatih - Depo Yönetim Sistemi',
+  description: 'Depolar arası  silahları, şarjörleri ve mühimmatı takip edin ve yönetin.',
 };
 
 export default function RootLayout({

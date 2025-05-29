@@ -1,4 +1,5 @@
+
 import { config } from 'dotenv';
 config();
 
-import '@/ai/flows/suggest-rebalancing.ts';
+// Removed import for suggest-rebalancing.ts

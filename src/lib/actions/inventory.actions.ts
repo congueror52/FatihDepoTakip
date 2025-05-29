@@ -2,13 +2,13 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import type { Firearm, Magazine, Ammunition, Shipment, ShipmentItem, AmmunitionUsageLog, DepotInventorySnapshot, HistoricalUsageSnapshot, UpcomingRequirementsSnapshot, FirearmDefinition, AmmunitionDailyUsageLog, UsageScenario, ScenarioCaliberConsumption, SupportedCaliber, MagazineStatus, AmmunitionStatus, Depot, MaintenanceLog, MaintenanceItemStatus, FirearmStatus, InventoryItemType, ShipmentTypeDefinition } from '@/types/inventory';
+import type { Firearm, Magazine, Ammunition, Shipment, ShipmentItem, AmmunitionUsageLog, FirearmDefinition, AmmunitionDailyUsageLog, UsageScenario, ScenarioCaliberConsumption, SupportedCaliber, MagazineStatus, AmmunitionStatus, Depot, MaintenanceLog, MaintenanceItemStatus, FirearmStatus, InventoryItemType, ShipmentTypeDefinition, DepotInventorySnapshot, HistoricalUsageSnapshot, UpcomingRequirementsSnapshot } from '@/types/inventory';
 import { readData, writeData, generateId } from '@/lib/data-utils';
 import { firearmFormSchema } from '@/app/(app)/inventory/firearms/_components/firearm-form-schema';
 import { firearmDefinitionFormSchema } from '@/app/(app)/admin/firearms-definitions/_components/firearm-definition-form-schema';
 import { ammunitionDailyUsageFormSchema } from '@/app/(app)/daily-ammo-usage/_components/usage-log-form-schema';
 import { usageScenarioFormSchema } from '@/app/(app)/admin/usage-scenarios/_components/usage-scenario-form-schema';
-import { suggestRebalancing as suggestRebalancingAI } from '@/ai/flows/suggest-rebalancing';
+// import { suggestRebalancing as suggestRebalancingAI } from '@/ai/flows/suggest-rebalancing'; // Removed AI import
 import { magazineFormSchema, type MagazineFormValues } from '@/app/(app)/inventory/magazines/_components/magazine-form-schema'; 
 import { ammunitionFormSchema } from '@/app/(app)/inventory/ammunition/_components/ammunition-form-schema'; 
 import { depotFormSchema } from '@/app/(app)/admin/depots/_components/depot-form-schema';
@@ -807,51 +807,4 @@ export async function deleteShipmentTypeDefinitionAction(id: string): Promise<vo
   definitions = definitions.filter(d => d.id !== id);
   await writeData('shipment_types.json', definitions);
   revalidatePath('/admin/shipment-types');
-}
-
-
-// AI Stock Balancing Action
-export async function suggestRebalancing(
-  depotAInventory: DepotInventorySnapshot,
-  depotBInventory: DepotInventorySnapshot,
-  historicalUsageData: HistoricalUsageSnapshot,
-  upcomingRequirements: UpcomingRequirementsSnapshot
-) {
-  try {
-    const result = await suggestRebalancingAI({
-      depotAInventory: JSON.stringify(depotAInventory),
-      depotBInventory: JSON.stringify(depotBInventory),
-      historicalUsageData: JSON.stringify(historicalUsageData),
-      upcomingRequirements: JSON.stringify(upcomingRequirements),
-    });
-    return { success: true, data: result };
-  } catch (error) {
-    console.error("AI Yeniden Dengeleme Hatası:", error);
-    return { success: false, error: "Yeniden dengeleme önerisi alınamadı." };
-  }
-}
-
-// Helper to get current inventory for AI
-export async function getCurrentDepotInventoriesForAI(): Promise<{ depotA: DepotInventorySnapshot, depotB: DepotInventorySnapshot }> {
-  const allFirearms = await getFirearms();
-  const allMagazines = await getMagazines();
-  const allAmmunition = await getAmmunition();
-
-  const createSnapshot = (depotId: 'depotA' | 'depotB'): DepotInventorySnapshot => ({
-    firearms: allFirearms.filter(i => i.depotId === depotId).map(f => ({ id: f.id, name: f.name, model: f.model, caliber: f.caliber, status: f.status })),
-    magazines: allMagazines.filter(i => i.depotId === depotId).map(m => ({ id: m.id, name: m.name, caliber: m.caliber, capacity: m.capacity, status: m.status })),
-    ammunition: allAmmunition.filter(i => i.depotId === depotId).map(a => ({ id: a.id, name: a.name, caliber: a.caliber, quantity: a.quantity, status: a.status })),
-  });
-  
-  return {
-    depotA: createSnapshot('depotA'),
-    depotB: createSnapshot('depotB'),
-  };
-}
-
-export async function getHistoricalUsageForAI(): Promise<HistoricalUsageSnapshot> {
-  const usageLogs = await getAmmunitionUsageLogs(); 
-  return {
-    ammunitionUsage: usageLogs.map(log => ({ ammunitionId: log.ammunitionId, quantityUsed: log.quantityUsed, date: log.date, depotId: log.depotId})),
-  };
 }
