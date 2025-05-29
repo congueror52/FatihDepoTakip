@@ -16,12 +16,23 @@
     "caliber": "5.56x45mm",
     "capacity": 30,
     "depotId": "depotA",
-    "status": "Hizmette",
+    "status": "Arızalı",
     "compatibleFirearmDefinitionId": "fd_1",
     "id": "ab94cd65-2bd8-485b-8557-2303629c8fbd",
     "itemType": "magazine",
-    "lastUpdated": "2025-05-28T10:28:18.490Z",
-    "maintenanceHistory": []
+    "lastUpdated": "2025-05-29T15:34:03.697Z",
+    "maintenanceHistory": [
+      {
+        "date": "2025-05-29T00:00:00.000Z",
+        "description": "şarjör altı kıırldı kadro atışında ",
+        "statusChangeFrom": "Hizmette",
+        "statusChangeTo": "Arızalı",
+        "technician": "",
+        "partsUsed": "",
+        "cost": 0,
+        "id": "65f4ac51-352f-46d9-a9d1-1a92e18df471"
+      }
+    ]
   },
   {
     "name": "Sar 223 P Şarjörü",

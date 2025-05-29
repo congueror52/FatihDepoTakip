@@ -128,5 +128,45 @@
     "entityType": "DailyAmmunitionUsage",
     "entityId": "161d6273-8af8-43cc-9775-e65b78cc8df6",
     "status": "SUCCESS"
+  },
+  {
+    "id": "0055ce42-09d3-4afe-87b9-2332df9c353c",
+    "timestamp": "2025-05-29T15:34:03.721Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "UPDATE",
+    "entityType": "Magazine",
+    "entityId": "ab94cd65-2bd8-485b-8557-2303629c8fbd",
+    "status": "SUCCESS",
+    "details": {
+      "status": "Arızalı",
+      "maintenanceLogAdded": "65f4ac51-352f-46d9-a9d1-1a92e18df471"
+    }
+  },
+  {
+    "id": "4fdbae94-bbe4-4ee5-8109-819cd7c3d388",
+    "timestamp": "2025-05-29T15:34:03.735Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "MaintenanceLog",
+    "entityId": "65f4ac51-352f-46d9-a9d1-1a92e18df471",
+    "status": "SUCCESS",
+    "details": {
+      "date": "2025-05-29T00:00:00.000Z",
+      "description": "şarjör altı kıırldı kadro atışında ",
+      "statusChangeFrom": "Hizmette",
+      "statusChangeTo": "Arızalı",
+      "technician": "",
+      "partsUsed": "",
+      "cost": 0,
+      "id": "65f4ac51-352f-46d9-a9d1-1a92e18df471"
+    }
   }
 ]

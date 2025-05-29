@@ -94,13 +94,21 @@ export function AuditLogsTableClient({ logs: initialLogs }: AuditLogsTableClient
       log.errorMessage || '-'
     ]);
 
-    let csvContent = "data:text/csv;charset=utf-8," 
-      + headers.join(",") + "\n" 
-      + rows.map(e => e.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(",")).join("\n");
+    // Construct the CSV data string
+    const csvData = [
+      headers.join(","),
+      ...rows.map(row => 
+        row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(",")
+      )
+    ].join("\n");
 
-    const encodedUri = encodeURI(csvContent);
+    // Prepend "sep=," for Excel to correctly interpret commas as separators, especially in some regional settings
+    const csvPayload = "sep=,\n" + csvData;
+
+    const dataUri = "data:text/csv;charset=utf-8," + encodeURIComponent(csvPayload);
+
     const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
+    link.setAttribute("href", dataUri);
     link.setAttribute("download", "denetim_kayitlari.csv");
     document.body.appendChild(link); 
     link.click();
