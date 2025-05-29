@@ -1,23 +1,18 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Briefcase, Boxes, DollarSign, Users, ShieldAlert, BarChart3, Activity, BellRing, ArrowRight, Target, ListChecks } from 'lucide-react'; // Added ListChecks
+import { Briefcase, Boxes, DollarSign, Users, ShieldAlert, BarChart3, Activity, Target, ListChecks } from 'lucide-react'; // Removed BellRing, ArrowRight
 import Image from 'next/image';
 import Link from 'next/link';
-import { getFirearms, getMagazines, getAmmunition } from '@/lib/actions/inventory.actions'; // Added getMagazines
-
-// import { AmmoUsageChart } from '@/components/dashboard/AmmoUsageChart'; // Placeholder, implement later
-// import { StockLevels } from '@/components/dashboard/StockLevels'; // Placeholder, implement later
-// import { AlertsSummary } from '@/components/dashboard/AlertsSummary'; // Placeholder, implement later
+import { getFirearms, getMagazines, getAmmunition } from '@/lib/actions/inventory.actions';
 
 export default async function DashboardPage() {
-  // Gerçek bir uygulamada veriler burada çekilir
   const firearms = await getFirearms();
-  const magazines = await getMagazines(); // Fetch magazines
+  const magazines = await getMagazines(); 
   const ammunition = await getAmmunition();
 
   const summaryData = {
     totalFirearms: firearms.length,
-    totalMagazines: magazines.length, // Use fetched magazine count
+    totalMagazines: magazines.length, 
     totalAmmunitionRounds: ammunition.reduce((sum, ammo) => sum + ammo.quantity, 0),
     recentActivity: [
       { id: 1, description: "5.56mm mühimmat sevkiyatı alındı", time: "2 saat önce" },
@@ -35,21 +30,6 @@ export default async function DashboardPage() {
     { id: '5', severity: 'Orta', message: 'Depo A nem seviyesi kritik eşiğin üzerinde.', date: new Date(Date.now() - 86400000 * 1).toISOString() },
   ];
 
-  const severityOrder: { [key: string]: number } = { 'Yüksek': 1, 'Orta': 2, 'Düşük': 3 };
-  
-  const sortedAlerts = [...allAlerts]
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) 
-    .sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]); 
-
-  const top3Alerts = sortedAlerts.slice(0, 3);
-
-  const getSeverityTextColor = (severity: string) => {
-    if (severity === 'Yüksek') return 'text-red-700 dark:text-red-400';
-    if (severity === 'Orta') return 'text-yellow-700 dark:text-yellow-400';
-    return 'text-blue-700 dark:text-blue-400'; 
-  };
-
-
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-3xl font-bold tracking-tight" suppressHydrationWarning>Gösterge Paneli</h1>
@@ -64,7 +44,6 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{summaryData.totalFirearms}</div>
-            {/* <p className="text-xs text-muted-foreground" suppressHydrationWarning>geçen aydan beri +2</p> */}
           </CardContent>
         </Card>
         <Card>
@@ -76,7 +55,6 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{summaryData.totalMagazines}</div>
-            {/* <p className="text-xs text-muted-foreground" suppressHydrationWarning>geçen aydan beri +15</p> */}
           </CardContent>
         </Card>
         <Card>
@@ -88,7 +66,6 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{summaryData.totalAmmunitionRounds.toLocaleString()}</div>
-            {/* <p className="text-xs text-muted-foreground" suppressHydrationWarning>son sevkiyattan beri +5,000</p> */}
           </CardContent>
         </Card>
         <Card>
@@ -100,32 +77,11 @@ export default async function DashboardPage() {
             </Link>
             <ShieldAlert className={`h-4 w-4 ${allAlerts.length > 0 ? 'text-destructive' : 'text-muted-foreground'}`} />
           </CardHeader>
-          <CardContent className="pt-1">
-            {sortedAlerts.length > 0 && (
-              <div className="space-y-3">
-                {top3Alerts.map(alert => (
-                  <div key={alert.id} className="flex items-start gap-2">
-                    <BellRing className={`h-4 w-4 mt-0.5 shrink-0 ${getSeverityTextColor(alert.severity)}`} />
-                    <div>
-                      <p className={`text-xs font-medium leading-tight ${getSeverityTextColor(alert.severity)}`} suppressHydrationWarning>
-                        {alert.message}
-                      </p>
-                      <p className={`text-[0.7rem] text-muted-foreground opacity-80`} suppressHydrationWarning>
-                        {new Date(alert.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', hour: 'numeric', minute: 'numeric' })}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-                 <Link href="/alerts" className="text-xs text-primary hover:underline font-medium flex items-center gap-1 pt-1">
-                  {allAlerts.length > 3 ? (
-                    <span suppressHydrationWarning>Tüm {allAlerts.length} uyarıyı gör</span>
-                  ) : (
-                    <span suppressHydrationWarning>Uyarıları Yönet</span>
-                  )}
-                  <ArrowRight className="h-3 w-3" />
-                </Link>
-              </div>
-            )}
+          <CardContent>
+            <div className="text-2xl font-bold">{allAlerts.length}</div>
+            <p className="text-xs text-muted-foreground" suppressHydrationWarning>
+              {allAlerts.length === 0 ? "aktif uyarı bulunmuyor" : (allAlerts.length === 1 ? "aktif uyarı" : "aktif uyarılar")}
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -137,7 +93,6 @@ export default async function DashboardPage() {
             <CardDescription suppressHydrationWarning>Aylık mühimmat tüketim eğilimleri.</CardDescription>
           </CardHeader>
           <CardContent className="pl-2">
-            {/* <AmmoUsageChart /> */}
             <div className="h-[300px] flex items-center justify-center bg-muted/50 rounded-md">
               <Image src="https://placehold.co/600x300.png?text=Mühimmat+Kullanım+Grafiği" alt="Mühimmat Kullanım Grafiği Yer Tutucusu" width={600} height={300} data-ai-hint="grafik çizelge" />
             </div>
@@ -168,10 +123,6 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-
-      {/* StockLevels ve AlertsSummary bileşenleri için yer tutucu */}
-      {/* <StockLevels /> */}
-      {/* <AlertsSummary /> */}
     </div>
   );
 }
