@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { AlertDefinition, AlertEntityType, AlertConditionType, FirearmStatus, MagazineStatus } from "@/types/inventory";
+import type { AlertDefinition, AlertEntityType, AlertConditionType } from "@/types/inventory";
 import { 
     ALERT_ENTITY_TYPES, 
     ALERT_CONDITION_TYPES, 
@@ -36,6 +36,8 @@ import { useEffect, useState } from "react";
 interface AlertDefinitionFormProps {
   definition?: AlertDefinition;
 }
+
+const ALL_CALIBERS_OPTION_VALUE = "__ALL_CALIBERS__"; // Special value for "All Calibers"
 
 export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
   const { toast } = useToast();
@@ -84,7 +86,7 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
     setCurrentConditionType(watchedConditionType);
     // Reset condition-specific fields when conditionType changes (except the one being set)
     if (watchedConditionType !== 'low_stock') {
-        form.setValue('caliberFilter', undefined);
+        form.setValue('caliberFilter', undefined); // Reset to undefined
         form.setValue('thresholdValue', undefined);
     }
     if (watchedConditionType !== 'status_is') {
@@ -170,7 +172,7 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel><span suppressHydrationWarning>Koşul Türü</span></FormLabel>
-                <Select onValueChange={field.onChange} value={field.value || ""} disabled={!watchedEntityType}>
+                <Select onValueChange={field.onChange} value={field.value} disabled={!watchedEntityType}>
                   <FormControl><SelectTrigger><SelectValue placeholder="Bir koşul türü seçin" /></SelectTrigger></FormControl>
                   <SelectContent>
                     {getApplicableConditionTypes().map(type => (
@@ -193,10 +195,19 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel><span suppressHydrationWarning>Kalibre Filtresi (İsteğe Bağlı)</span></FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value || ""}>
+                  <Select 
+                    onValueChange={(value) => {
+                      if (value === ALL_CALIBERS_OPTION_VALUE) {
+                        field.onChange(undefined); // Set form value to undefined
+                      } else {
+                        field.onChange(value);
+                      }
+                    }} 
+                    value={field.value} // Use field.value directly; placeholder handles undefined
+                  >
                     <FormControl><SelectTrigger><SelectValue placeholder="Tüm kalibreler" /></SelectTrigger></FormControl>
                     <SelectContent>
-                      <SelectItem value=""><span suppressHydrationWarning>Tüm Kalibreler</span></SelectItem>
+                      <SelectItem value={ALL_CALIBERS_OPTION_VALUE}><span suppressHydrationWarning>-- Tüm Kalibreler --</span></SelectItem>
                       {SUPPORTED_CALIBERS.map(cal => (
                         <SelectItem key={cal} value={cal}><span suppressHydrationWarning>{cal}</span></SelectItem>
                       ))}
@@ -230,7 +241,7 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel><span suppressHydrationWarning>Hedef Durum</span></FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value || ""}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl><SelectTrigger><SelectValue placeholder="Bir durum seçin" /></SelectTrigger></FormControl>
                     <SelectContent>
                       {getApplicableStatusFilters().map(status => (
@@ -299,5 +310,3 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
     </Form>
   );
 }
-
-    
