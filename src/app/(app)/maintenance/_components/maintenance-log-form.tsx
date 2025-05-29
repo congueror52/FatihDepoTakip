@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,21 +37,6 @@ interface MaintenanceLogFormProps {
   magazines: Magazine[];
   firearmDefinitions: FirearmDefinition[];
 }
-
-const statusDisplayLabels: Record<string, string> = {
-  "Depoda Arızalı": "Depoda Arızalı", // Formda "Depoda Arızalı Silahlar" gibi daha uzun olabilir, ama value ile eşleşmeli.
-  "Depoda": "Depodaki", // Örn: "Depodaki Silahlar" veya "Depodaki Şarjörler"
-  "Destekte": "Desteğe Teslim Edilenler",
-  "Poligonda": "Poligondaki", // Örn: "Poligondaki Silahlar/Şarjörler"
-  "Rapor Bekliyor": "Rapor Yazılacaklar",
-  "Onarıldı": "Onarıldı",
-  // Eski durumlar için de bir eşleşme gerekebilir eğer veritabanında kalmışlarsa
-  "Hizmette": "Depodaki",
-  "Bakımda": "Desteğe Teslim Edilenler",
-  "Arızalı": "Depoda Arızalı",
-  "Onarım Bekliyor": "Poligondaki",
-  "Hizmet Dışı": "Rapor Yazılacaklar",
-};
 
 export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: MaintenanceLogFormProps) {
   const { toast } = useToast();
@@ -120,7 +106,7 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
       }
       
       if (item) {
-        form.setValue("statusChangeFrom", item.status as MaintenanceItemStatus);
+        form.setValue("statusChangeFrom", getDisplayLabel(item.status as MaintenanceItemStatus));
       }
     } else {
       form.setValue("statusChangeFrom", "");
@@ -140,7 +126,7 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
       const result = await addMaintenanceLogToItemAction(logSubmitData.itemId, logSubmitData.itemType, {
         date: new Date(logSubmitData.date).toISOString(),
         description: logSubmitData.description,
-        statusChangeFrom: logSubmitData.statusChangeFrom as MaintenanceItemStatus,
+        statusChangeFrom: logSubmitData.statusChangeFrom as MaintenanceItemStatus, // This will be display label, backend should find original
         statusChangeTo: logSubmitData.statusChangeTo as MaintenanceItemStatus,
         technician: logSubmitData.technician,
         partsUsed: logSubmitData.partsUsed,
@@ -164,15 +150,14 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
   }
 
   const getDisplayLabel = (statusValue: string) => {
-    const itemTypeSpecificSuffix = watchedItemType === 'firearm' ? ' Silahlar' : (watchedItemType === 'magazine' ? ' Şarjörler' : '');
+    const itemTypeSuffix = watchedItemType === 'firearm' ? ' Silahlar' : (watchedItemType === 'magazine' ? ' Şarjörler' : '');
     switch (statusValue) {
-        case "Depoda Arızalı": return `Depoda Arızalı${itemTypeSpecificSuffix}`;
-        case "Depoda": return `Depodaki${itemTypeSpecificSuffix}`;
+        case "Depoda Arızalı": return `Depoda Arızalı${itemTypeSuffix}`;
+        case "Depoda": return `Depodaki${itemTypeSuffix}`;
         case "Destekte": return "Desteğe Teslim Edilenler";
-        case "Poligonda": return `Poligondaki${itemTypeSpecificSuffix}`;
+        case "Poligonda": return `Poligondaki${itemTypeSuffix}`;
         case "Rapor Bekliyor": return "Rapor Yazılacaklar";
-        case "Onarıldı": return "Onarıldı"; // This status is only for firearms based on current schemas
-        default: return statusValue;
+        default: return statusValue; // Handles cases like "" or other unexpected values
     }
   };
 
@@ -333,7 +318,7 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
                 <FormItem>
                     <FormLabel><span suppressHydrationWarning>Önceki Durum</span></FormLabel>
                     <FormControl>
-                        <Input {...field} readOnly className="bg-muted/50" value={field.value ? getDisplayLabel(field.value) : ''} />
+                        <Input {...field} readOnly className="bg-muted/50" value={field.value || ''} />
                     </FormControl>
                     <FormDescription><span suppressHydrationWarning>Bu alan öğe seçildiğinde otomatik dolar.</span></FormDescription>
                     <FormMessage />

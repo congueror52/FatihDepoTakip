@@ -2,7 +2,7 @@
 import { z } from "zod";
 
 // Updated firearm statuses
-export const firearmStatuses = ['Depoda', 'Destekte', 'Depoda Arızalı', 'Poligonda', 'Onarıldı', 'Rapor Bekliyor'] as const;
+export const firearmStatuses = ['Depoda', 'Destekte', 'Depoda Arızalı', 'Poligonda', 'Rapor Bekliyor'] as const;
 
 export const firearmFormSchema = z.object({
   definitionId: z.string().min(1, { message: "Lütfen bir silah türü seçin." }),
@@ -37,4 +37,3 @@ export const firearmFormSchema = z.object({
 });
 
 export type FirearmFormValues = z.infer<typeof firearmFormSchema>;
-

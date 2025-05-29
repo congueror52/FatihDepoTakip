@@ -25,7 +25,7 @@ export const alertDefinitionFormSchema = z.object({
   depotId: z.string().optional(), 
   caliberFilter: z.enum(SUPPORTED_CALIBERS).optional(),
   thresholdValue: z.coerce.number().int().min(0).optional(),
-  statusFilter: z.enum(allItemDisplayStatuses).optional(), // Use the combined list
+  statusFilter: z.enum(allItemDisplayStatuses).optional(), 
   severity: z.enum(ALERT_SEVERITIES as [string, ...string[]], {
     errorMap: () => ({ message: "Lütfen geçerli bir ciddiyet seviyesi seçin." }),
   }),

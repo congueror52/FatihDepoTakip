@@ -16,10 +16,10 @@ export const maintenanceLogFormSchema = z.object({
     message: "Geçerli bir tarih giriniz.",
   }),
   description: z.string().min(5, { message: "Açıklama en az 5 karakter olmalıdır." }).max(1000),
-  statusChangeFrom: z.enum(allPossibleStatuses, { // Use combined list
+  statusChangeFrom: z.enum(allPossibleStatuses, { 
     errorMap: () => ({ message: "Geçerli bir önceki durum seçin." }),
   }).or(z.literal("")), 
-  statusChangeTo: z.enum(allPossibleStatuses, { // Use combined list
+  statusChangeTo: z.enum(allPossibleStatuses, { 
     errorMap: () => ({ message: "Geçerli bir yeni durum seçin." }),
   }),
   technician: z.string().max(100).optional(),
