@@ -1,11 +1,12 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, Box, Warehouse, List } from "lucide-react"; // Replaced BarChartHorizontalBig with Warehouse and List
+import { PlusCircle, Box, Warehouse, List, TrendingUp, TrendingDown, PackageSearch } from "lucide-react";
 import Link from "next/link";
 import { AmmunitionTableClient } from "./_components/ammunition-table-client"; 
-import { getAmmunition, getDepots } from "@/lib/actions/inventory.actions"; 
-import type { Ammunition, Depot } from "@/types/inventory"; 
+import { getAmmunition, getDepots, getAmmunitionDailyUsageLogs } from "@/lib/actions/inventory.actions"; 
+import type { Ammunition, Depot, SupportedCaliber } from "@/types/inventory"; 
+import { SUPPORTED_CALIBERS } from "@/types/inventory";
 
 interface DepotAmmunitionSummary {
   depotId: string;
@@ -16,9 +17,17 @@ interface DepotAmmunitionSummary {
   }>;
 }
 
+interface CaliberOverallStatus {
+  caliber: SupportedCaliber;
+  totalStock: number;
+  totalUsed: number;
+  remaining: number;
+}
+
 export default async function AmmunitionPage() {
   const ammunitionList = await getAmmunition(); 
   const depots = await getDepots(); 
+  const dailyUsageLogs = await getAmmunitionDailyUsageLogs();
 
   const depotSummaries: DepotAmmunitionSummary[] = depots.map(depot => {
     const depotAmmunition = ammunitionList.filter(ammo => ammo.depotId === depot.id);
@@ -35,9 +44,39 @@ export default async function AmmunitionPage() {
       depotName: depot.name,
       calibers: Object.entries(calibersInDepot)
         .map(([caliber, quantity]) => ({ caliber, quantity }))
-        .sort((a, b) => a.caliber.localeCompare(b.caliber)), // Sort calibers alphabetically
+        .sort((a, b) => a.caliber.localeCompare(b.caliber)),
     };
-  }).filter(summary => summary.calibers.length > 0); // Only include depots that have ammunition
+  }).filter(summary => summary.calibers.length > 0);
+
+
+  const caliberOverallStatus: CaliberOverallStatus[] = SUPPORTED_CALIBERS.map(caliber => {
+    const totalStock = ammunitionList
+      .filter(ammo => ammo.caliber === caliber)
+      .reduce((sum, ammo) => sum + ammo.quantity, 0);
+
+    let totalUsed = 0;
+    switch (caliber) {
+      case "9x19mm":
+        totalUsed = dailyUsageLogs.reduce((sum, log) => sum + log.used_9x19mm, 0);
+        break;
+      case "5.56x45mm":
+        totalUsed = dailyUsageLogs.reduce((sum, log) => sum + log.used_5_56x45mm, 0);
+        break;
+      case "7.62x39mm":
+        totalUsed = dailyUsageLogs.reduce((sum, log) => sum + log.used_7_62x39mm, 0);
+        break;
+      case "7.62x51mm":
+        totalUsed = dailyUsageLogs.reduce((sum, log) => sum + log.used_7_62x51mm, 0);
+        break;
+    }
+    
+    return {
+      caliber,
+      totalStock,
+      totalUsed,
+      remaining: totalStock - totalUsed,
+    };
+  });
 
 
   return (
@@ -53,6 +92,43 @@ export default async function AmmunitionPage() {
           </Button>
         </Link> 
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <PackageSearch className="h-6 w-6 text-primary" />
+            <span suppressHydrationWarning>Genel Kalibre Durumu</span>
+          </CardTitle>
+          <CardDescription suppressHydrationWarning>Her bir fişek kalibresi için toplam stok, kullanılan ve kalan miktarlar.</CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4">
+          {caliberOverallStatus.map((status) => (
+            <Card key={status.caliber} className="shadow-sm">
+              <CardHeader className="pb-2 pt-4">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Box className="h-5 w-5 text-muted-foreground" /> 
+                  <span suppressHydrationWarning>{status.caliber} Durumu</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-1 text-sm">
+                <div className="flex justify-between items-center">
+                  <span className="flex items-center gap-1"><List className="h-4 w-4 text-blue-500" /> <span suppressHydrationWarning>Toplam Stok:</span></span>
+                  <span className="font-semibold">{status.totalStock.toLocaleString()} <span className="text-xs text-muted-foreground" suppressHydrationWarning>adet</span></span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="flex items-center gap-1"><TrendingDown className="h-4 w-4 text-red-500" /> <span suppressHydrationWarning>Toplam Kullanılan:</span></span>
+                  <span className="font-semibold">{status.totalUsed.toLocaleString()} <span className="text-xs text-muted-foreground" suppressHydrationWarning>adet</span></span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="flex items-center gap-1"><TrendingUp className="h-4 w-4 text-green-500" /> <span suppressHydrationWarning>Kalan Miktar:</span></span>
+                  <span className="font-semibold">{status.remaining.toLocaleString()} <span className="text-xs text-muted-foreground" suppressHydrationWarning>adet</span></span>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </CardContent>
+      </Card>
+
 
       {depotSummaries.length > 0 && (
         <Card>

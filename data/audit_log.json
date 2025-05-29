@@ -168,5 +168,80 @@
       "cost": 0,
       "id": "65f4ac51-352f-46d9-a9d1-1a92e18df471"
     }
+  },
+  {
+    "id": "8d1753c3-0d00-4a94-bb8b-aa501e8dbc77",
+    "timestamp": "2025-05-29T15:44:40.763Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "FirearmDefinition",
+    "entityId": "f6f5ab56-1f73-4a4a-88ce-1e000446ca39",
+    "status": "SUCCESS",
+    "details": {
+      "name": "MP5",
+      "model": "MP5 MAKİNALI TABANCA",
+      "manufacturer": "MKE",
+      "caliber": "9X19",
+      "description": "",
+      "id": "f6f5ab56-1f73-4a4a-88ce-1e000446ca39",
+      "lastUpdated": "2025-05-29T15:44:40.751Z"
+    }
+  },
+  {
+    "id": "c64904e7-07a4-4571-ae03-fa62cc4c4c6b",
+    "timestamp": "2025-05-29T15:45:12.525Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Firearm",
+    "entityId": "4b26af3b-c7da-49f7-8dab-75d4262f2de6",
+    "status": "SUCCESS",
+    "details": {
+      "definitionId": "f6f5ab56-1f73-4a4a-88ce-1e000446ca39",
+      "serialNumber": "44444",
+      "depotId": "depotB",
+      "status": "Hizmette",
+      "purchaseDate": "2025-05-27T00:00:00.000Z",
+      "notes": "",
+      "id": "4b26af3b-c7da-49f7-8dab-75d4262f2de6",
+      "itemType": "firearm",
+      "name": "MP5",
+      "model": "MP5 MAKİNALI TABANCA",
+      "manufacturer": "MKE",
+      "caliber": "9X19",
+      "lastUpdated": "2025-05-29T15:45:12.505Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "b27a72d5-fab0-41ec-9212-fa17e1e7d52d",
+    "timestamp": "2025-05-29T15:46:46.361Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "DailyAmmunitionUsage",
+    "entityId": "c0d9d06e-9f2d-4113-af54-17b4d8774ff5",
+    "status": "SUCCESS",
+    "details": {
+      "date": "2025-05-28T00:00:00.000Z",
+      "personnelCount": 76,
+      "usageScenarioId": "scenario_1",
+      "used_9x19mm": 5700,
+      "used_5_56x45mm": 1900,
+      "used_7_62x39mm": 0,
+      "used_7_62x51mm": 0,
+      "notes": "",
+      "id": "c0d9d06e-9f2d-4113-af54-17b4d8774ff5"
+    }
   }
 ]

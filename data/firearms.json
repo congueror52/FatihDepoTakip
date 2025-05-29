@@ -102,5 +102,21 @@
     "caliber": "7.62X39",
     "lastUpdated": "2025-05-29T15:10:50.715Z",
     "maintenanceHistory": []
+  },
+  {
+    "definitionId": "f6f5ab56-1f73-4a4a-88ce-1e000446ca39",
+    "serialNumber": "44444",
+    "depotId": "depotB",
+    "status": "Hizmette",
+    "purchaseDate": "2025-05-27T00:00:00.000Z",
+    "notes": "",
+    "id": "4b26af3b-c7da-49f7-8dab-75d4262f2de6",
+    "itemType": "firearm",
+    "name": "MP5",
+    "model": "MP5 MAKİNALI TABANCA",
+    "manufacturer": "MKE",
+    "caliber": "9X19",
+    "lastUpdated": "2025-05-29T15:45:12.505Z",
+    "maintenanceHistory": []
   }
 ]
