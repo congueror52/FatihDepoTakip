@@ -15,7 +15,6 @@ import { ammunitionFormSchema } from '@/app/(app)/inventory/ammunition/_componen
 import { depotFormSchema } from '@/app/(app)/admin/depots/_components/depot-form-schema';
 import { maintenanceLogFormSchema } from '@/app/(app)/maintenance/_components/maintenance-log-form-schema';
 import { shipmentFormSchema } from '@/app/(app)/shipments/_components/shipment-form-schema';
-import { shipmentTypeDefinitionFormSchema } from '@/app/(app)/admin/shipment-types/_components/shipment-type-definition-form-schema';
 import { alertDefinitionFormSchema } from '@/app/(app)/admin/alert-definitions/_components/alert-definition-form-schema'; 
 import type { AuditLogEntry } from '@/types/audit';
 
@@ -124,14 +123,6 @@ export async function deleteFirearmDefinitionAction(id: string): Promise<void> {
   }
 }
 
-interface CsvImportResult {
-  successCount: number;
-  errorCount: number;
-  errors: { row: number; message: string; data: any }[];
-}
-
-// importFirearmDefinitionsFromCsvAction fonksiyonu kaldırıldı
-
 export async function exportFirearmDefinitionsToCsvAction(): Promise<string> {
   noStore();
   const definitions = await getFirearmDefinitions();
@@ -162,7 +153,7 @@ export async function exportFirearmDefinitionsToCsvAction(): Promise<string> {
     ].join(';')
   );
   
-  return ["sep=;", header.join(';'), ...rows].join('\n');
+  return [header.join(';'), ...rows].join('\n');
 }
 
 
@@ -294,8 +285,6 @@ export async function deleteFirearmAction(id: string): Promise<void> {
   }
 }
 
-// importFirearmsFromCsvAction fonksiyonu kaldırıldı
-
 export async function exportFirearmsToCsvAction(): Promise<string> {
   noStore();
   const firearms = await getFirearms();
@@ -334,7 +323,7 @@ export async function exportFirearmsToCsvAction(): Promise<string> {
     ].join(';')
   );
 
-  return ["sep=;", header.join(';'), ...rows].join('\n');
+  return [header.join(';'), ...rows].join('\n');
 }
 
 
@@ -1443,3 +1432,4 @@ export async function getRecentAuditLogs(limit: number = 5): Promise<AuditLogEnt
     return []; 
   }
 }
+

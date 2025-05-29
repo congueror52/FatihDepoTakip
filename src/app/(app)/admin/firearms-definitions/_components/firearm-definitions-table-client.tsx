@@ -70,7 +70,8 @@ export function FirearmDefinitionsTableClient({ definitions: initialDefinitions,
       }
       
       const BOM = "\uFEFF"; // UTF-8 Byte Order Mark for Excel
-      const blob = new Blob([BOM + csvString], { type: 'text/csv;charset=utf-8;' });
+      // Prepend BOM, then sep=; for Excel compatibility
+      const blob = new Blob([BOM + "sep=;\n" + csvString], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement("a");
       
       if (link.download !== undefined) { 
@@ -83,8 +84,8 @@ export function FirearmDefinitionsTableClient({ definitions: initialDefinitions,
         document.body.removeChild(link);
         URL.revokeObjectURL(url); // Clean up
       } else {
-        // Fallback for older browsers (though less common now)
-        window.open('data:text/csv;charset=utf-8,' + BOM + encodeURIComponent(csvString));
+        // Fallback for older browsers 
+        window.open('data:text/csv;charset=utf-8,' + BOM + "sep=;\n" + encodeURIComponent(csvString));
       }
       toast({ variant: "success", title: "Başarılı", description: "Silah tanımları CSV olarak dışa aktarıldı." });
     } catch (error: any) {
@@ -157,3 +158,4 @@ export function FirearmDefinitionsTableClient({ definitions: initialDefinitions,
     </>
   );
 }
+

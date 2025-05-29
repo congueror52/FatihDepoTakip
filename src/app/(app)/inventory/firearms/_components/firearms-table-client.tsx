@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, Edit, Trash2 } from "lucide-react"; 
+import { Eye, Edit, Trash2, Download } from "lucide-react"; 
 import Link from "next/link";
 import { useState, useEffect } from "react"; 
 import {
@@ -26,7 +26,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { deleteFirearmAction } from "@/lib/actions/inventory.actions";
+import { deleteFirearmAction, exportFirearmsToCsvAction } from "@/lib/actions/inventory.actions";
 
 
 interface FirearmsTableClientProps {
@@ -81,9 +81,43 @@ export function FirearmsTableClient({ firearms: initialFirearms, depots, onRefre
     return depot ? depot.name : depotId;
   }
 
+  const handleExportToCsv = async () => {
+    try {
+      const csvString = await exportFirearmsToCsvAction();
+      if (!csvString) {
+        toast({ variant: "default", title: "Bilgi", description: "Dışa aktarılacak silah bulunmamaktadır." });
+        return;
+      }
+      const BOM = "\uFEFF"; 
+      // Prepend BOM, then sep=; for Excel compatibility
+      const blob = new Blob([BOM + "sep=;\n" + csvString], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      if (link.download !== undefined) { 
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", "silah_envanteri.csv");
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      } else {
+         window.open('data:text/csv;charset=utf-8,' + BOM + "sep=;\n" + encodeURIComponent(csvString));
+      }
+      toast({ variant: "success", title: "Başarılı", description: "Silah envanteri CSV olarak dışa aktarıldı." });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Hata", description: error.message || "CSV dışa aktarılırken bir hata oluştu." });
+    }
+  };
+
 
   return (
     <>
+       <div className="mb-4 flex justify-end">
+        <Button onClick={handleExportToCsv} variant="outline">
+          <Download className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>CSV'ye Aktar</span>
+        </Button>
+      </div>
       <Table>
         <TableHeader>
           <TableRow>
@@ -153,3 +187,4 @@ export function FirearmsTableClient({ firearms: initialFirearms, depots, onRefre
     </>
   );
 }
+
