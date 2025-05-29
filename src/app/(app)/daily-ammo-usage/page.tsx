@@ -3,14 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlusCircle, ClipboardList, BarChart3, Users, Info, ListTree } from "lucide-react";
 import Link from "next/link";
-import { getAmmunitionDailyUsageLogs, getGroupedAmmunitionDailyUsageLogs, type GroupedDailyUsageLog } from "@/lib/actions/inventory.actions";
+import { getAmmunitionDailyUsageLogs, getGroupedAmmunitionDailyUsageLogs, getUsageScenarios, type GroupedDailyUsageLog } from "@/lib/actions/inventory.actions";
 import { AmmunitionDailyUsageTableClient } from "./_components/usage-log-table-client";
 
 export default async function AmmunitionDailyUsagePage() {
-  const allLogs = await getAmmunitionDailyUsageLogs(); // For total summary
+  const allLogs = await getAmmunitionDailyUsageLogs(); 
   const groupedLogs = await getGroupedAmmunitionDailyUsageLogs();
+  const usageScenarios = await getUsageScenarios(); // Fetch scenarios to pass to table client
 
-  // Calculate total usage for summary (simple sum for now)
   const totalUsage = {
     '9x19mm': allLogs.reduce((sum, log) => sum + log.used_9x19mm, 0),
     '5.56x45mm': allLogs.reduce((sum, log) => sum + log.used_5_56x45mm, 0),
@@ -96,7 +96,7 @@ export default async function AmmunitionDailyUsagePage() {
                 </CardHeader>
                 {group.logs.length > 0 && (
                   <CardContent className="p-0">
-                    <AmmunitionDailyUsageTableClient logs={group.logs} />
+                    <AmmunitionDailyUsageTableClient logs={group.logs} usageScenarios={usageScenarios} />
                   </CardContent>
                 )}
               </Card>

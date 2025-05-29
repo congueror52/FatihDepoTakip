@@ -18,7 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ammunitionDailyUsageFormSchema, type AmmunitionDailyUsageFormValues } from "./usage-log-form-schema";
-import { addAmmunitionDailyUsageLogAction } from "@/lib/actions/inventory.actions";
+import { addAmmunitionDailyUsageLogAction, updateAmmunitionDailyUsageLogAction } from "@/lib/actions/inventory.actions";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { CalendarIcon, Loader2 } from "lucide-react";
@@ -27,32 +27,45 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
-import { useEffect, useState, useMemo } from "react"; // Added useMemo
-import type { SupportedCaliber, UsageScenario } from "@/types/inventory";
+import { useEffect, useState, useMemo } from "react";
+import type { SupportedCaliber, UsageScenario, AmmunitionDailyUsageLog } from "@/types/inventory";
 import { SUPPORTED_CALIBERS } from "@/types/inventory";
 
 interface AmmunitionDailyUsageFormProps {
   usageScenarios: UsageScenario[];
+  logToEdit?: AmmunitionDailyUsageLog;
 }
 
 type CaliberCheckboxState = Record<SupportedCaliber, boolean>;
 type ScenarioConsumptionRates = Record<SupportedCaliber, number>;
 
-export function AmmunitionDailyUsageForm({ usageScenarios }: AmmunitionDailyUsageFormProps) {
+export function AmmunitionDailyUsageForm({ usageScenarios, logToEdit }: AmmunitionDailyUsageFormProps) {
   const { toast } = useToast();
   const router = useRouter();
+  const isEditing = !!logToEdit;
 
-  const initialCheckboxState = useMemo(() => { // Memoized initialCheckboxState
-    return SUPPORTED_CALIBERS.reduce((acc, caliber) => {
-      acc[caliber] = false; // Default to unchecked
+  const initialCheckboxState = useMemo(() => {
+    const state = SUPPORTED_CALIBERS.reduce((acc, caliber) => {
+      acc[caliber] = false;
       return acc;
     }, {} as CaliberCheckboxState);
-  }, []); // Empty dependency array as SUPPORTED_CALIBERS is constant
+
+    if (isEditing && logToEdit) {
+        if (logToEdit.used_9x19mm > 0) state["9x19mm"] = true;
+        if (logToEdit.used_5_56x45mm > 0) state["5.56x45mm"] = true;
+        if (logToEdit.used_7_62x39mm > 0) state["7.62x39mm"] = true;
+        if (logToEdit.used_7_62x51mm > 0) state["7.62x51mm"] = true;
+    }
+    return state;
+  }, [isEditing, logToEdit]);
 
   const [checkedCalibers, setCheckedCalibers] = useState<CaliberCheckboxState>(initialCheckboxState);
   const [currentScenarioRates, setCurrentScenarioRates] = useState<ScenarioConsumptionRates | null>(null);
 
-  const defaultValues: Partial<AmmunitionDailyUsageFormValues> = {
+  const defaultValues: Partial<AmmunitionDailyUsageFormValues> = isEditing && logToEdit ? {
+    ...logToEdit,
+    date: format(new Date(logToEdit.date), 'yyyy-MM-dd'),
+  } : {
     date: format(new Date(), 'yyyy-MM-dd'),
     personnelCount: 0,
     usageScenarioId: undefined,
@@ -89,11 +102,12 @@ export function AmmunitionDailyUsageForm({ usageScenarios }: AmmunitionDailyUsag
         setCurrentScenarioRates(scenarioRates);
       }
     } else {
-      // No scenario selected, clear scenario-specific rates and uncheck all
       setCurrentScenarioRates(null);
-      setCheckedCalibers(initialCheckboxState);
+      if (!isEditing) { // Only reset checkboxes if not editing and no scenario selected
+        setCheckedCalibers(initialCheckboxState);
+      }
     }
-  }, [selectedScenarioId, usageScenarios, initialCheckboxState]);
+  }, [selectedScenarioId, usageScenarios, initialCheckboxState, isEditing]);
 
   const handleCheckboxChange = (caliber: SupportedCaliber, isChecked: boolean) => {
     setCheckedCalibers(prevState => ({ ...prevState, [caliber]: isChecked }));
@@ -114,27 +128,33 @@ export function AmmunitionDailyUsageForm({ usageScenarios }: AmmunitionDailyUsag
 
       if (checkedCalibers[caliber] && currentScenarioRates && currentScenarioRates[caliber] !== undefined) {
         form.setValue(formFieldName, Math.round(count * currentScenarioRates[caliber]));
-      } else if (checkedCalibers[caliber] && !currentScenarioRates) {
-         // Caliber checked, but no scenario or rate in scenario: keep manual input or default to 0.
-         // If you want to ensure it zeroes out if not in scenario, explicitly set to 0 here
-         // or ensure manual entry is still possible / doesn't get overwritten if it was non-zero
-      }
-      else { // Not checked or no rate (effectively, not part of calculation for now)
+      } else if (checkedCalibers[caliber] && !currentScenarioRates && !isEditing) {
+        // Caliber checked, no scenario rates, and not editing: keep manual input or default to 0
+        // If we want to reset to 0 if not in scenario, do it here
+        // form.setValue(formFieldName, 0); 
+      } else if (!checkedCalibers[caliber] && !isEditing) { // Not checked and not editing
         form.setValue(formFieldName, 0);
       }
+       // If editing, the initial values from logToEdit are already set by defaultValues
+       // and manual changes are preserved.
     });
 
-  }, [personnelCount, currentScenarioRates, form, checkedCalibers]);
+  }, [personnelCount, currentScenarioRates, form, checkedCalibers, isEditing]);
 
 
   async function onSubmit(data: AmmunitionDailyUsageFormValues) {
     try {
-      await addAmmunitionDailyUsageLogAction(data);
-      toast({ variant: "success", title: "Başarılı", description: "Günlük fişek kullanım kaydı başarıyla eklendi." });
+      if (isEditing && logToEdit) {
+        await updateAmmunitionDailyUsageLogAction({ ...logToEdit, ...data, date: new Date(data.date).toISOString() });
+        toast({ variant: "success", title: "Başarılı", description: "Günlük fişek kullanım kaydı başarıyla güncellendi." });
+      } else {
+        await addAmmunitionDailyUsageLogAction({...data, date: new Date(data.date).toISOString() });
+        toast({ variant: "success", title: "Başarılı", description: "Günlük fişek kullanım kaydı başarıyla eklendi." });
+      }
       router.push("/daily-ammo-usage");
       router.refresh(); 
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Hata", description: error.message || "Kayıt eklenirken hata oluştu." });
+      toast({ variant: "destructive", title: "Hata", description: error.message || `Kayıt ${isEditing ? 'güncellenirken' : 'eklenirken'} hata oluştu.` });
       console.error("Form gönderme hatası:", error);
     }
   }
@@ -250,7 +270,7 @@ export function AmmunitionDailyUsageForm({ usageScenarios }: AmmunitionDailyUsag
             <FormField
               key={item.name}
               control={form.control}
-              name={item.name} // This field still holds the calculated or manual value
+              name={item.name} 
               render={({ field: valueField }) => ( 
                 <FormItem>
                   <div className="flex items-center space-x-3">
@@ -294,7 +314,7 @@ export function AmmunitionDailyUsageForm({ usageScenarios }: AmmunitionDailyUsag
         />
         <Button type="submit" disabled={form.formState.isSubmitting}>
           {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {form.formState.isSubmitting ? <span suppressHydrationWarning>Kaydediliyor...</span> : <span suppressHydrationWarning>Kullanım Kaydı Ekle</span>}
+          {form.formState.isSubmitting ? (isEditing ? <span suppressHydrationWarning>Güncelleniyor...</span> : <span suppressHydrationWarning>Kaydediliyor...</span>) : (isEditing ? <span suppressHydrationWarning>Kullanım Kaydını Güncelle</span> : <span suppressHydrationWarning>Kullanım Kaydı Ekle</span>)}
         </Button>
       </form>
     </Form>

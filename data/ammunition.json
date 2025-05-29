@@ -22,5 +22,16 @@
     "id": "ca74be46-5ac9-4878-8abe-c1222c8fbf6c",
     "itemType": "ammunition",
     "lastUpdated": "2025-05-29T15:12:35.193Z"
+  },
+  {
+    "name": "ACM EĞİTİMİ",
+    "caliber": "5.56x45mm",
+    "quantity": 700,
+    "depotId": "depotB",
+    "status": "Mevcut",
+    "purchaseDate": "2025-05-29T00:00:00.000Z",
+    "id": "4181521c-0a97-4945-9514-6278dc5164ad",
+    "itemType": "ammunition",
+    "lastUpdated": "2025-05-29T15:17:32.227Z"
   }
 ]
