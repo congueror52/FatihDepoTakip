@@ -1,29 +1,36 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Briefcase, Boxes, DollarSign, Users, ShieldAlert, BarChart3, Activity, Target, ListChecks, BellRing } from 'lucide-react';
-import Image from 'next/image';
+import { Briefcase, DollarSign, Users, ShieldAlert, BarChart3, Activity, Target, ListChecks, BellRing, ListTree } from 'lucide-react';
 import Link from 'next/link';
-import { getFirearms, getMagazines, getAmmunition, getTriggeredAlerts, getRecentAuditLogs } from '@/lib/actions/inventory.actions';
-import type { AlertDefinition } from '@/types/inventory'; 
+import { 
+  getFirearms, 
+  getMagazines, 
+  getAmmunition, 
+  getTriggeredAlerts, 
+  getRecentAuditLogs,
+  getAmmunitionDailyUsageLogs // Yeni eklenen fonksiyon
+} from '@/lib/actions/inventory.actions';
+import type { AlertDefinition, SupportedCaliber } from '@/types/inventory'; 
+import { SUPPORTED_CALIBERS } from '@/types/inventory'; // Desteklenen kalibreleri almak için
 import { Badge } from '@/components/ui/badge'; 
 import type { AuditLogEntry } from '@/types/audit';
+import { AmmunitionUsageSummaryChart } from './_components/ammunition-usage-summary-chart'; // Yeni grafik bileşeni
 
 
 export default async function DashboardPage() {
   const firearms = await getFirearms();
   const magazines = await getMagazines();
-  const ammunition = await getAmmunition();
+  const ammunitionStock = await getAmmunition(); // Stoktaki mühimmat
   const triggeredAlerts = await getTriggeredAlerts(); 
   const recentAuditLogs = await getRecentAuditLogs(5);
+  const dailyUsageLogs = await getAmmunitionDailyUsageLogs(); // Günlük kullanım logları
 
-  // For "Diğer Malzemeler" (Other Items) - Placeholder count for now
   const totalOtherItems = 0; 
-
 
   const summaryData = {
     totalFirearms: firearms.length,
     totalMagazines: magazines.length,
-    totalAmmunitionRounds: ammunition.reduce((sum, ammo) => sum + ammo.quantity, 0),
+    totalAmmunitionRounds: ammunitionStock.reduce((sum, ammo) => sum + ammo.quantity, 0),
   };
   
   const getSeverityBadgeClasses = (severity: AlertDefinition['severity']) => {
@@ -46,7 +53,7 @@ export default async function DashboardPage() {
     Shipment: "Malzeme Kaydı",
     ShipmentTypeDefinition: "Malzeme Kayıt Türü",
     MaintenanceLog: "Bakım Kaydı",
-    AmmunitionUsage: "Mühimmat Kullanımı", // This might be deprecated
+    AmmunitionUsage: "Mühimmat Kullanımı", 
     AlertDefinition: "Uyarı Tanımı",
   };
 
@@ -76,14 +83,25 @@ export default async function DashboardPage() {
       case 'LOG_USAGE': 
         return `Mühimmat kullanımı kaydedildi: ${log.details?.ammunitionId || identifierText}`;
       case 'LOG_MAINTENANCE': 
-         // This case is for the 'MaintenanceLog' entity type being created.
-         // The actual item being maintained is logged via an 'UPDATE' to 'Firearm' or 'Magazine'.
-         // So, a log for a 'MaintenanceLog' entity means "A maintenance log entry was created".
          return `${translatedEntityType} ${identifierText} oluşturuldu.`;
       default:
         return `${log.actionType} işlemi ${translatedEntityType} ${identifierText} üzerinde yapıldı.`;
     }
   };
+
+  // Process data for the ammunition usage chart
+  const usageByCaliber = dailyUsageLogs.reduce((acc, log) => {
+    acc['9x19mm'] = (acc['9x19mm'] || 0) + log.used_9x19mm;
+    acc['5.56x45mm'] = (acc['5.56x45mm'] || 0) + log.used_5_56x45mm;
+    acc['7.62x39mm'] = (acc['7.62x39mm'] || 0) + log.used_7_62x39mm;
+    acc['7.62x51mm'] = (acc['7.62x51mm'] || 0) + log.used_7_62x51mm;
+    return acc;
+  }, {} as Record<SupportedCaliber, number>);
+
+  const ammunitionUsageChartData = SUPPORTED_CALIBERS.map(caliber => ({
+    name: caliber,
+    'Kullanılan': usageByCaliber[caliber] || 0,
+  }));
 
 
   return (
@@ -148,24 +166,20 @@ export default async function DashboardPage() {
           <CardContent>
             <div className="text-2xl font-bold">{triggeredAlerts.length}</div>
             <p className="text-xs text-muted-foreground" suppressHydrationWarning>
-              {triggeredAlerts.length === 0 ? "aktif uyarı bulunmuyor" : (triggeredAlerts.length === 1 ? "aktif uyarı" : `${triggeredAlerts.length} aktif uyarılar`)}
+              {triggeredAlerts.length === 0 ? "aktif uyarı bulunmuyor" : (triggeredAlerts.length === 1 ? "aktif uyarı" : `${triggeredAlerts.length} aktif uyarı`)}
             </p>
           </CardContent>
         </Card>
       </div>
 
-
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <Card className="lg:col-span-4">
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><BarChart3 className="h-5 w-5" /> <span suppressHydrationWarning>Mühimmat Kullanım Özeti</span></CardTitle>
-            <CardDescription suppressHydrationWarning>Aylık mühimmat tüketim eğilimleri.</CardDescription>
+            <CardDescription suppressHydrationWarning>Kaydedilen tüm günlük kullanımlara göre kalibre bazlı toplam tüketim.</CardDescription>
           </CardHeader>
           <CardContent className="pl-2">
-            <div className="h-[300px] flex items-center justify-center bg-muted/50 rounded-md">
-              <Image src="https://placehold.co/600x300.png?text=Mühimmat+Kullanım+Grafiği" alt="Mühimmat Kullanım Grafiği Yer Tutucusu" width={600} height={300} data-ai-hint="grafik çizelge" />
-            </div>
-            <p className="text-xs text-muted-foreground mt-2" suppressHydrationWarning>Mühimmat Kullanım Grafiği için yer tutucu.</p>
+            <AmmunitionUsageSummaryChart data={ammunitionUsageChartData} />
           </CardContent>
         </Card>
         <Card className="lg:col-span-3">
@@ -197,34 +211,7 @@ export default async function DashboardPage() {
         </Card>
       </div>
       
-      {triggeredAlerts.length > 0 && (
-        <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <BellRing className="h-5 w-5 text-destructive" />
-                    <span suppressHydrationWarning>Son Uyarılar</span>
-                </CardTitle>
-                <CardDescription suppressHydrationWarning>Sistemdeki en son {Math.min(triggeredAlerts.length, 5)} önemli uyarı.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-                {triggeredAlerts.slice(0, 5).map(alert => ( // Tetiklenmiş uyarıları gösterir
-                    <div key={alert.id} className="flex items-start justify-between p-3 border rounded-md shadow-sm">
-                        <div>
-                            <p className="font-medium text-sm" suppressHydrationWarning>{alert.name}</p>
-                            <p className="text-xs text-muted-foreground" suppressHydrationWarning>
-                                {alert.messageTemplate.substring(0, 100) + '...'} - <span suppressHydrationWarning>Tetiklenme: {new Date(alert.lastUpdated).toLocaleDateString('tr-TR')}</span>
-                            </p>
-                        </div>
-                        <Badge className={getSeverityBadgeClasses(alert.severity)}>{alert.severity}</Badge>
-                    </div>
-                ))}
-                 <Link href="/alerts" className="text-sm text-primary hover:underline float-right mt-2">
-                    <span suppressHydrationWarning>Tüm Uyarıları Gör</span>
-                </Link>
-            </CardContent>
-        </Card>
-      )}
-       {(triggeredAlerts.length === 0) && ( 
+      {triggeredAlerts.length === 0 && ( 
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -240,6 +227,33 @@ export default async function DashboardPage() {
                 </CardContent>
             </Card>
         )}
+         {triggeredAlerts.length > 0 && (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <BellRing className="h-5 w-5 text-destructive" />
+                    <span suppressHydrationWarning>Son Uyarılar</span>
+                </CardTitle>
+                <CardDescription suppressHydrationWarning>Sistemdeki en son {Math.min(triggeredAlerts.length, 5)} önemli uyarı.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+                {triggeredAlerts.slice(0, 5).map(alert => (
+                    <div key={alert.id} className="flex items-start justify-between p-3 border rounded-md shadow-sm">
+                        <div>
+                            <p className="font-medium text-sm" suppressHydrationWarning>{alert.name}</p>
+                            <p className="text-xs text-muted-foreground" suppressHydrationWarning>
+                                {alert.messageTemplate.substring(0, 100) + '...'} - <span suppressHydrationWarning>Tanım Güncelleme: {new Date(alert.lastUpdated).toLocaleDateString('tr-TR')}</span>
+                            </p>
+                        </div>
+                        <Badge className={getSeverityBadgeClasses(alert.severity)}>{alert.severity}</Badge>
+                    </div>
+                ))}
+                 <Link href="/alerts" className="text-sm text-primary hover:underline float-right mt-2">
+                    <span suppressHydrationWarning>Tüm Uyarıları Gör</span>
+                </Link>
+            </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
