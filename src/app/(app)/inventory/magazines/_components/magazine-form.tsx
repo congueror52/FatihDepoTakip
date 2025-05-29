@@ -22,8 +22,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import type { Magazine, FirearmDefinition, Depot } from "@/types/inventory"; // Added Depot
-import { SUPPORTED_CALIBERS } from "@/types/inventory"; // Removed DEPOT_LOCATIONS
+import type { Magazine, FirearmDefinition, Depot, SupportedCaliber } from "@/types/inventory";
+import { SUPPORTED_CALIBERS } from "@/types/inventory";
 import { magazineFormSchema, magazineStatuses, type MagazineFormValues } from "./magazine-form-schema";
 import { addMagazineAction, updateMagazineAction } from "@/lib/actions/inventory.actions";
 import { useToast } from "@/hooks/use-toast";
@@ -39,15 +39,13 @@ import { useState, useEffect } from "react";
 interface MagazineFormProps {
   magazine?: Magazine;
   firearmDefinitions: FirearmDefinition[];
-  depots: Depot[]; // Added depots prop
+  depots: Depot[];
 }
 
-export function MagazineForm({ magazine, firearmDefinitions, depots }: MagazineFormProps) { // Added depots to props
+export function MagazineForm({ magazine, firearmDefinitions, depots }: MagazineFormProps) {
   const { toast } = useToast();
   const router = useRouter();
-  const [selectedFirearmDefId, setSelectedFirearmDefId] = useState<string | undefined>(magazine?.compatibleFirearmDefinitionId || undefined);
-  const [isNameCaliberReadOnly, setIsNameCaliberReadOnly] = useState<boolean>(!!magazine?.compatibleFirearmDefinitionId);
-
+  
   const isEditing = !!magazine;
 
   const defaultValues: Partial<MagazineFormValues> = magazine ? {
@@ -56,17 +54,18 @@ export function MagazineForm({ magazine, firearmDefinitions, depots }: MagazineF
     serialNumber: magazine.serialNumber || "",
     manufacturer: magazine.manufacturer || "",
     notes: magazine.notes || "",
-    quantity: 1, // Quantity is 1 when editing an existing magazine
+    quantity: 1,
     purchaseDate: magazine.purchaseDate ? format(new Date(magazine.purchaseDate), 'yyyy-MM-dd') : undefined,
     compatibleFirearmDefinitionId: magazine.compatibleFirearmDefinitionId,
+    caliber: magazine.caliber as SupportedCaliber, // Ensure type safety
   } : {
     name: "",
     serialNumber: "",
     caliber: SUPPORTED_CALIBERS[0],
     capacity: 30,
-    quantity: 1, // Default quantity for new magazines
+    quantity: 1,
     status: 'Hizmette',
-    depotId: depots.length > 0 ? depots[0].id : "", // Default to first available depot
+    depotId: depots.length > 0 ? depots[0].id : "",
     manufacturer: "",
     purchaseDate: undefined,
     notes: "",
@@ -79,24 +78,31 @@ export function MagazineForm({ magazine, firearmDefinitions, depots }: MagazineF
     mode: "onChange",
   });
 
+  // Directly use form.watch instead of managing separate state for selectedFirearmDefId
+  const watchedCompatibleFirearmDefId = form.watch("compatibleFirearmDefinitionId");
+  const [isNameCaliberReadOnly, setIsNameCaliberReadOnly] = useState<boolean>(!!watchedCompatibleFirearmDefId);
+
+
   useEffect(() => {
-    if (selectedFirearmDefId) {
-      const definition = firearmDefinitions.find(def => def.id === selectedFirearmDefId);
+    if (watchedCompatibleFirearmDefId) {
+      const definition = firearmDefinitions.find(def => def.id === watchedCompatibleFirearmDefId);
       if (definition) {
-        form.setValue('name', `${definition.name} Şarjörü`);
-        form.setValue('caliber', definition.caliber as typeof SUPPORTED_CALIBERS[number]);
-        form.setValue('compatibleFirearmDefinitionId', definition.id);
+        form.setValue('name', `${definition.name} Şarjörü`, { shouldValidate: true });
+        form.setValue('caliber', definition.caliber as SupportedCaliber, { shouldValidate: true });
+        // compatibleFirearmDefinitionId is already set by the select
         setIsNameCaliberReadOnly(true);
       }
     } else {
-        if (!magazine) { 
-            form.setValue('name', defaultValues.name || ""); 
-            form.setValue('caliber', defaultValues.caliber || SUPPORTED_CALIBERS[0]);
-            form.setValue('compatibleFirearmDefinitionId', undefined);
-        }
         setIsNameCaliberReadOnly(false);
+        if (!isEditing) { // Only reset for new magazines if firearm def is cleared
+            form.setValue('name', defaultValues.name || "", { shouldValidate: true });
+            form.setValue('caliber', defaultValues.caliber || SUPPORTED_CALIBERS[0], { shouldValidate: true });
+        } else if (magazine) { // If editing, and firearm def is cleared, revert to original magazine values
+            form.setValue('name', magazine.name, { shouldValidate: true });
+            form.setValue('caliber', magazine.caliber as SupportedCaliber, { shouldValidate: true });
+        }
     }
-  }, [selectedFirearmDefId, firearmDefinitions, form, magazine, defaultValues.name, defaultValues.caliber]);
+  }, [watchedCompatibleFirearmDefId, firearmDefinitions, form, isEditing, magazine, defaultValues.name, defaultValues.caliber]);
 
 
   async function onSubmit(data: MagazineFormValues) {
@@ -104,14 +110,13 @@ export function MagazineForm({ magazine, firearmDefinitions, depots }: MagazineF
       const payload = {
         ...data,
         purchaseDate: data.purchaseDate ? new Date(data.purchaseDate).toISOString() : undefined,
-        compatibleFirearmDefinitionId: selectedFirearmDefId, 
       };
 
       if (magazine) {
-        await updateMagazineAction({ ...magazine, ...payload, quantity: 1 }); // Ensure quantity is 1 for updates
+        await updateMagazineAction({ ...magazine, ...payload, quantity: 1 });
         toast({ variant: "success", title: "Başarılı", description: "Şarjör başarıyla güncellendi." });
       } else {
-        await addMagazineAction(payload); // addMagazineAction will handle the quantity
+        await addMagazineAction(payload);
         toast({ variant: "success", title: "Başarılı", description: `${payload.quantity} adet şarjör başarıyla eklendi.` });
       }
       router.push("/inventory/magazines");
@@ -125,36 +130,43 @@ export function MagazineForm({ magazine, firearmDefinitions, depots }: MagazineF
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormItem>
-            <FormLabel><span suppressHydrationWarning>Ait Olduğu Silah Türü (İsteğe Bağlı)</span></FormLabel>
-            <Select 
-                onValueChange={(value) => {
-                    if (value === "clear_selection") {
-                        setSelectedFirearmDefId(undefined);
-                    } else {
-                        setSelectedFirearmDefId(value);
-                    }
-                }} 
-                value={selectedFirearmDefId || ""}
-            >
-                <FormControl>
-                    <SelectTrigger>
-                        <SelectValue placeholder="Bir silah türü seçin (Ad ve Kalibreyi otomatik doldurur)" />
-                    </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                    <SelectItem value="clear_selection" disabled={!selectedFirearmDefId}>
-                        <span suppressHydrationWarning>Silah Türü Seçimini Temizle</span>
-                    </SelectItem>
-                    {firearmDefinitions.map(def => (
-                        <SelectItem key={def.id} value={def.id}>
-                            <span suppressHydrationWarning>{def.name} ({def.model} - {def.caliber})</span>
+        <FormField
+          control={form.control}
+          name="compatibleFirearmDefinitionId"
+          render={({ field }) => (
+            <FormItem>
+                <FormLabel><span suppressHydrationWarning>Ait Olduğu Silah Türü (İsteğe Bağlı)</span></FormLabel>
+                <Select 
+                    onValueChange={(value) => {
+                        if (value === "clear_selection") {
+                            field.onChange(undefined);
+                        } else {
+                            field.onChange(value);
+                        }
+                    }} 
+                    value={field.value || ""}
+                >
+                    <FormControl>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Bir silah türü seçin (Ad ve Kalibreyi otomatik doldurur)" />
+                        </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                        <SelectItem value="clear_selection" disabled={!field.value}>
+                            <span suppressHydrationWarning>Silah Türü Seçimini Temizle</span>
                         </SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
-            <FormDescription><span suppressHydrationWarning>Bir silah türü seçmek, şarjör adı ve kalibresini otomatik olarak dolduracaktır.</span></FormDescription>
-        </FormItem>
+                        {firearmDefinitions.map(def => (
+                            <SelectItem key={def.id} value={def.id}>
+                                <span suppressHydrationWarning>{def.name} ({def.model} - {def.caliber})</span>
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+                <FormDescription><span suppressHydrationWarning>Bir silah türü seçmek, şarjör adı ve kalibresini otomatik olarak dolduracaktır.</span></FormDescription>
+                <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
@@ -233,7 +245,7 @@ export function MagazineForm({ magazine, firearmDefinitions, depots }: MagazineF
                         const val = parseInt(e.target.value, 10) || 1;
                         field.onChange(val);
                         if (val > 1) {
-                          form.setValue('serialNumber', ''); // Clear serial number if quantity > 1
+                          form.setValue('serialNumber', ''); 
                         }
                       }} 
                     />
@@ -345,7 +357,7 @@ export function MagazineForm({ magazine, firearmDefinitions, depots }: MagazineF
             </FormItem>
           )}
         />
-        <Button type="submit" disabled={form.formState.isSubmitting}>
+        <Button type="submit" disabled={form.formState.isSubmitting || !form.formState.isValid}>
           {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {form.formState.isSubmitting ? <span suppressHydrationWarning>Kaydediliyor...</span> : (magazine ? <span suppressHydrationWarning>Şarjörü Güncelle</span> : <span suppressHydrationWarning>Şarjör Ekle</span>)}
         </Button>
