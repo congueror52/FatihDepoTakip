@@ -12,12 +12,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  useFormField, // Import useFormField
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { AlertDefinition, AlertEntityType, AlertConditionType } from "@/types/inventory";
+import type { AlertDefinition, AlertEntityType, AlertConditionType, SupportedCaliber } from "@/types/inventory";
 import { 
     ALERT_ENTITY_TYPES, 
     ALERT_CONDITION_TYPES, 
@@ -32,6 +33,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface AlertDefinitionFormProps {
   definition?: AlertDefinition;
@@ -198,7 +200,7 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
                       if (value === ALL_CALIBERS_OPTION_VALUE) {
                         field.onChange(undefined); 
                       } else {
-                        field.onChange(value);
+                        field.onChange(value as SupportedCaliber);
                       }
                     }} 
                     value={field.value || ALL_CALIBERS_OPTION_VALUE} 
@@ -276,19 +278,23 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
         <FormField
           control={form.control}
           name="messageTemplate"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel><span suppressHydrationWarning>Mesaj Şablonu</span></FormLabel>
-              <FormControl>
-                <Textarea 
-                  placeholder="Örnek: {depotName} deposundaki {itemName} ({caliber}) stok miktarı ({currentValue} adet), belirlenen eşik ({threshold} adet) altına düştü." 
-                  className="resize-none" 
-                  {...field} 
-                  rows={3} 
-                />
-              </FormControl>
-              <FormDescription asChild className="text-xs space-y-1">
-                <div>
+          render={({ field }) => {
+            // Get formDescriptionId for manual description rendering
+            const { formDescriptionId } = useFormField(); 
+            return (
+              <FormItem>
+                <FormLabel><span suppressHydrationWarning>Mesaj Şablonu</span></FormLabel>
+                <FormControl>
+                  <Textarea 
+                    placeholder="Örnek: {depotName} deposundaki {itemName} ({caliber}) stok miktarı ({currentValue} adet), belirlenen eşik ({threshold} adet) altına düştü." 
+                    className="resize-none" 
+                    {...field} 
+                    rows={3} 
+                    aria-describedby={formDescriptionId} // Connect textarea to custom description
+                  />
+                </FormControl>
+                {/* Manual description rendering using a div */}
+                <div id={formDescriptionId} className={cn("text-xs text-muted-foreground space-y-1")}>
                   <span suppressHydrationWarning>Uyarı mesajınızda aşağıdaki yer tutucuları kullanabilirsiniz. Bunlar, uyarı oluştuğunda gerçek değerlerle değiştirilecektir:</span>
                   <ul className="list-disc list-inside text-muted-foreground">
                       <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{itemName}'}</code>: Öğenin adı (örn. "9mm Fişek", "Sar 223 P").</li>
@@ -304,10 +310,10 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
                     Dikkat! {"{depotName}"} deposundaki {"{itemName}"} ({'{caliber}'}) stok miktarı ({'{currentValue}'} adet), belirlenen eşik ({'{threshold}'} adet) altına düştü.
                   </code>
                 </div>
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
+                <FormMessage />
+              </FormItem>
+            )
+          }}
         />
         <FormField
           control={form.control}
@@ -332,5 +338,4 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
     </Form>
   );
 }
-
     
