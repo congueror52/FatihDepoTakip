@@ -1,2 +1,28 @@
-
-[]
+[
+  {
+    "id": "23cbf5a2-bfc6-4155-b420-4f1bcc1007ed",
+    "timestamp": "2025-05-29T12:46:06.859Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "AlertDefinition",
+    "entityId": "30cec792-5cda-49f5-97ee-e5d7954cf54f",
+    "status": "SUCCESS",
+    "details": {
+      "name": "fişek düşük",
+      "description": "fişek düşk ayarı",
+      "entityType": "ammunition",
+      "conditionType": "low_stock",
+      "caliberFilter": "9x19mm",
+      "thresholdValue": 300,
+      "severity": "Orta",
+      "messageTemplate": "{itemName}{depotName}{currentValue}{threshold}{status}{caliber} {status} değer altına düştü",
+      "isActive": true,
+      "id": "30cec792-5cda-49f5-97ee-e5d7954cf54f",
+      "lastUpdated": "2025-05-29T12:46:06.852Z"
+    }
+  }
+]

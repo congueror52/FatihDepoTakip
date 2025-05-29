@@ -101,9 +101,7 @@ export default async function DashboardPage() {
             <ShieldAlert className={`h-4 w-4 ${allAlerts.length > 0 ? 'text-destructive' : 'text-muted-foreground'}`} />
           </CardHeader>
           <CardContent className="pt-1">
-            {sortedAlerts.length === 0 ? (
-              <p className="text-sm text-muted-foreground pt-2" suppressHydrationWarning>Aktif uyarı yok.</p>
-            ) : (
+            {sortedAlerts.length > 0 && (
               <div className="space-y-3">
                 {top3Alerts.map(alert => (
                   <div key={alert.id} className="flex items-start gap-2">
