@@ -5034,5 +5034,33 @@
       "lastUpdated": "2025-05-29T20:07:10.927Z",
       "maintenanceHistory": []
     }
+  },
+  {
+    "id": "6d3a1bbb-b676-45bc-b264-4a4cf3b2246b",
+    "timestamp": "2025-05-29T20:10:31.742Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "UPDATE",
+    "entityType": "Firearm",
+    "entityId": "2f602254-ccab-4e9b-877e-9889274d6d39",
+    "status": "SUCCESS",
+    "details": {
+      "definitionId": "fd_1",
+      "serialNumber": "147895",
+      "depotId": "depotB",
+      "status": "Depoda Arızalı",
+      "notes": "",
+      "id": "2f602254-ccab-4e9b-877e-9889274d6d39",
+      "itemType": "firearm",
+      "name": "Sar 223 P",
+      "model": "Sar 223 P",
+      "manufacturer": "Sarsılmaz",
+      "caliber": "5.56x45mm",
+      "lastUpdated": "2025-05-29T20:10:31.716Z",
+      "maintenanceHistory": []
+    }
   }
 ]

@@ -1,5 +1,5 @@
 
-// 'use client'; // Removed this line
+'use client'; // This page uses client-side state and effects
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,26 +9,39 @@ import { MagazinesTableClient } from "./_components/magazines-table-client";
 import { getMagazines, getDepots, getFirearmDefinitions } from "@/lib/actions/inventory.actions"; 
 import type { MagazineStatus, FirearmDefinition, Magazine, Depot } from "@/types/inventory"; 
 import { magazineStatuses } from "./_components/magazine-form-schema";
-// useEffect, useState, and useToast are no longer needed here if it's a Server Component
-// import { useEffect, useState } from "react";
-// import { useToast } from "@/hooks/use-toast";
+import { useEffect, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
-export const dynamic = 'force-dynamic'; // Ensures the page is re-rendered dynamically
+export const dynamic = 'force-dynamic'; 
 
-export default async function MagazinesPage() {
-  let magazines: Magazine[] = [];
-  let depots: Depot[] = [];
-  let firearmDefinitions: FirearmDefinition[] = [];
-  let errorLoadingData = false;
+export default function MagazinesPage() {
+  const [magazines, setMagazines] = useState<Magazine[]>([]);
+  const [depots, setDepots] = useState<Depot[]>([]);
+  const [firearmDefinitions, setFirearmDefinitions] = useState<FirearmDefinition[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
 
-  try {
-    magazines = await getMagazines(); 
-    depots = await getDepots(); 
-    firearmDefinitions = await getFirearmDefinitions();
-  } catch (error) {
-    console.error("Şarjör envanteri verileri yüklenirken hata:", error);
-    errorLoadingData = true;
-  }
+  useEffect(() => {
+    async function fetchData() {
+      setIsLoading(true);
+      try {
+        const [magazinesData, depotsData, definitionsData] = await Promise.all([
+          getMagazines(),
+          getDepots(),
+          getFirearmDefinitions()
+        ]);
+        setMagazines(magazinesData);
+        setDepots(depotsData);
+        setFirearmDefinitions(definitionsData);
+      } catch (error) {
+        console.error("Şarjör envanteri verileri yüklenirken hata:", error);
+        toast({ variant: "destructive", title: "Hata", description: "Şarjör envanteri verileri yüklenirken bir sorun oluştu." });
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchData();
+  }, [toast]);
 
 
   const statusCounts = magazines.reduce((acc, magazine) => {
@@ -37,11 +50,11 @@ export default async function MagazinesPage() {
   }, {} as Record<MagazineStatus, number>);
 
   const summaryCards: { title: string; count: number; icon: React.ElementType; statusKey: MagazineStatus, bgColor?: string, textColor?: string, borderColor?: string }[] = [
-    { title: "Depodaki Şarjörler", count: statusCounts['Hizmette'] || 0, icon: Warehouse, statusKey: 'Hizmette', bgColor: 'bg-green-50 dark:bg-green-900/30', textColor: 'text-green-700 dark:text-green-400', borderColor: 'border-green-200 dark:border-green-700' },
-    { title: "Depoda Arızalı Şarjörler", count: statusCounts['Arızalı'] || 0, icon: ShieldX, statusKey: 'Arızalı', bgColor: 'bg-red-50 dark:bg-red-900/30', textColor: 'text-red-700 dark:text-red-400', borderColor: 'border-red-200 dark:border-red-700' },
-    { title: "Desteğe Teslim Edilenler", count: statusCounts['Bakımda'] || 0, icon: PackageCheck, statusKey: 'Bakımda', bgColor: 'bg-yellow-50 dark:bg-yellow-900/30', textColor: 'text-yellow-700 dark:text-yellow-400', borderColor: 'border-yellow-200 dark:border-yellow-700' },
-    { title: "Poligondaki Şarjörler", count: statusCounts['Kayıp'] || 0, icon: MapPin, statusKey: 'Kayıp', bgColor: 'bg-purple-50 dark:bg-purple-900/30', textColor: 'text-purple-700 dark:text-purple-400', borderColor: 'border-purple-200 dark:border-purple-700' },
-    { title: "Rapor Yazılacaklar", count: statusCounts['Hizmet Dışı'] || 0, icon: ClipboardEdit, statusKey: 'Hizmet Dışı', bgColor: 'bg-slate-50 dark:bg-slate-700/30', textColor: 'text-slate-700 dark:text-slate-400', borderColor: 'border-slate-200 dark:border-slate-600' },
+    { title: "Depodaki Şarjörler", count: statusCounts['Depoda'] || 0, icon: Warehouse, statusKey: 'Depoda', bgColor: 'bg-green-50 dark:bg-green-900/30', textColor: 'text-green-700 dark:text-green-400', borderColor: 'border-green-200 dark:border-green-700' },
+    { title: "Depoda Arızalı Şarjörler", count: statusCounts['Depoda Arızalı'] || 0, icon: ShieldX, statusKey: 'Depoda Arızalı', bgColor: 'bg-red-50 dark:bg-red-900/30', textColor: 'text-red-700 dark:text-red-400', borderColor: 'border-red-200 dark:border-red-700' },
+    { title: "Desteğe Teslim Edilenler", count: statusCounts['Destekte'] || 0, icon: PackageCheck, statusKey: 'Destekte', bgColor: 'bg-yellow-50 dark:bg-yellow-900/30', textColor: 'text-yellow-700 dark:text-yellow-400', borderColor: 'border-yellow-200 dark:border-yellow-700' },
+    { title: "Poligondaki Şarjörler", count: statusCounts['Poligonda'] || 0, icon: MapPin, statusKey: 'Poligonda', bgColor: 'bg-purple-50 dark:bg-purple-900/30', textColor: 'text-purple-700 dark:text-purple-400', borderColor: 'border-purple-200 dark:border-purple-700' },
+    { title: "Rapor Yazılacaklar", count: statusCounts['Rapor Bekliyor'] || 0, icon: ClipboardEdit, statusKey: 'Rapor Bekliyor', bgColor: 'bg-blue-50 dark:bg-blue-900/30', textColor: 'text-blue-700 dark:text-blue-400', borderColor: 'border-blue-200 dark:border-blue-700' },
   ];
 
   const summaryByFirearmDefinition = firearmDefinitions.map(definition => {
@@ -67,15 +80,15 @@ export default async function MagazinesPage() {
   }).filter(summary => summary.totalCount > 0);
 
 
-  if (errorLoadingData) {
+  if (isLoading) {
     return (
-      <div className="flex flex-col gap-6 items-center justify-center h-full">
-        <ShieldX className="h-12 w-12 text-destructive" />
-        <h1 className="text-2xl font-semibold" suppressHydrationWarning>Veri Yüklenemedi</h1>
-        <p className="text-muted-foreground" suppressHydrationWarning>Şarjör envanteri verileri yüklenirken bir sorun oluştu. Lütfen daha sonra tekrar deneyin.</p>
-      </div>
+        <div className="flex flex-col gap-6 items-center justify-center h-full">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            <p className="text-muted-foreground" suppressHydrationWarning>Şarjör verileri yükleniyor...</p>
+        </div>
     );
   }
+
 
   return (
     <div className="flex flex-col gap-6">
@@ -99,7 +112,7 @@ export default async function MagazinesPage() {
               <card.icon className={`h-5 w-5 ${card.textColor} opacity-80`} />
             </CardHeader>
             <CardContent>
-              <div className={`text-2xl font-bold ${card.textColor}`}>{card.count}</div>
+              <div className={`text-2xl font-bold ${card.textColor} text-center`}>{card.count}</div>
             </CardContent>
           </Card>
         ))}
@@ -139,10 +152,9 @@ export default async function MagazinesPage() {
           <CardDescription suppressHydrationWarning>Envanterdeki tüm şarjörleri yönetin ve takip edin.</CardDescription>
         </CardHeader>
         <CardContent>
-          <MagazinesTableClient magazines={magazines} depots={depots} /> {/* Pass depots prop */}
+          <MagazinesTableClient magazines={magazines} depots={depots} />
         </CardContent>
       </Card>
     </div>
   );
 }
-

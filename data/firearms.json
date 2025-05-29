@@ -62,7 +62,7 @@
     "definitionId": "fd_1",
     "serialNumber": "147895",
     "depotId": "depotB",
-    "status": "Hizmette",
+    "status": "Depoda Arızalı",
     "notes": "",
     "id": "2f602254-ccab-4e9b-877e-9889274d6d39",
     "itemType": "firearm",
@@ -70,7 +70,7 @@
     "model": "Sar 223 P",
     "manufacturer": "Sarsılmaz",
     "caliber": "5.56x45mm",
-    "lastUpdated": "2025-05-28T11:21:14.093Z",
+    "lastUpdated": "2025-05-29T20:10:31.716Z",
     "maintenanceHistory": []
   },
   {
