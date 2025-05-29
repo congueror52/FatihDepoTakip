@@ -23,9 +23,9 @@ import {
     ALERT_CONDITION_TYPES, 
     ALERT_SEVERITIES, 
     SUPPORTED_CALIBERS,
-    firearmStatuses,
-    magazineStatuses
 } from "@/types/inventory";
+import { firearmStatuses } from "@/app/(app)/inventory/firearms/_components/firearm-form-schema";
+import { magazineStatuses } from "@/app/(app)/inventory/magazines/_components/magazine-form-schema";
 import { alertDefinitionFormSchema, type AlertDefinitionFormValues } from "./alert-definition-form-schema";
 import { addAlertDefinitionAction, updateAlertDefinitionAction } from "@/lib/actions/inventory.actions";
 import { useToast } from "@/hooks/use-toast";
