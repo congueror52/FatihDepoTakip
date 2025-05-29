@@ -12,7 +12,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  useFormField, // Import useFormField
+  useFormField,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -32,7 +32,7 @@ import { addAlertDefinitionAction, updateAlertDefinitionAction } from "@/lib/act
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react"; // Added useRef
 import { cn } from "@/lib/utils";
 
 interface AlertDefinitionFormProps {
@@ -41,6 +41,16 @@ interface AlertDefinitionFormProps {
 
 const ALL_CALIBERS_OPTION_VALUE = "__ALL_CALIBERS__"; 
 
+const availablePlaceholders = [
+  { label: "Öğe Adı", value: "{itemName}" },
+  { label: "Depo Adı", value: "{depotName}" },
+  { label: "Mevcut Değer", value: "{currentValue}" },
+  { label: "Eşik Değer", value: "{threshold}" },
+  { label: "Durum", value: "{status}" },
+  { label: "Kalibre", value: "{caliber}" },
+  { label: "Seri Numarası", value: "{serialNumber}" },
+];
+
 export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
   const { toast } = useToast();
   const router = useRouter();
@@ -48,6 +58,7 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
 
   const [currentEntityType, setCurrentEntityType] = useState<AlertEntityType | undefined>(definition?.entityType);
   const [currentConditionType, setCurrentConditionType] = useState<AlertConditionType | undefined>(definition?.conditionType);
+  const messageTemplateTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   const defaultValues: Partial<AlertDefinitionFormValues> = definition ? {
     ...definition,
@@ -93,6 +104,24 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
         form.setValue('statusFilter', undefined);
     }
   }, [watchedConditionType, form]);
+
+  const handleInsertPlaceholder = (placeholder: string) => {
+    const textarea = messageTemplateTextareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const currentValue = form.getValues("messageTemplate") || "";
+    const newValue = currentValue.substring(0, start) + placeholder + currentValue.substring(end);
+
+    form.setValue("messageTemplate", newValue, { shouldValidate: true, shouldDirty: true });
+
+    // Set focus and cursor position after state update
+    setTimeout(() => {
+      textarea.focus();
+      textarea.selectionStart = textarea.selectionEnd = start + placeholder.length;
+    }, 0);
+  };
 
   async function onSubmit(data: AlertDefinitionFormValues) {
     try {
@@ -172,7 +201,7 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel><span suppressHydrationWarning>Koşul Türü</span></FormLabel>
-                <Select onValueChange={field.onChange} value={field.value} disabled={!watchedEntityType}>
+                <Select onValueChange={field.onChange} value={field.value || undefined} disabled={!watchedEntityType}>
                   <FormControl><SelectTrigger><SelectValue placeholder="Bir koşul türü seçin" /></SelectTrigger></FormControl>
                   <SelectContent>
                     {getApplicableConditionTypes().map(type => (
@@ -224,7 +253,7 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel><span suppressHydrationWarning>Eşik Değer (Adet)</span></FormLabel>
-                  <FormControl><Input type="number" placeholder="100" {...field} onChange={e => field.onChange(parseInt(e.target.value,10) || 0)} /></FormControl>
+                  <FormControl><Input type="number" placeholder="100" {...field} value={field.value ?? ''} onChange={e => field.onChange(parseInt(e.target.value,10) || undefined)} /></FormControl>
                   <FormDescription className="text-xs"><span suppressHydrationWarning>Bu değerin altına düştüğünde uyarı tetiklenir.</span></FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -241,7 +270,7 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel><span suppressHydrationWarning>Hedef Durum</span></FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value || undefined}>
                     <FormControl><SelectTrigger><SelectValue placeholder="Bir durum seçin" /></SelectTrigger></FormControl>
                     <SelectContent>
                       {getApplicableStatusFilters().map(status => (
@@ -279,23 +308,40 @@ export function AlertDefinitionForm({ definition }: AlertDefinitionFormProps) {
           control={form.control}
           name="messageTemplate"
           render={({ field }) => {
-            // Get formDescriptionId for manual description rendering
             const { formDescriptionId } = useFormField(); 
             return (
               <FormItem>
                 <FormLabel><span suppressHydrationWarning>Mesaj Şablonu</span></FormLabel>
                 <FormControl>
                   <Textarea 
-                    placeholder="Örnek: {depotName} deposundaki {itemName} ({caliber}) stok miktarı ({currentValue} adet), belirlenen eşik ({threshold} adet) altına düştü." 
+                    placeholder="Aşağıdaki 'Hızlı Ekle' butonlarını kullanarak veya manuel olarak mesaj şablonunuzu oluşturun. Örn: Dikkat! {depotName} deposundaki..."
                     className="resize-none" 
-                    {...field} 
-                    rows={3} 
-                    aria-describedby={formDescriptionId} // Connect textarea to custom description
+                    {...field}
+                    ref={(e) => {
+                      field.ref(e);
+                      messageTemplateTextareaRef.current = e;
+                    }}
+                    rows={4} 
+                    aria-describedby={formDescriptionId}
                   />
                 </FormControl>
-                {/* Manual description rendering using a div */}
-                <div id={formDescriptionId} className={cn("text-xs text-muted-foreground space-y-1")}>
-                  <span suppressHydrationWarning>Uyarı mesajınızda aşağıdaki yer tutucuları kullanabilirsiniz. Bunlar, uyarı oluştuğunda gerçek değerlerle değiştirilecektir:</span>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <span className="text-sm text-muted-foreground self-center"><span suppressHydrationWarning>Hızlı Ekle:</span></span>
+                  {availablePlaceholders.map(p => (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      key={p.value}
+                      onClick={() => handleInsertPlaceholder(p.value)}
+                      className="text-xs"
+                    >
+                      {p.label}
+                    </Button>
+                  ))}
+                </div>
+                <div id={formDescriptionId} className={cn("text-xs text-muted-foreground space-y-1 mt-2")}>
+                  <span suppressHydrationWarning>Yukarıdaki butonlarla veya manuel olarak mesajınızda aşağıdaki yer tutucuları kullanabilirsiniz. Bunlar, uyarı oluştuğunda gerçek değerlerle değiştirilecektir:</span>
                   <ul className="list-disc list-inside text-muted-foreground">
                       <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{itemName}'}</code>: Öğenin adı (örn. "9mm Fişek", "Sar 223 P").</li>
                       <li suppressHydrationWarning><code className="font-mono text-xs bg-muted p-0.5 rounded-sm">{'{depotName}'}</code>: Öğenin bulunduğu depo.</li>
