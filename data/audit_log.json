@@ -4889,5 +4889,52 @@
       "itemType": "ammunition",
       "lastUpdated": "2025-05-29T18:54:26.506Z"
     }
+  },
+  {
+    "id": "2c686d5a-ba67-44ce-910c-d5321895326e",
+    "timestamp": "2025-05-29T19:58:24.225Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "LOG_MAINTENANCE",
+    "entityType": "MaintenanceLog",
+    "entityId": "79784471-27b0-45b0-9466-2fb8fc584fd5",
+    "status": "FAILURE",
+    "details": {
+      "date": "2025-05-29T00:00:00.000Z",
+      "description": "deneme ",
+      "statusChangeFrom": "Bakımda",
+      "statusChangeTo": "Bakımda",
+      "technician": "",
+      "partsUsed": ""
+    },
+    "errorMessage": "Bakım kaydı için geçersiz veri: {\"_errors\":[],\"statusChangeFrom\":{\"_errors\":[\"Geçerli bir önceki durum seçin.\",\"Invalid literal value, expected \\\"\\\"\"]},\"statusChangeTo\":{\"_errors\":[\"Geçerli bir yeni durum seçin.\"]}}"
+  },
+  {
+    "id": "15a64693-0a64-4a05-89dc-4107769b12d2",
+    "timestamp": "2025-05-29T19:58:26.607Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "MaintenanceLog",
+    "entityId": "79784471-27b0-45b0-9466-2fb8fc584fd5",
+    "status": "FAILURE",
+    "details": {
+      "itemId": "79784471-27b0-45b0-9466-2fb8fc584fd5",
+      "itemType": "firearm",
+      "selectedFirearmDefIdForFilter": "fd_3",
+      "date": "2025-05-29",
+      "description": "deneme ",
+      "statusChangeFrom": "Bakımda",
+      "statusChangeTo": "Bakımda",
+      "technician": "",
+      "partsUsed": ""
+    },
+    "errorMessage": "Bakım kaydı için geçersiz veri: {\"_errors\":[],\"statusChangeFrom\":{\"_errors\":[\"Geçerli bir önceki durum seçin.\",\"Invalid literal value, expected \\\"\\\"\"]},\"statusChangeTo\":{\"_errors\":[\"Geçerli bir yeni durum seçin.\"]}}"
   }
 ]

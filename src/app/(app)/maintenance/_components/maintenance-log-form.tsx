@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,7 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { maintenanceLogFormSchema, type MaintenanceLogFormValues } from "./maintenance-log-form-schema";
 import { addMaintenanceLogToItemAction } from "@/lib/actions/inventory.actions";
-import { logAction } from "@/lib/log-service"; // Corrected import path
+import { logAction } from "@/lib/log-service";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { CalendarIcon, Loader2, Wrench } from "lucide-react";
@@ -37,6 +36,21 @@ interface MaintenanceLogFormProps {
   magazines: Magazine[];
   firearmDefinitions: FirearmDefinition[];
 }
+
+const statusDisplayLabels: Record<string, string> = {
+  "Depoda Arızalı": "Depoda Arızalı", // Formda "Depoda Arızalı Silahlar" gibi daha uzun olabilir, ama value ile eşleşmeli.
+  "Depoda": "Depodaki", // Örn: "Depodaki Silahlar" veya "Depodaki Şarjörler"
+  "Destekte": "Desteğe Teslim Edilenler",
+  "Poligonda": "Poligondaki", // Örn: "Poligondaki Silahlar/Şarjörler"
+  "Rapor Bekliyor": "Rapor Yazılacaklar",
+  "Onarıldı": "Onarıldı",
+  // Eski durumlar için de bir eşleşme gerekebilir eğer veritabanında kalmışlarsa
+  "Hizmette": "Depodaki",
+  "Bakımda": "Desteğe Teslim Edilenler",
+  "Arızalı": "Depoda Arızalı",
+  "Onarım Bekliyor": "Poligondaki",
+  "Hizmet Dışı": "Rapor Yazılacaklar",
+};
 
 export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: MaintenanceLogFormProps) {
   const { toast } = useToast();
@@ -100,7 +114,7 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
     if (watchedItemId) {
       let item: Firearm | Magazine | undefined;
       if (watchedItemType === 'firearm') {
-        item = filteredFirearms.find(i => i.id === watchedItemId);
+        item = (watchedFirearmDefIdForFilter ? filteredFirearms : firearms).find(i => i.id === watchedItemId);
       } else if (watchedItemType === 'magazine') {
         item = magazines.find(i => i.id === watchedItemId);
       }
@@ -111,7 +125,7 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
     } else {
       form.setValue("statusChangeFrom", "");
     }
-  }, [watchedItemId, watchedItemType, filteredFirearms, magazines, form]);
+  }, [watchedItemId, watchedItemType, filteredFirearms, firearms, magazines, form, watchedFirearmDefIdForFilter]);
 
 
   async function onSubmit(data: MaintenanceLogFormValues) {
@@ -148,6 +162,20 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
       console.error("Bakım kaydı gönderme hatası:", error);
     }
   }
+
+  const getDisplayLabel = (statusValue: string) => {
+    const itemTypeSpecificSuffix = watchedItemType === 'firearm' ? ' Silahlar' : (watchedItemType === 'magazine' ? ' Şarjörler' : '');
+    switch (statusValue) {
+        case "Depoda Arızalı": return `Depoda Arızalı${itemTypeSpecificSuffix}`;
+        case "Depoda": return `Depodaki${itemTypeSpecificSuffix}`;
+        case "Destekte": return "Desteğe Teslim Edilenler";
+        case "Poligonda": return `Poligondaki${itemTypeSpecificSuffix}`;
+        case "Rapor Bekliyor": return "Rapor Yazılacaklar";
+        case "Onarıldı": return "Onarıldı"; // This status is only for firearms based on current schemas
+        default: return statusValue;
+    }
+  };
+
 
   return (
     <Form {...form}>
@@ -189,7 +217,7 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
                 <Select onValueChange={field.onChange} value={field.value || ""}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Önce silah türünü seçin" />
+                      <SelectValue placeholder="Bakımı yapılacak silahın türünü seçin" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -223,9 +251,9 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
                     </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                    {(watchedItemType === 'firearm' ? filteredFirearms : magazines).map(item => (
+                    {(watchedItemType === 'firearm' ? (watchedFirearmDefIdForFilter ? filteredFirearms : firearms) : magazines).map(item => (
                     <SelectItem key={item.id} value={item.id}>
-                        <span suppressHydrationWarning>{watchedItemType === 'firearm' ? `${(item as Firearm).name} (SN: ${(item as Firearm).serialNumber})` : `${(item as Magazine).name} (ID: ${item.id.substring(0,6)})`}</span>
+                        <span suppressHydrationWarning>{watchedItemType === 'firearm' ? `${(item as Firearm).name} (SN: ${(item as Firearm).serialNumber || 'N/A'})` : `${(item as Magazine).name} (ID: ${item.id.substring(0,6)}... Cal: ${item.caliber})`}</span>
                     </SelectItem>
                     ))}
                 </SelectContent>
@@ -305,7 +333,7 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
                 <FormItem>
                     <FormLabel><span suppressHydrationWarning>Önceki Durum</span></FormLabel>
                     <FormControl>
-                        <Input {...field} readOnly className="bg-muted/50" />
+                        <Input {...field} readOnly className="bg-muted/50" value={field.value ? getDisplayLabel(field.value) : ''} />
                     </FormControl>
                     <FormDescription><span suppressHydrationWarning>Bu alan öğe seçildiğinde otomatik dolar.</span></FormDescription>
                     <FormMessage />
@@ -326,7 +354,7 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
                     </FormControl>
                     <SelectContent>
                         {currentStatuses.map(status => (
-                        <SelectItem key={status} value={status}><span suppressHydrationWarning>{status}</span></SelectItem>
+                        <SelectItem key={status} value={status}><span suppressHydrationWarning>{getDisplayLabel(status)}</span></SelectItem>
                         ))}
                     </SelectContent>
                     </Select>
