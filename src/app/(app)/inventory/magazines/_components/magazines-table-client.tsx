@@ -12,8 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Eye, Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2 } from "lucide-react"; // Removed MoreHorizontal, DropdownMenu components
 import Link from "next/link";
 import { useState } from "react";
 import {
@@ -108,27 +107,15 @@ export function MagazinesTableClient({ magazines: initialMagazines, depots }: Ma
                     {magazine.status}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
-                        <span className="sr-only" suppressHydrationWarning>Menüyü aç</span>
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel><span suppressHydrationWarning>Eylemler</span></DropdownMenuLabel>
-                      <DropdownMenuItem asChild>
-                        <Link href={`/inventory/magazines/${magazine.id}/edit`} className="flex items-center">
-                           <Edit className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>Düzenle</span>
-                         </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => openDeleteDialog(magazine.id)} className="text-destructive flex items-center">
-                        <Trash2 className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>Sil</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                <TableCell className="text-right space-x-2">
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href={`/inventory/magazines/${magazine.id}/edit`} className="flex items-center">
+                       <Edit className="mr-2 h-3 w-3" /> <span suppressHydrationWarning>Düzenle</span>
+                     </Link>
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => openDeleteDialog(magazine.id)} className="text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/50 hover:border-destructive">
+                    <Trash2 className="mr-2 h-3 w-3" /> <span suppressHydrationWarning>Sil</span>
+                  </Button>
                 </TableCell>
               </TableRow>
             ))

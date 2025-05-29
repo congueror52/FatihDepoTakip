@@ -102,5 +102,18 @@
       "itemType": "ammunition",
       "lastUpdated": "2025-05-29T15:17:32.227Z"
     }
+  },
+  {
+    "id": "83336426-6fce-424a-bd38-5a2b3fda5297",
+    "timestamp": "2025-05-29T15:25:01.886Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "DailyAmmunitionUsage",
+    "entityId": "72553fd1-a6b0-4ac4-b05e-986e9f25d52a",
+    "status": "SUCCESS"
   }
 ]
