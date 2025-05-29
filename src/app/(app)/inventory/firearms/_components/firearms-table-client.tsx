@@ -1,7 +1,7 @@
 
 'use client';
 
-import type { Firearm, Depot } from "@/types/inventory"; // Added Depot
+import type { Firearm, Depot } from "@/types/inventory"; 
 import {
   Table,
   TableBody,
@@ -12,9 +12,9 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, Edit, Trash2 } from "lucide-react"; // Removed MoreHorizontal, DropdownMenu components
+import { Eye, Edit, Trash2 } from "lucide-react"; 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react"; 
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,24 +27,30 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { deleteFirearmAction } from "@/lib/actions/inventory.actions";
-// import { DEPOT_LOCATIONS } from "@/types/inventory"; // Removed
+
 
 interface FirearmsTableClientProps {
   firearms: Firearm[];
-  depots: Depot[]; // Added depots prop
+  depots: Depot[]; 
+  onRefresh: () => Promise<void>; // Added onRefresh prop
 }
 
-export function FirearmsTableClient({ firearms: initialFirearms, depots }: FirearmsTableClientProps) { // Added depots to props
+export function FirearmsTableClient({ firearms: initialFirearms, depots, onRefresh }: FirearmsTableClientProps) { 
   const [firearms, setFirearms] = useState<Firearm[]>(initialFirearms);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedFirearmId, setSelectedFirearmId] = useState<string | null>(null);
   const { toast } = useToast();
 
+  useEffect(() => { // Ensures table updates if the prop changes from parent
+    setFirearms(initialFirearms);
+  }, [initialFirearms]);
+
   const handleDelete = async () => {
     if (!selectedFirearmId) return;
     try {
       await deleteFirearmAction(selectedFirearmId);
-      setFirearms(firearms.filter(f => f.id !== selectedFirearmId));
+      // setFirearms(firearms.filter(f => f.id !== selectedFirearmId)); // Refresh via prop now
+      await onRefresh();
       toast({ variant: "success", title: "Başarılı", description: "Silah başarıyla silindi." });
     } catch (error: any) {
       toast({ variant: "destructive", title: "Hata", description: error.message || "Silah silinemedi." });
@@ -72,7 +78,7 @@ export function FirearmsTableClient({ firearms: initialFirearms, depots }: Firea
   };
   
   const getDepotName = (depotId: string) => {
-    const depot = depots.find(d => d.id === depotId); // Use passed depots prop
+    const depot = depots.find(d => d.id === depotId); 
     return depot ? depot.name : depotId;
   }
 
@@ -148,3 +154,5 @@ export function FirearmsTableClient({ firearms: initialFirearms, depots }: Firea
     </>
   );
 }
+
+    

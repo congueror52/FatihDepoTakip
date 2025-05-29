@@ -6,7 +6,7 @@ import { unstable_noStore as noStore } from 'next/cache';
 import type { Firearm, Magazine, Ammunition, Shipment, ShipmentItem, AmmunitionUsageLog, FirearmDefinition, AmmunitionDailyUsageLog, UsageScenario, ScenarioCaliberConsumption, SupportedCaliber, MagazineStatus, AmmunitionStatus, Depot, MaintenanceLog, MaintenanceItemStatus, FirearmStatus, InventoryItemType, ShipmentTypeDefinition, AlertDefinition } from '@/types/inventory';
 import { readData, writeData, generateId } from '@/lib/data-utils';
 import { logAction } from '@/lib/log-service'; 
-import { firearmFormSchema } from '@/app/(app)/inventory/firearms/_components/firearm-form-schema';
+import { firearmFormSchema, firearmStatuses as firearmStatusesArray } from '@/app/(app)/inventory/firearms/_components/firearm-form-schema';
 import { firearmDefinitionFormSchema, type FirearmDefinitionFormValues } from '@/app/(app)/admin/firearms-definitions/_components/firearm-definition-form-schema';
 import { ammunitionDailyUsageFormSchema } from '@/app/(app)/daily-ammo-usage/_components/usage-log-form-schema';
 import { usageScenarioFormSchema } from '@/app/(app)/admin/usage-scenarios/_components/usage-scenario-form-schema';
@@ -132,8 +132,8 @@ interface CsvImportResult {
 
 export async function importFirearmDefinitionsFromCsvAction(csvString: string): Promise<CsvImportResult> {
   const result: CsvImportResult = { successCount: 0, errorCount: 0, errors: [] };
-  let definitions = await getFirearmDefinitions(); // Make it mutable
-  const lines = csvString.split(/\r\n|\n|\r/).filter(line => line.trim() !== ''); // Handle different line endings
+  let definitions = await getFirearmDefinitions(); 
+  const lines = csvString.split(/\r\n|\n|\r/).filter(line => line.trim() !== ''); 
 
   if (lines.length < 2) {
     result.errors.push({ row: 0, message: "CSV dosyası başlık satırını ve en az bir veri satırını içermelidir.", data: {} });
@@ -141,13 +141,11 @@ export async function importFirearmDefinitionsFromCsvAction(csvString: string): 
     return result;
   }
 
-  const headerLine = lines[0].endsWith(';') ? lines[0].slice(0, -1) : lines[0]; // Remove trailing semicolon if present
-  const header = headerLine.split(';').map(h => h.trim().toLowerCase().replace(/"/g, '')); // Use semicolon, trim, lower, remove quotes
+  const headerLine = lines[0].trim().endsWith(';') ? lines[0].trim().slice(0, -1) : lines[0].trim();
+  const header = headerLine.split(';').map(h => h.trim().toLowerCase().replace(/"/g, '')); 
 
   const expectedHeadersRequired = ["name", "model", "caliber"];
-  const optionalHeaders = ["id", "manufacturer", "description"];
-
-
+  
   if (!expectedHeadersRequired.every(eh => header.includes(eh))) {
      result.errors.push({ row: 1, message: `CSV başlıkları eksik veya yanlış. Gerekli başlıklar: ${expectedHeadersRequired.join('; ')}`, data: header });
      result.errorCount = 1;
@@ -155,11 +153,12 @@ export async function importFirearmDefinitionsFromCsvAction(csvString: string): 
   }
 
   for (let i = 1; i < lines.length; i++) {
-    const line = lines[i].endsWith(';') ? lines[i].slice(0, -1) : lines[i];
-    const values = line.split(';').map(v => v.trim().replace(/^"|"$/g, '')); // Use semicolon, trim, remove surrounding quotes
+    const line = lines[i].trim().endsWith(';') ? lines[i].trim().slice(0, -1) : lines[i].trim();
+    if (!line) continue; // Skip empty lines
+    const values = line.split(';').map(v => v.trim().replace(/^"|"$/g, ''));
     const rowData: any = {};
     header.forEach((h, index) => {
-      if (values[index] !== undefined) { // Only add if value exists
+      if (values[index] !== undefined) { 
           rowData[h] = values[index];
       }
     });
@@ -189,12 +188,11 @@ export async function importFirearmDefinitionsFromCsvAction(csvString: string): 
           definitions[existingIndex] = { 
             ...definitions[existingIndex], 
             ...validatedDefinition, 
-            id: definitions[existingIndex].id, // Ensure original ID is kept
+            id: definitions[existingIndex].id, 
             lastUpdated: new Date().toISOString() 
           };
           await logAction({ actionType: "UPDATE", entityType: "FirearmDefinition", entityId: definitions[existingIndex].id, status: "SUCCESS", details: definitions[existingIndex] });
         } else {
-          // ID from CSV not found, create new with this ID
           const newDef = { ...validatedDefinition, id: validatedDefinition.id, lastUpdated: new Date().toISOString() };
           definitions.push(newDef);
           await logAction({ actionType: "CREATE", entityType: "FirearmDefinition", entityId: newDef.id, status: "SUCCESS", details: newDef });
@@ -228,13 +226,10 @@ export async function exportFirearmDefinitionsToCsvAction(): Promise<string> {
   }
   const header = ["id", "name", "model", "manufacturer", "caliber", "description", "lastUpdated"];
   
-  // Helper to quote CSV fields if they contain delimiter, quote, or newline
   const escapeCsvField = (field: string | undefined | null): string => {
     if (field === null || field === undefined) return "";
     let strField = String(field);
-    // Replace all " with ""
     strField = strField.replace(/"/g, '""');
-    // If field contains delimiter, quote, or newline, wrap in quotes
     if (strField.includes(';') || strField.includes('"') || strField.includes('\n') || strField.includes('\r')) {
       return `"${strField}"`;
     }
@@ -250,10 +245,10 @@ export async function exportFirearmDefinitionsToCsvAction(): Promise<string> {
       escapeCsvField(def.caliber),
       escapeCsvField(def.description),
       escapeCsvField(def.lastUpdated)
-    ].join(';') // Use semicolon as delimiter
+    ].join(';')
   );
   
-  return ["sep=;", header.join(';'), ...rows].join('\n'); // Add sep=; for Excel (TR)
+  return ["sep=;", header.join(';'), ...rows].join('\n');
 }
 
 
@@ -321,7 +316,7 @@ export async function updateFirearmAction(firearm: Firearm) {
       status: firearm.status,
       purchaseDate: firearm.purchaseDate,
       notes: firearm.notes,
-      name: firearm.name, // These are auto-filled but schema expects them
+      name: firearm.name, 
       model: firearm.model,
       manufacturer: firearm.manufacturer,
       caliber: firearm.caliber,
@@ -344,7 +339,6 @@ export async function updateFirearmAction(firearm: Firearm) {
     const currentFirearm = firearms[index];
     const updatedFirearm: Firearm = {
       ...currentFirearm,
-      // definitionId cannot be changed after creation, so it's not updated from validatedData
       serialNumber: validatedData.data.serialNumber,
       depotId: validatedData.data.depotId,
       status: validatedData.data.status,
@@ -384,6 +378,178 @@ export async function deleteFirearmAction(id: string): Promise<void> {
     await logAction({ actionType: "DELETE", entityType: "Firearm", entityId: id, status: "FAILURE", errorMessage: error.message });
     throw error;
   }
+}
+
+export async function importFirearmsFromCsvAction(csvString: string): Promise<CsvImportResult> {
+  noStore();
+  const result: CsvImportResult = { successCount: 0, errorCount: 0, errors: [] };
+  let firearms = await getFirearms();
+  const firearmDefinitions = await getFirearmDefinitions();
+  const depots = await getDepots();
+  const lines = csvString.split(/\r\n|\n|\r/).filter(line => line.trim() !== '');
+
+  if (lines.length < 2) {
+    result.errors.push({ row: 0, message: "CSV dosyası başlık satırını ve en az bir veri satırını içermelidir.", data: {} });
+    result.errorCount = 1;
+    return result;
+  }
+
+  const headerLine = lines[0].trim().endsWith(';') ? lines[0].trim().slice(0, -1) : lines[0].trim();
+  const header = headerLine.split(';').map(h => h.trim().toLowerCase().replace(/"/g, ''));
+
+  const requiredHeaders = ["definitionid", "serialnumber", "depotid", "status"];
+  if (!requiredHeaders.every(rh => header.includes(rh))) {
+    result.errors.push({ row: 1, message: `CSV başlıkları eksik veya yanlış. Gerekli başlıklar: ${requiredHeaders.join('; ')}`, data: header });
+    result.errorCount = 1;
+    return result;
+  }
+
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim().endsWith(';') ? lines[i].trim().slice(0, -1) : lines[i].trim();
+    if (!line) continue;
+    const values = line.split(';').map(v => v.trim().replace(/^"|"$/g, ''));
+    const rowData: any = {};
+    header.forEach((h, index) => {
+      if (values[index] !== undefined) {
+        rowData[h] = values[index];
+      }
+    });
+
+    const definition = firearmDefinitions.find(def => def.id === rowData.definitionid);
+    if (!definition) {
+      result.errorCount++;
+      result.errors.push({ row: i + 1, message: `Geçersiz definitionId: ${rowData.definitionid}. Bu ID ile bir silah tanımı bulunamadı.`, data: rowData });
+      continue;
+    }
+
+    if (!depots.some(depot => depot.id === rowData.depotid)) {
+      result.errorCount++;
+      result.errors.push({ row: i + 1, message: `Geçersiz depotId: ${rowData.depotid}. Bu ID ile bir depo bulunamadı.`, data: rowData });
+      continue;
+    }
+
+    if (!firearmStatusesArray.includes(rowData.status as FirearmStatus)) {
+        result.errorCount++;
+        result.errors.push({ row: i + 1, message: `Geçersiz durum: ${rowData.status}. İzin verilen durumlar: ${firearmStatusesArray.join(', ')}`, data: rowData });
+        continue;
+    }
+    
+    const firearmData = {
+      id: rowData.id || undefined,
+      definitionId: rowData.definitionid,
+      serialNumber: rowData.serialnumber,
+      depotId: rowData.depotid,
+      status: rowData.status as FirearmStatus,
+      purchaseDate: rowData.purchasedate ? new Date(rowData.purchasedate).toISOString() : undefined,
+      notes: rowData.notes || "",
+      name: definition.name, // Auto-filled from definition
+      model: definition.model, // Auto-filled
+      manufacturer: definition.manufacturer, // Auto-filled
+      caliber: definition.caliber, // Auto-filled
+    };
+
+    const validation = firearmFormSchema.safeParse(firearmData);
+    if (!validation.success) {
+      result.errorCount++;
+      result.errors.push({ row: i + 1, message: JSON.stringify(validation.error.format()), data: rowData });
+      continue;
+    }
+
+    try {
+      const validatedFirearm = validation.data;
+      if (validatedFirearm.id) { // Attempt to update
+        const existingIndex = firearms.findIndex(f => f.id === validatedFirearm.id);
+        if (existingIndex !== -1) {
+          firearms[existingIndex] = {
+            ...firearms[existingIndex],
+            ...validatedFirearm,
+            name: definition.name, // Ensure these are from definition
+            model: definition.model,
+            manufacturer: definition.manufacturer,
+            caliber: definition.caliber,
+            lastUpdated: new Date().toISOString(),
+          };
+          await logAction({ actionType: "UPDATE", entityType: "Firearm", entityId: firearms[existingIndex].id, status: "SUCCESS", details: firearms[existingIndex] });
+        } else { // ID provided but not found, create new with this ID if desired or throw error
+          // For now, let's create a new one if ID not found.
+          // Or: result.errors.push({ row: i + 1, message: `Güncellenecek silah ID'si (${validatedFirearm.id}) bulunamadı.`, data: rowData }); result.errorCount++; continue;
+          const newFirearm: Firearm = {
+            ...validatedFirearm,
+            id: validatedFirearm.id, // Use provided ID
+            itemType: 'firearm',
+            maintenanceHistory: [],
+            lastUpdated: new Date().toISOString(),
+          };
+          firearms.push(newFirearm);
+          await logAction({ actionType: "CREATE", entityType: "Firearm", entityId: newFirearm.id, status: "SUCCESS", details: newFirearm });
+        }
+      } else { // Create new
+        const newFirearm: Firearm = {
+          ...validatedFirearm,
+          id: await generateId(),
+          itemType: 'firearm',
+          maintenanceHistory: [],
+          lastUpdated: new Date().toISOString(),
+        };
+        firearms.push(newFirearm);
+        await logAction({ actionType: "CREATE", entityType: "Firearm", entityId: newFirearm.id, status: "SUCCESS", details: newFirearm });
+      }
+      result.successCount++;
+    } catch (e: any) {
+      result.errorCount++;
+      result.errors.push({ row: i + 1, message: e.message, data: rowData });
+       await logAction({ actionType: validatedFirearm.id ? "UPDATE" : "CREATE", entityType: "Firearm", entityId: validatedFirearm.id, status: "FAILURE", details: rowData, errorMessage: e.message });
+    }
+  }
+
+  if (result.successCount > 0) {
+    await writeData('firearms.json', firearms);
+    revalidatePath('/inventory/firearms');
+    revalidatePath('/inventory/firearms', 'layout');
+    revalidatePath('/dashboard');
+  }
+  return result;
+}
+
+export async function exportFirearmsToCsvAction(): Promise<string> {
+  noStore();
+  const firearms = await getFirearms();
+  if (firearms.length === 0) {
+    return "";
+  }
+  const header = [
+    "id", "definitionId", "name", "model", "manufacturer", "caliber", 
+    "serialNumber", "depotId", "status", "purchaseDate", "notes", "lastUpdated"
+  ];
+
+  const escapeCsvField = (field: string | undefined | null): string => {
+    if (field === null || field === undefined) return "";
+    let strField = String(field);
+    strField = strField.replace(/"/g, '""');
+    if (strField.includes(';') || strField.includes('"') || strField.includes('\n') || strField.includes('\r')) {
+      return `"${strField}"`;
+    }
+    return strField;
+  };
+
+  const rows = firearms.map(f =>
+    [
+      escapeCsvField(f.id),
+      escapeCsvField(f.definitionId),
+      escapeCsvField(f.name),
+      escapeCsvField(f.model),
+      escapeCsvField(f.manufacturer),
+      escapeCsvField(f.caliber),
+      escapeCsvField(f.serialNumber),
+      escapeCsvField(f.depotId),
+      escapeCsvField(f.status),
+      escapeCsvField(f.purchaseDate ? f.purchaseDate.substring(0,10) : ""), // YYYY-MM-DD
+      escapeCsvField(f.notes),
+      escapeCsvField(f.lastUpdated)
+    ].join(';')
+  );
+
+  return ["sep=;", header.join(';'), ...rows].join('\n');
 }
 
 
@@ -1458,6 +1624,11 @@ export async function deleteAlertDefinitionAction(id: string): Promise<void> {
 
 export async function getTriggeredAlerts(): Promise<AlertDefinition[]> {
   noStore();
+  // This is a placeholder. In a real system, this would check definitions against current inventory.
+  // For now, it will return an empty array to simulate no active alerts.
+  // Or, to show something on the /alerts page, we could return a subset of alert definitions.
+  // Based on user's request to not show definitions on /alerts page unless an alert is triggered,
+  // this should remain empty until a proper triggering mechanism is in place.
   return []; 
 }
 
@@ -1484,3 +1655,6 @@ export async function getRecentAuditLogs(limit: number = 5): Promise<AuditLogEnt
     return []; 
   }
 }
+
+
+    
