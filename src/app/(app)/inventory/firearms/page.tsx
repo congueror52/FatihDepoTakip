@@ -4,7 +4,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { PlusCircle, Target, ShieldX, Wrench, Info, Download, Warehouse, MapPin, FileText, PackageCheck, ClipboardEdit } from "lucide-react"; 
+import { PlusCircle, Target, ShieldX, Warehouse, MapPin, FileText, PackageCheck, ClipboardEdit, Info, Download } from "lucide-react"; 
 import Link from "next/link";
 import { getFirearms, getFirearmDefinitions, getDepots } from "@/lib/actions/inventory.actions"; 
 import { FirearmsTableClient } from "./_components/firearms-table-client";
@@ -49,11 +49,11 @@ export default function FirearmsPage() {
   }, {} as Record<FirearmStatus, number>);
 
   const summaryCards: { title: string; count: number; icon: React.ElementType; statusKey: FirearmStatus, bgColor?: string, textColor?: string, borderColor?: string }[] = [
-    { title: "Depodaki Silahlar", count: statusCounts['Hizmette'] || 0, icon: Warehouse, statusKey: 'Hizmette', bgColor: 'bg-green-50 dark:bg-green-900/30', textColor: 'text-green-700 dark:text-green-400', borderColor: 'border-green-200 dark:border-green-700' },
-    { title: "Depoda Arızalı Silahlar", count: statusCounts['Arızalı'] || 0, icon: ShieldX, statusKey: 'Arızalı', bgColor: 'bg-red-50 dark:bg-red-900/30', textColor: 'text-red-700 dark:text-red-400', borderColor: 'border-red-200 dark:border-red-700' },
-    { title: "Desteğe Teslim Edilenler", count: statusCounts['Bakımda'] || 0, icon: PackageCheck, statusKey: 'Bakımda', bgColor: 'bg-yellow-50 dark:bg-yellow-900/30', textColor: 'text-yellow-700 dark:text-yellow-400', borderColor: 'border-yellow-200 dark:border-yellow-700' },
-    { title: "Poligondaki Silahlar", count: statusCounts['Onarım Bekliyor'] || 0, icon: MapPin, statusKey: 'Onarım Bekliyor', bgColor: 'bg-orange-50 dark:bg-orange-900/30', textColor: 'text-orange-700 dark:text-orange-400', borderColor: 'border-orange-200 dark:border-orange-700' },
-    { title: "Rapor Yazılacaklar", count: statusCounts['Hizmet Dışı'] || 0, icon: ClipboardEdit, statusKey: 'Hizmet Dışı', bgColor: 'bg-slate-50 dark:bg-slate-700/30', textColor: 'text-slate-700 dark:text-slate-400', borderColor: 'border-slate-200 dark:border-slate-600' },
+    { title: "Depodaki Silahlar", count: statusCounts['Depoda'] || 0, icon: Warehouse, statusKey: 'Depoda', bgColor: 'bg-green-50 dark:bg-green-900/30', textColor: 'text-green-700 dark:text-green-400', borderColor: 'border-green-200 dark:border-green-700' },
+    { title: "Depoda Arızalı Silahlar", count: statusCounts['Depoda Arızalı'] || 0, icon: ShieldX, statusKey: 'Depoda Arızalı', bgColor: 'bg-red-50 dark:bg-red-900/30', textColor: 'text-red-700 dark:text-red-400', borderColor: 'border-red-200 dark:border-red-700' },
+    { title: "Desteğe Teslim Edilenler", count: statusCounts['Destekte'] || 0, icon: PackageCheck, statusKey: 'Destekte', bgColor: 'bg-yellow-50 dark:bg-yellow-900/30', textColor: 'text-yellow-700 dark:text-yellow-400', borderColor: 'border-yellow-200 dark:border-yellow-700' },
+    { title: "Poligondaki Silahlar", count: statusCounts['Poligonda'] || 0, icon: MapPin, statusKey: 'Poligonda', bgColor: 'bg-orange-50 dark:bg-orange-900/30', textColor: 'text-orange-700 dark:text-orange-400', borderColor: 'border-orange-200 dark:border-orange-700' },
+    { title: "Rapor Yazılacaklar", count: statusCounts['Rapor Bekliyor'] || 0, icon: ClipboardEdit, statusKey: 'Rapor Bekliyor', bgColor: 'bg-slate-50 dark:bg-slate-700/30', textColor: 'text-slate-700 dark:text-slate-400', borderColor: 'border-slate-200 dark:border-slate-600' },
   ];
 
   const summaryByDefinition = firearmDefinitions.map(definition => {
