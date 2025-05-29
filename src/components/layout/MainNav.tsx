@@ -31,7 +31,7 @@ import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 
 const menuItems = [
-  { href: '/dashboard', label: 'Gösterge Paneli', icon: Gauge },
+  { href: '/dashboard', label: 'ÖZET BİLGİLER', icon: Gauge },
   { href: '/inventory/firearms', label: 'Silahlar', icon: Target },
   { href: '/inventory/magazines', label: 'Şarjörler', icon: ListChecks },
   { href: '/inventory/ammunition', label: 'Mühimmat', icon: Box },
