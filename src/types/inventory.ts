@@ -11,7 +11,7 @@ export type MagazineStatus = 'Hizmette' | 'Bakımda' | 'Arızalı' | 'Kayıp' | 
 export type AmmunitionStatus = 'Mevcut' | 'Düşük Stok' | 'Kritik Stok' | 'Tükenmek Üzere';
 export type MaintenanceItemStatus = FirearmStatus | MagazineStatus;
 
-export type InventoryItemType = 'firearm' | 'magazine' | 'ammunition';
+export type InventoryItemType = 'firearm' | 'magazine' | 'ammunition' | 'other';
 
 
 export interface BaseItem {
@@ -144,6 +144,7 @@ export const INVENTORY_ITEM_TYPES: {value: InventoryItemType, label: string}[] =
     {value: 'firearm', label: 'Silah'},
     {value: 'magazine', label: 'Şarjör'},
     {value: 'ammunition', label: 'Mühimmat'},
+    {value: 'other', label: 'Diğer Malzemeler'},
 ];
 
 
@@ -220,3 +221,4 @@ export type AmmunitionDailyUsageDb = AmmunitionDailyUsageLog[];
 export type UsageScenariosDb = UsageScenario[];
 export type DepotsDb = Depot[];
 export type ShipmentTypeDefinitionsDb = ShipmentTypeDefinition[];
+
