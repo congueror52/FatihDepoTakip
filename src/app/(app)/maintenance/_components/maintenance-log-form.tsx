@@ -18,6 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { maintenanceLogFormSchema, type MaintenanceLogFormValues } from "./maintenance-log-form-schema";
 import { addMaintenanceLogToItemAction } from "@/lib/actions/inventory.actions";
+import { logAction } from "@/lib/log-service"; // Corrected import path
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { CalendarIcon, Loader2, Wrench } from "lucide-react";
@@ -40,19 +41,17 @@ interface MaintenanceLogFormProps {
 export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: MaintenanceLogFormProps) {
   const { toast } = useToast();
   const router = useRouter();
-  const [selectedItemType, setSelectedItemType] = useState<'firearm' | 'magazine' | undefined>(undefined);
-  const [availableItems, setAvailableItems] = useState<(Firearm | Magazine)[]>([]);
-  const [currentStatuses, setCurrentStatuses] = useState<readonly string[]>([]);
-  const [selectedFirearmDefId, setSelectedFirearmDefId] = useState<string | undefined>(undefined);
   const [filteredFirearms, setFilteredFirearms] = useState<Firearm[]>([]);
+  const [currentStatuses, setCurrentStatuses] = useState<readonly string[]>([]);
 
 
   const defaultValues: Partial<MaintenanceLogFormValues> = {
     itemId: undefined,
     itemType: undefined,
+    selectedFirearmDefIdForFilter: undefined,
     date: format(new Date(), 'yyyy-MM-dd'),
     description: "",
-    statusChangeFrom: "",
+    statusChangeFrom: "", 
     statusChangeTo: undefined,
     technician: "",
     partsUsed: "",
@@ -66,33 +65,33 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
 
   const watchedItemType = form.watch("itemType");
   const watchedItemId = form.watch("itemId");
-  const watchedFirearmDefIdForFilter = form.watch("selectedFirearmDefIdForFilter"); // Temporary field in form state
+  const watchedFirearmDefIdForFilter = form.watch("selectedFirearmDefIdForFilter");
 
   useEffect(() => {
-    setSelectedItemType(watchedItemType);
     form.resetField("itemId");
     form.setValue("statusChangeFrom", "");
     form.resetField("statusChangeTo");
-    setSelectedFirearmDefId(undefined); // Reset firearm definition filter
-    setFilteredFirearms([]);
-
+    
     if (watchedItemType === 'firearm') {
       setCurrentStatuses(firearmStatuses);
     } else if (watchedItemType === 'magazine') {
-      setAvailableItems(magazines); // For magazines, list all directly
       setCurrentStatuses(magazineStatuses);
+      form.setValue("selectedFirearmDefIdForFilter", undefined); 
+      setFilteredFirearms([]); 
     } else {
-      setAvailableItems([]);
       setCurrentStatuses([]);
+      form.setValue("selectedFirearmDefIdForFilter", undefined);
+      setFilteredFirearms([]);
     }
-  }, [watchedItemType, firearms, magazines, form]);
+  }, [watchedItemType, form]);
   
   useEffect(() => {
     if (watchedItemType === 'firearm' && watchedFirearmDefIdForFilter) {
       setFilteredFirearms(firearms.filter(f => f.definitionId === watchedFirearmDefIdForFilter));
-      form.resetField("itemId"); // Reset item when definition changes
-    } else if (watchedItemType === 'firearm') {
-      setFilteredFirearms([]); // No definition selected, so no firearms to show for item selection
+      form.resetField("itemId"); 
+    } else if (watchedItemType === 'firearm' && !watchedFirearmDefIdForFilter) {
+      setFilteredFirearms([]); 
+      form.resetField("itemId");
     }
   }, [watchedItemType, watchedFirearmDefIdForFilter, firearms, form]);
 
@@ -100,20 +99,19 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
   useEffect(() => {
     if (watchedItemId) {
       let item: Firearm | Magazine | undefined;
-      if (selectedItemType === 'firearm') {
+      if (watchedItemType === 'firearm') {
         item = filteredFirearms.find(i => i.id === watchedItemId);
-      } else if (selectedItemType === 'magazine') {
+      } else if (watchedItemType === 'magazine') {
         item = magazines.find(i => i.id === watchedItemId);
       }
       
       if (item) {
         form.setValue("statusChangeFrom", item.status as MaintenanceItemStatus);
-        form.setValue("itemType", item.itemType as 'firearm' | 'magazine'); // ensure itemType is set
       }
     } else {
       form.setValue("statusChangeFrom", "");
     }
-  }, [watchedItemId, selectedItemType, filteredFirearms, magazines, form]);
+  }, [watchedItemId, watchedItemType, filteredFirearms, magazines, form]);
 
 
   async function onSubmit(data: MaintenanceLogFormValues) {
@@ -121,24 +119,33 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
         toast({ variant: "destructive", title: "Hata", description: "Lütfen bir öğe türü ve öğe seçin." });
         return;
     }
+    let logEntryId: string | undefined = undefined;
     try {
-      await addMaintenanceLogToItemAction(data.itemId, data.itemType, {
-        date: new Date(data.date).toISOString(),
-        description: data.description,
-        statusChangeFrom: data.statusChangeFrom as MaintenanceItemStatus,
-        statusChangeTo: data.statusChangeTo as MaintenanceItemStatus,
-        technician: data.technician,
-        partsUsed: data.partsUsed,
+      const { selectedFirearmDefIdForFilter, ...logSubmitData } = data; 
+
+      const result = await addMaintenanceLogToItemAction(logSubmitData.itemId, logSubmitData.itemType, {
+        date: new Date(logSubmitData.date).toISOString(),
+        description: logSubmitData.description,
+        statusChangeFrom: logSubmitData.statusChangeFrom as MaintenanceItemStatus,
+        statusChangeTo: logSubmitData.statusChangeTo as MaintenanceItemStatus,
+        technician: logSubmitData.technician,
+        partsUsed: logSubmitData.partsUsed,
       });
+      logEntryId = result.id;
       toast({ variant: "success", title: "Başarılı", description: "Bakım kaydı başarıyla eklendi." });
       router.push(`/inventory/${data.itemType === 'firearm' ? 'firearms' : 'magazines'}/${data.itemId}`);
       router.refresh();
     } catch (error: any) {
-      if (error.message.startsWith('Bakım kaydı için geçersiz veri') ||
-        error.message.includes('bulunamadı') ||
-        error.message.startsWith('Geçersiz öğe türü')) throw error;
-      await logAction({ actionType: "LOG_MAINTENANCE", entityType: "MaintenanceLog", entityId: data.itemId, status: "FAILURE", details: data, errorMessage: error.message });
-      throw error;
+      await logAction({ 
+        actionType: "CREATE", 
+        entityType: "MaintenanceLog", 
+        entityId: logEntryId || data.itemId, 
+        status: "FAILURE", 
+        details: data, 
+        errorMessage: error.message 
+      });
+      toast({ variant: "destructive", title: "Hata", description: error.message || "Bakım kaydı eklenirken bir hata oluştu." });
+      console.error("Bakım kaydı gönderme hatası:", error);
     }
   }
 
@@ -154,9 +161,8 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
                 <Select
                   onValueChange={(value: 'firearm' | 'magazine' | undefined) => {
                     field.onChange(value);
-                    // setSelectedItemType(value); // This is handled by watchedItemType useEffect
                   }}
-                  value={field.value}
+                  value={field.value || ""}
                 >
                     <FormControl>
                         <SelectTrigger>
@@ -176,7 +182,7 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
         {watchedItemType === 'firearm' && (
            <FormField
             control={form.control}
-            name="selectedFirearmDefIdForFilter" // Use a temporary form field for this filter
+            name="selectedFirearmDefIdForFilter"
             render={({ field }) => (
               <FormItem>
                 <FormLabel><span suppressHydrationWarning>Silah Türü Seçin</span></FormLabel>
@@ -187,7 +193,6 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="" disabled><span suppressHydrationWarning>Bir silah türü seçin...</span></SelectItem>
                     {firearmDefinitions.map(def => (
                       <SelectItem key={def.id} value={def.id}>
                         <span suppressHydrationWarning>{def.name} ({def.model})</span>
@@ -218,7 +223,6 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
                     </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                     <SelectItem value="" disabled><span suppressHydrationWarning>Bir öğe seçin...</span></SelectItem>
                     {(watchedItemType === 'firearm' ? filteredFirearms : magazines).map(item => (
                     <SelectItem key={item.id} value={item.id}>
                         <span suppressHydrationWarning>{watchedItemType === 'firearm' ? `${(item as Firearm).name} (SN: ${(item as Firearm).serialNumber})` : `${(item as Magazine).name} (ID: ${item.id.substring(0,6)})`}</span>
@@ -314,7 +318,7 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
                 render={({ field }) => (
                 <FormItem>
                     <FormLabel><span suppressHydrationWarning>Yeni Durum</span></FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value} disabled={!watchedItemId}>
+                    <Select onValueChange={field.onChange} value={field.value || ""} disabled={!watchedItemId}>
                     <FormControl>
                         <SelectTrigger>
                             <SelectValue placeholder="Yeni durumu seçin" />
