@@ -49,11 +49,10 @@ export function MaintenanceLogForm({ firearms, magazines }: MaintenanceLogFormPr
     itemType: undefined,
     date: format(new Date(), 'yyyy-MM-dd'),
     description: "",
-    statusChangeFrom: "", // Initialize as empty string for the Input
+    statusChangeFrom: "", 
     statusChangeTo: undefined,
     technician: "",
     partsUsed: "",
-    cost: 0,
   };
   
   const form = useForm<MaintenanceLogFormValues>({
@@ -75,9 +74,8 @@ export function MaintenanceLogForm({ firearms, magazines }: MaintenanceLogFormPr
       setAvailableItems([]);
       setCurrentStatuses([]);
     }
-    // Reset dependent fields when itemType changes
     form.resetField("itemId");
-    form.setValue("statusChangeFrom", ""); // Ensure it's controlled
+    form.setValue("statusChangeFrom", ""); 
     form.resetField("statusChangeTo");
 
   }, [selectedItemType, firearms, magazines, form]);
@@ -90,14 +88,13 @@ export function MaintenanceLogForm({ firearms, magazines }: MaintenanceLogFormPr
         form.setValue("itemType", item.itemType as 'firearm' | 'magazine');
       }
     } else {
-      // If no item is selected, ensure statusChangeFrom is reset to an empty string
       form.setValue("statusChangeFrom", "");
     }
   }, [selectedItemId, availableItems, form]);
 
 
   async function onSubmit(data: MaintenanceLogFormValues) {
-    if (!data.itemType || !data.itemId) { // Also check itemId
+    if (!data.itemType || !data.itemId) { 
         toast({ variant: "destructive", title: "Hata", description: "Lütfen bir öğe türü ve öğe seçin." });
         return;
     }
@@ -109,10 +106,9 @@ export function MaintenanceLogForm({ firearms, magazines }: MaintenanceLogFormPr
         statusChangeTo: data.statusChangeTo as MaintenanceItemStatus,
         technician: data.technician,
         partsUsed: data.partsUsed,
-        cost: data.cost,
       });
       toast({ variant: "success", title: "Başarılı", description: "Bakım kaydı başarıyla eklendi." });
-      router.push(`/inventory/${data.itemType === 'firearm' ? 'silahlar' : 'sarjorler'}/${data.itemId}`); // Updated paths
+      router.push(`/inventory/${data.itemType === 'firearm' ? 'firearms' : 'magazines'}/${data.itemId}`); 
       router.refresh(); 
     } catch (error: any) {
       toast({ variant: "destructive", title: "Hata", description: error.message || "Bakım kaydı eklenirken hata oluştu." });
@@ -278,8 +274,7 @@ export function MaintenanceLogForm({ firearms, magazines }: MaintenanceLogFormPr
             />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <FormField
+        <FormField
             control={form.control}
             name="partsUsed"
             render={({ field }) => (
@@ -291,22 +286,8 @@ export function MaintenanceLogForm({ firearms, magazines }: MaintenanceLogFormPr
                 <FormMessage />
                 </FormItem>
             )}
-            />
-            <FormField
-                control={form.control}
-                name="cost"
-                render={({ field }) => (
-                <FormItem>
-                    <FormLabel><span suppressHydrationWarning>Maliyet (₺ - İsteğe Bağlı)</span></FormLabel>
-                    <FormControl>
-                        <Input type="number" placeholder="0.00" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-                )}
-            />
-        </div>
-
+        />
+        
         <Button type="submit" disabled={form.formState.isSubmitting || !form.formState.isValid}>
           {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {form.formState.isSubmitting ? <span suppressHydrationWarning>Kaydediliyor...</span> : <span suppressHydrationWarning>Bakım Kaydı Ekle</span>}
@@ -315,4 +296,3 @@ export function MaintenanceLogForm({ firearms, magazines }: MaintenanceLogFormPr
     </Form>
   );
 }
-    

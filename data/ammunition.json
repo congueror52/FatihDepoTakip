@@ -33,5 +33,15 @@
     "id": "4181521c-0a97-4945-9514-6278dc5164ad",
     "itemType": "ammunition",
     "lastUpdated": "2025-05-29T15:17:32.227Z"
+  },
+  {
+    "name": "MKE",
+    "caliber": "5.56x45mm",
+    "quantity": 2999,
+    "depotId": "depotA",
+    "status": "Mevcut",
+    "id": "36a70c91-8872-4c15-9f41-35e43aa3c13a",
+    "itemType": "ammunition",
+    "lastUpdated": "2025-05-29T18:54:26.506Z"
   }
 ]

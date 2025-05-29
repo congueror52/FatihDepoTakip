@@ -4842,5 +4842,52 @@
       "cost": 0,
       "id": "91b2c626-24f5-4250-a16e-8147ae66b39f"
     }
+  },
+  {
+    "id": "497356fb-4fb6-409d-bb07-af0eabe57b1b",
+    "timestamp": "2025-05-29T18:53:13.817Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "DailyAmmunitionUsage",
+    "entityId": "484c7c02-8d7f-4a12-9ad5-00a9f7bc2bf0",
+    "status": "SUCCESS",
+    "details": {
+      "date": "2025-05-29T00:00:00.000Z",
+      "personnelCount": 200,
+      "usageScenarioId": "scenario_2",
+      "used_9x19mm": 15000,
+      "used_5_56x45mm": 0,
+      "used_7_62x39mm": 5000,
+      "used_7_62x51mm": 0,
+      "notes": "",
+      "id": "484c7c02-8d7f-4a12-9ad5-00a9f7bc2bf0"
+    }
+  },
+  {
+    "id": "b9ec47eb-6d7a-4a58-a7e7-07975a5db81e",
+    "timestamp": "2025-05-29T18:54:26.519Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Ammunition",
+    "entityId": "36a70c91-8872-4c15-9f41-35e43aa3c13a",
+    "status": "SUCCESS",
+    "details": {
+      "name": "MKE",
+      "caliber": "5.56x45mm",
+      "quantity": 2999,
+      "depotId": "depotA",
+      "status": "Mevcut",
+      "id": "36a70c91-8872-4c15-9f41-35e43aa3c13a",
+      "itemType": "ammunition",
+      "lastUpdated": "2025-05-29T18:54:26.506Z"
+    }
   }
 ]

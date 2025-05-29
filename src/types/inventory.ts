@@ -1,8 +1,6 @@
 
 export type DepotId = string; 
 
-// DEPOT_LOCATIONS sabitini kaldırıyoruz, depolar artık dinamik olarak yönetilecek.
-
 export type FirearmStatus = 'Hizmette' | 'Bakımda' | 'Arızalı' | 'Onarım Bekliyor' | 'Onarıldı' | 'Hizmet Dışı';
 export type MagazineStatus = 'Hizmette' | 'Bakımda' | 'Arızalı' | 'Kayıp' | 'Hizmet Dışı';
 export type AmmunitionStatus = 'Mevcut' | 'Düşük Stok' | 'Kritik Stok' | 'Tükenmek Üzere';
@@ -30,17 +28,17 @@ export interface FirearmDefinition {
   name: string; 
   model: string; 
   manufacturer?: string; 
-  caliber: SupportedCaliber; // Updated from string
+  caliber: SupportedCaliber; 
   description?: string;
   lastUpdated: string;
 }
 
 export interface Firearm extends BaseItem {
   itemType: 'firearm';
-  definitionId: string; // Links to FirearmDefinition
+  definitionId: string; 
   serialNumber: string;
-  model: string; // Copied from definition
-  caliber: SupportedCaliber; // Copied from definition
+  model: string; 
+  caliber: SupportedCaliber; 
   status: FirearmStatus;
   maintenanceHistory?: MaintenanceLog[];
 }
@@ -68,18 +66,16 @@ export type InventoryItem = Firearm | Magazine | Ammunition;
 
 
 export interface ShipmentItem {
-  id: string; // for useFieldArray key
-  name: string; // Description of the item, e.g., "SAR9 Magazine" or "5.56x45mm FMJ MKE"
+  id: string; 
+  name: string; 
   itemType: InventoryItemType;
   quantity: number;
-  // Optional details, relevant based on itemType
   caliber?: SupportedCaliber;
-  model?: string; // For firearms
-  serialNumber?: string; // For individual firearms, if applicable in shipment
-  capacity?: number; // For magazines
+  model?: string; 
+  serialNumber?: string; 
+  capacity?: number; 
 }
 
-// Definition for a shipment type (managed by admin)
 export interface ShipmentTypeDefinition {
   id: string;
   name: string;
@@ -91,32 +87,31 @@ export interface ShipmentTypeDefinition {
 
 export interface Shipment {
   id: string;
-  date: string; // ISO date string
-  typeId: string; // References ShipmentTypeDefinition.id
+  date: string; 
+  typeId: string; 
   items: ShipmentItem[];
   notes?: string;
-  supplier?: string; // Relevant for 'Gelen'
+  supplier?: string; 
   trackingNumber?: string;
-  sourceDepotId?: DepotId; // For 'Giden' or 'Transfer (from)'
-  destinationDepotId?: DepotId; // For 'Gelen' or 'Transfer (to)'
+  sourceDepotId?: DepotId; 
+  destinationDepotId?: DepotId; 
   lastUpdated: string;
 }
 
 
 export interface MaintenanceLog {
   id:string;
-  date: string; // ISO date string
+  date: string; 
   description: string;
   statusChangeFrom: MaintenanceItemStatus;
   statusChangeTo: MaintenanceItemStatus;
   technician?: string;
   partsUsed?: string; 
-  cost?: number;
 }
 
 export interface AmmunitionUsageLog {
   id: string;
-  date: string; // ISO date string
+  date: string; 
   ammunitionId: string; 
   quantityUsed: number;
   depotId: DepotId;
@@ -127,7 +122,7 @@ export interface AmmunitionUsageLog {
 
 export interface AmmunitionDailyUsageLog {
   id: string;
-  date: string; // ISO date string
+  date: string; 
   personnelCount: number;
   usageScenarioId?: string; 
   used_9x19mm: number;
@@ -181,7 +176,6 @@ export const ALERT_ENTITY_TYPES: { value: AlertEntityType; label: string }[] = [
 
 export const ALERT_CONDITION_TYPES: { value: AlertConditionType; label: string; applicableTo: AlertEntityType[] }[] = [
   { value: 'low_stock', label: 'Düşük Stok', applicableTo: ['ammunition'] },
-  // { value: 'maintenance_due_soon', label: 'Bakım Tarihi Yaklaşıyor', applicableTo: ['firearm', 'magazine'] }, // Future: Requires maintenance scheduling
   { value: 'status_is', label: 'Durumu Şöyle Olduğunda', applicableTo: ['firearm', 'magazine'] },
 ];
 
@@ -194,17 +188,16 @@ export interface AlertDefinition {
   description?: string;
   entityType: AlertEntityType;
   conditionType: AlertConditionType;
-  depotId?: DepotId; // For depot-specific alerts
-  // Fields specific to conditionType
-  caliberFilter?: SupportedCaliber; // For ammunition + low_stock
-  thresholdValue?: number; // For low_stock
-  statusFilter?: FirearmStatus | MagazineStatus; // For status_is
-  daysBeforeMaintenance?: number; // For maintenance_due_soon (future)
+  depotId?: DepotId; 
+  caliberFilter?: SupportedCaliber; 
+  thresholdValue?: number; 
+  statusFilter?: FirearmStatus | MagazineStatus; 
+  daysBeforeMaintenance?: number; 
   
   severity: AlertSeverity;
-  messageTemplate: string; // e.g., "{itemName} için stok kritik seviyede ({currentValue}/{thresholdValue})"
+  messageTemplate: string; 
   isActive: boolean;
-  lastUpdated: string; // ISO date string
+  lastUpdated: string; 
 }
 
 

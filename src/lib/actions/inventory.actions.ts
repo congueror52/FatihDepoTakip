@@ -129,16 +129,16 @@ export async function exportFirearmDefinitionsToCsvAction(): Promise<string> {
   noStore();
   const definitions = await getFirearmDefinitions();
   if (definitions.length === 0) {
-    return ""; 
+    return "";
   }
   const header = ["id", "name", "model", "manufacturer", "caliber", "description", "lastUpdated"];
-  
+
   const escapeCsvField = (field: string | undefined | null): string => {
     if (field === null || field === undefined) return "";
     let strField = String(field);
-    strField = strField.replace(/"/g, '""');
+    strField = strField.replace(/"/g, '""'); // Escape double quotes
     if (strField.includes(';') || strField.includes('"') || strField.includes('\n') || strField.includes('\r')) {
-      return `"${strField}"`;
+      return `"${strField}"`; // Enclose in double quotes if it contains separator or quotes
     }
     return strField;
   };
@@ -319,7 +319,7 @@ export async function exportFirearmsToCsvAction(): Promise<string> {
       escapeCsvField(f.serialNumber),
       escapeCsvField(f.depotId),
       escapeCsvField(f.status),
-      escapeCsvField(f.purchaseDate ? f.purchaseDate.substring(0,10) : ""), // YYYY-MM-DD
+      escapeCsvField(f.purchaseDate ? f.purchaseDate.substring(0,10) : ""), 
       escapeCsvField(f.notes),
       escapeCsvField(f.lastUpdated)
     ].join(';')
@@ -881,8 +881,8 @@ export async function getGroupedAmmunitionDailyUsageLogs(): Promise<GroupedDaily
 }
 
 export interface MonthlyUsageDataPoint {
-  month: string; // "Ocak 2024"
-  [scenarioName: string]: number | string; // Scenario name as key, total usage as value
+  month: string; 
+  [scenarioName: string]: number | string; 
 }
 
 export async function getMonthlyScenarioUsageForChart(): Promise<MonthlyUsageDataPoint[]> {
@@ -891,7 +891,7 @@ export async function getMonthlyScenarioUsageForChart(): Promise<MonthlyUsageDat
   const scenarios = await getUsageScenarios();
   const scenarioMap = new Map(scenarios.map(s => [s.id, s.name]));
 
-  const monthlyData: Record<string, Record<string, number>> = {}; // Key: "YYYY-MM", Value: { scenarioName: totalUsage }
+  const monthlyData: Record<string, Record<string, number>> = {}; 
 
   dailyLogs.forEach(log => {
     const date = parseISO(log.date);
@@ -899,7 +899,7 @@ export async function getMonthlyScenarioUsageForChart(): Promise<MonthlyUsageDat
     const monthDisplay = format(date, "MMMM yyyy", { locale: tr });
 
     if (!monthlyData[monthYearKey]) {
-      monthlyData[monthYearKey] = { monthDisplay }; // Store display month name
+      monthlyData[monthYearKey] = { monthDisplay: monthDisplay as any }; // Store display month name, temp 'any'
     }
 
     const scenarioName = log.usageScenarioId ? scenarioMap.get(log.usageScenarioId) || "Bilinmeyen Senaryo" : "Senaryo Belirtilmeyen";
@@ -914,7 +914,7 @@ export async function getMonthlyScenarioUsageForChart(): Promise<MonthlyUsageDat
   });
 
   const chartData: MonthlyUsageDataPoint[] = Object.keys(monthlyData)
-    .sort() // Sort by YYYY-MM
+    .sort() 
     .map(monthYearKey => {
       const dataForMonth = monthlyData[monthYearKey];
       const { monthDisplay, ...scenarioUsages } = dataForMonth;
@@ -1166,7 +1166,7 @@ export async function deleteDepotAction(id: string): Promise<void> {
 export async function addMaintenanceLogToItemAction(
   itemId: string,
   itemType: 'firearm' | 'magazine',
-  logData: Omit<MaintenanceLog, 'id'>
+  logData: Omit<MaintenanceLog, 'id' | 'cost'> // Removed cost from input type
 ) {
   let logEntryId: string | undefined = undefined;
   try {
@@ -1186,7 +1186,7 @@ export async function addMaintenanceLogToItemAction(
       statusChangeTo: validatedData.data.statusChangeTo,
       technician: validatedData.data.technician,
       partsUsed: validatedData.data.partsUsed,
-      cost: validatedData.data.cost,
+      // cost: validatedData.data.cost, // Cost is removed
       id: await generateId(),
     };
     logEntryId = newLog.id; 
@@ -1229,7 +1229,7 @@ export async function addMaintenanceLogToItemAction(
     
     await logAction({ actionType: "CREATE", entityType: "MaintenanceLog", entityId: newLog.id, status: "SUCCESS", details: newLog });
 
-    revalidatePath(`/inventory/${itemType === 'firearm' ? 'firearms' : 'magazines'}/${itemId}`); // Corrected paths
+    revalidatePath(`/inventory/${itemType === 'firearm' ? 'firearms' : 'magazines'}/${itemId}`); 
     revalidatePath(`/inventory/${itemType === 'firearm' ? 'firearms' : 'magazines'}`);
     revalidatePath(`/inventory/${itemType === 'firearm' ? 'firearms' : 'magazines'}`, 'layout');
     revalidatePath('/maintenance');
@@ -1450,11 +1450,6 @@ export async function deleteAlertDefinitionAction(id: string): Promise<void> {
 
 export async function getTriggeredAlerts(): Promise<AlertDefinition[]> {
   noStore();
-  // This is a placeholder. In a real system, this would check definitions against current inventory.
-  // For now, it will return an empty array to simulate no active alerts.
-  // Or, to show something on the /alerts page, we could return a subset of alert definitions.
-  // Based on user's request to not show definitions on /alerts page unless an alert is triggered,
-  // this should remain empty until a proper triggering mechanism is in place.
   return []; 
 }
 
@@ -1481,5 +1476,3 @@ export async function getRecentAuditLogs(limit: number = 5): Promise<AuditLogEnt
     return []; 
   }
 }
-
-
