@@ -24,5 +24,59 @@
       "id": "30cec792-5cda-49f5-97ee-e5d7954cf54f",
       "lastUpdated": "2025-05-29T12:46:06.852Z"
     }
+  },
+  {
+    "id": "18c73806-2eb2-4e80-89b4-fa0576a38faf",
+    "timestamp": "2025-05-29T15:10:50.724Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Firearm",
+    "entityId": "79784471-27b0-45b0-9466-2fb8fc584fd5",
+    "status": "SUCCESS",
+    "details": {
+      "definitionId": "fd_3",
+      "serialNumber": "az554245",
+      "depotId": "depotB",
+      "status": "Bakımda",
+      "purchaseDate": "2025-05-28T00:00:00.000Z",
+      "notes": "kadro atışında kullanılıyor ",
+      "id": "79784471-27b0-45b0-9466-2fb8fc584fd5",
+      "itemType": "firearm",
+      "name": "AK-47 ",
+      "model": "AK47",
+      "manufacturer": "BELLİ DEĞİL",
+      "caliber": "7.62X39",
+      "lastUpdated": "2025-05-29T15:10:50.715Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "928e2781-f266-4de7-8b47-5dde09b0ddaa",
+    "timestamp": "2025-05-29T15:12:35.200Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Ammunition",
+    "entityId": "ca74be46-5ac9-4878-8abe-c1222c8fbf6c",
+    "status": "SUCCESS",
+    "details": {
+      "name": "mps fişrek",
+      "caliber": "9x19mm",
+      "quantity": 300000,
+      "depotId": "depotA",
+      "status": "Mevcut",
+      "manufacturer": "mardin silah sanayi",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "id": "ca74be46-5ac9-4878-8abe-c1222c8fbf6c",
+      "itemType": "ammunition",
+      "lastUpdated": "2025-05-29T15:12:35.193Z"
+    }
   }
 ]

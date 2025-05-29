@@ -10,5 +10,17 @@
     "id": "767d910d-abd1-49f8-a0c9-09982e841434",
     "itemType": "ammunition",
     "lastUpdated": "2025-05-28T12:38:36.890Z"
+  },
+  {
+    "name": "mps fişrek",
+    "caliber": "9x19mm",
+    "quantity": 300000,
+    "depotId": "depotA",
+    "status": "Mevcut",
+    "manufacturer": "mardin silah sanayi",
+    "purchaseDate": "2025-05-29T00:00:00.000Z",
+    "id": "ca74be46-5ac9-4878-8abe-c1222c8fbf6c",
+    "itemType": "ammunition",
+    "lastUpdated": "2025-05-29T15:12:35.193Z"
   }
 ]

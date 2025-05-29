@@ -86,5 +86,21 @@
     "caliber": "7.62X51",
     "lastUpdated": "2025-05-28T12:23:34.998Z",
     "maintenanceHistory": []
+  },
+  {
+    "definitionId": "fd_3",
+    "serialNumber": "az554245",
+    "depotId": "depotB",
+    "status": "Bakımda",
+    "purchaseDate": "2025-05-28T00:00:00.000Z",
+    "notes": "kadro atışında kullanılıyor ",
+    "id": "79784471-27b0-45b0-9466-2fb8fc584fd5",
+    "itemType": "firearm",
+    "name": "AK-47 ",
+    "model": "AK47",
+    "manufacturer": "BELLİ DEĞİL",
+    "caliber": "7.62X39",
+    "lastUpdated": "2025-05-29T15:10:50.715Z",
+    "maintenanceHistory": []
   }
 ]
