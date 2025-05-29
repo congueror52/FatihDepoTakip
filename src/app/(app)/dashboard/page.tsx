@@ -1,18 +1,49 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Briefcase, Boxes, DollarSign, Users, ShieldAlert, BarChart3, Activity, Target, ListChecks } from 'lucide-react'; // Removed BellRing, ArrowRight
+import { Briefcase, Boxes, DollarSign, Users, ShieldAlert, BarChart3, Activity, Target, ListChecks, BellRing } from 'lucide-react'; // Added BellRing
 import Image from 'next/image';
 import Link from 'next/link';
-import { getFirearms, getMagazines, getAmmunition } from '@/lib/actions/inventory.actions';
+import { getFirearms, getMagazines, getAmmunition, getAlertDefinitions } from '@/lib/actions/inventory.actions';
+import type { AlertDefinition } from '@/types/inventory'; // Added AlertDefinition
+import { Badge } from '@/components/ui/badge'; // Added Badge for severity
+
+// Helper function to simulate active alerts based on definitions (for prototype)
+// In a real system, this would come from a dedicated active alerts data source.
+const getSimulatedActiveAlerts = (definitions: AlertDefinition[]): AlertDefinition[] => {
+  // For now, let's assume all active definitions are "triggered" alerts
+  // You might want to add more complex logic here in a real app
+  return definitions.filter(def => def.isActive).map(def => ({
+    ...def,
+    // Simulate some dynamic parts of the message if needed for display
+    // This is highly dependent on how your messageTemplate is structured
+    // and what data would be available when an alert is actually triggered.
+    // For now, we'll just use the template as is or a generic message.
+    // message: def.messageTemplate
+    //   .replace('{itemName}', def.name) // Basic replacement
+    //   .replace('{depotName}', 'N/A')
+    //   .replace('{currentValue}', 'N/A')
+    //   .replace('{threshold}', String(def.thresholdValue || 'N/A'))
+    //   .replace('{status}', String(def.statusFilter || 'N/A'))
+    //   .replace('{caliber}', String(def.caliberFilter || 'N/A'))
+    //   .replace('{serialNumber}', 'N/A'),
+    // date: new Date().toISOString() // Simulate a date
+  })).sort((a,b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime());
+};
+
 
 export default async function DashboardPage() {
   const firearms = await getFirearms();
-  const magazines = await getMagazines(); 
+  const magazines = await getMagazines();
   const ammunition = await getAmmunition();
+  const alertDefinitions = await getAlertDefinitions();
+
+  const simulatedActiveAlerts = getSimulatedActiveAlerts(alertDefinitions);
+  const latestAlerts = simulatedActiveAlerts.slice(0, 5);
+
 
   const summaryData = {
     totalFirearms: firearms.length,
-    totalMagazines: magazines.length, 
+    totalMagazines: magazines.length,
     totalAmmunitionRounds: ammunition.reduce((sum, ammo) => sum + ammo.quantity, 0),
     recentActivity: [
       { id: 1, description: "5.56mm mühimmat sevkiyatı alındı", time: "2 saat önce" },
@@ -20,19 +51,29 @@ export default async function DashboardPage() {
       { id: 3, description: "9mm HP fişekler için düşük stok uyarısı", time: "1 gün önce" },
     ]
   };
+  
+  const getSeverityBadgeVariant = (severity: AlertDefinition['severity']) => {
+    switch (severity) {
+      case 'Yüksek': return 'destructive';
+      case 'Orta': return 'default';
+      case 'Düşük': return 'secondary';
+      default: return 'outline';
+    }
+  };
+  
+  const getSeverityBadgeClasses = (severity: AlertDefinition['severity']) => {
+    switch (severity) {
+      case 'Yüksek': return 'bg-red-500 hover:bg-red-600';
+      case 'Orta': return 'bg-yellow-500 hover:bg-yellow-600 text-black';
+      case 'Düşük': return 'bg-blue-500 hover:bg-blue-600';
+      default: return 'bg-gray-500 hover:bg-gray-600';
+    }
+  };
 
-  // Örnek uyarı verileri (alerts sayfasındakiyle tutarlı)
-  const allAlerts = [
-    { id: '1', severity: 'Yüksek', message: 'Düşük stok: 9mm FMJ mühimmat (Depo A - 500 adet kaldı)', date: new Date(Date.now() - 86400000 * 0.2).toISOString() },
-    { id: '2', severity: 'Orta', message: 'SN:XG5523 seri nolu silahın planlı bakımı gecikti', date: new Date(Date.now() - 86400000 * 2).toISOString() },
-    { id: '4', severity: 'Yüksek', message: 'Depo B sıcaklık sensörü arızalı.', date: new Date(Date.now() - 86400000 * 0.5).toISOString() },
-    { id: '3', severity: 'Düşük', message: 'Şarjör M007 (Depo B) için küçük hasar bildirildi', date: new Date(Date.now() - 86400000 * 3).toISOString() },
-    { id: '5', severity: 'Orta', message: 'Depo A nem seviyesi kritik eşiğin üzerinde.', date: new Date(Date.now() - 86400000 * 1).toISOString() },
-  ];
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-3xl font-bold tracking-tight" suppressHydrationWarning>Gösterge Paneli</h1>
+      <h1 className="text-3xl font-bold tracking-tight" suppressHydrationWarning>ÖZET BİLGİLER</h1>
       
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
@@ -75,12 +116,12 @@ export default async function DashboardPage() {
                 <span suppressHydrationWarning>Aktif Uyarılar</span>
               </CardTitle>
             </Link>
-            <ShieldAlert className={`h-4 w-4 ${allAlerts.length > 0 ? 'text-destructive' : 'text-muted-foreground'}`} />
+            <ShieldAlert className={`h-4 w-4 ${simulatedActiveAlerts.length > 0 ? 'text-destructive' : 'text-muted-foreground'}`} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{allAlerts.length}</div>
+            <div className="text-2xl font-bold">{simulatedActiveAlerts.length}</div>
             <p className="text-xs text-muted-foreground" suppressHydrationWarning>
-              {allAlerts.length === 0 ? "aktif uyarı bulunmuyor" : (allAlerts.length === 1 ? "aktif uyarı" : "aktif uyarılar")}
+              {simulatedActiveAlerts.length === 0 ? "aktif uyarı bulunmuyor" : (simulatedActiveAlerts.length === 1 ? "aktif uyarı" : "aktif uyarılar")}
             </p>
           </CardContent>
         </Card>
@@ -101,7 +142,7 @@ export default async function DashboardPage() {
         </Card>
         <Card className="lg:col-span-3">
           <CardHeader>
-            <CardTitle  className="flex items-center gap-2"><Activity className="h-5 w-5" /><span suppressHydrationWarning>Son Aktiviteler</span></CardTitle>
+            <CardTitle className="flex items-center gap-2"><Activity className="h-5 w-5" /><span suppressHydrationWarning>Son Aktiviteler</span></CardTitle>
             <CardDescription suppressHydrationWarning>En son güncellemeler ve sistem olayları.</CardDescription>
           </CardHeader>
           <CardContent>
@@ -123,6 +164,34 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+      
+      {latestAlerts.length > 0 && (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <BellRing className="h-5 w-5 text-destructive" />
+                    <span suppressHydrationWarning>Son Uyarılar</span>
+                </CardTitle>
+                <CardDescription suppressHydrationWarning>Sistemdeki en son 5 önemli uyarı.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+                {latestAlerts.map(alert => (
+                    <div key={alert.id} className="flex items-start justify-between p-3 border rounded-md shadow-sm">
+                        <div>
+                            <p className="font-medium text-sm" suppressHydrationWarning>{alert.name}</p>
+                            <p className="text-xs text-muted-foreground" suppressHydrationWarning>
+                                {alert.description || "Detay yok"} - <span suppressHydrationWarning>Son Güncelleme: {new Date(alert.lastUpdated).toLocaleDateString('tr-TR')}</span>
+                            </p>
+                        </div>
+                        <Badge className={getSeverityBadgeClasses(alert.severity)}>{alert.severity}</Badge>
+                    </div>
+                ))}
+                 <Link href="/alerts" className="text-sm text-primary hover:underline float-right mt-2">
+                    <span suppressHydrationWarning>Tüm Uyarıları Gör</span>
+                </Link>
+            </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

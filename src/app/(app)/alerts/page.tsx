@@ -1,24 +1,52 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShieldAlert, BellRing } from "lucide-react";
+import { getAlertDefinitions } from "@/lib/actions/inventory.actions";
+import type { AlertDefinition } from "@/types/inventory";
+import { Badge } from "@/components/ui/badge";
+
+// Helper function to simulate active alerts based on definitions (for prototype)
+// This should ideally come from a dedicated active alerts data source in a real system.
+const getSimulatedActiveAlerts = (definitions: AlertDefinition[]): AlertDefinition[] => {
+  return definitions.filter(def => def.isActive).map(def => ({
+    ...def,
+    // Simulate message and date for display
+    // message: def.messageTemplate
+    //   .replace('{itemName}', def.name)
+    //   .replace('{depotName}', 'N/A')
+    //   .replace('{currentValue}', 'N/A')
+    //   .replace('{threshold}', String(def.thresholdValue || 'N/A'))
+    //   .replace('{status}', String(def.statusFilter || 'N/A'))
+    //   .replace('{caliber}', String(def.caliberFilter || 'N/A'))
+    //   .replace('{serialNumber}', 'N/A'),
+    // date: new Date().toISOString() // Simulate a date
+  })).sort((a,b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime());
+};
+
 
 export default async function AlertsPage() {
-  // Örnek uyarı verileri
-  const alerts = [
-    { id: '1', severity: 'Yüksek', message: 'Düşük stok: 9mm FMJ mühimmat (Depo A - 500 adet kaldı)', date: new Date().toISOString() },
-    { id: '2', severity: 'Orta', message: 'SN:XG5523 seri nolu ateşli silahın planlı bakımı gecikti', date: new Date(Date.now() - 86400000 * 2).toISOString() },
-    { id: '3', severity: 'Düşük', message: 'Şarjör M007 (Depo B) için küçük hasar bildirildi', date: new Date(Date.now() - 86400000 * 3).toISOString() },
-  ];
+  const alertDefinitions = await getAlertDefinitions();
+  const activeAlerts = getSimulatedActiveAlerts(alertDefinitions);
 
   const getSeverityColor = (severity: string) => {
-    if (severity === 'Yüksek') return 'border-red-500 bg-red-50';
-    if (severity === 'Orta') return 'border-yellow-500 bg-yellow-50';
-    return 'border-blue-500 bg-blue-50'; // Düşük
+    if (severity === 'Yüksek') return 'border-red-500 bg-red-50 dark:bg-red-900/20 dark:border-red-700';
+    if (severity === 'Orta') return 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 dark:border-yellow-700';
+    return 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-700'; // Düşük
   };
   
   const getSeverityTextColor = (severity: string) => {
-    if (severity === 'Yüksek') return 'text-red-700';
-    if (severity === 'Orta') return 'text-yellow-700';
-    return 'text-blue-700'; // Düşük
+    if (severity === 'Yüksek') return 'text-red-700 dark:text-red-400';
+    if (severity === 'Orta') return 'text-yellow-700 dark:text-yellow-400';
+    return 'text-blue-700 dark:text-blue-400'; // Düşük
+  };
+  
+  const getSeverityBadgeClasses = (severity: AlertDefinition['severity']) => {
+    switch (severity) {
+      case 'Yüksek': return 'bg-red-500 hover:bg-red-600';
+      case 'Orta': return 'bg-yellow-500 hover:bg-yellow-600 text-black';
+      case 'Düşük': return 'bg-blue-500 hover:bg-blue-600';
+      default: return 'bg-gray-500 hover:bg-gray-600';
+    }
   };
 
 
@@ -31,26 +59,40 @@ export default async function AlertsPage() {
       
       <Card>
         <CardHeader>
-          <CardTitle suppressHydrationWarning>Aktif Uyarılar</CardTitle>
-          <CardDescription suppressHydrationWarning>Envanter seviyeleri ve öğe durumları hakkındaki önemli bildirimleri inceleyin.</CardDescription>
+          <CardTitle suppressHydrationWarning>Tanımlı ve Aktif Uyarı Kuralları</CardTitle>
+          <CardDescription suppressHydrationWarning>
+            Aşağıda sistemde tanımlanmış ve aktif olan uyarı kuralları listelenmektedir. 
+            Bu kurallar, belirli koşullar oluştuğunda (örn. düşük stok, hatalı durum) otomatik uyarılar üretir.
+            Gerçek zamanlı tetiklenen uyarılar için ayrı bir bildirim sistemi entegre edilebilir.
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          {alerts.length === 0 ? (
-            <p className="text-muted-foreground" suppressHydrationWarning>Aktif uyarı yok. Sistem nominal.</p>
+          {activeAlerts.length === 0 ? (
+            <p className="text-muted-foreground text-center py-8" suppressHydrationWarning>Aktif uyarı kuralı bulunmamaktadır veya tanımlı kurallar henüz bir uyarıyı tetiklememiştir.</p>
           ) : (
             <div className="space-y-4">
-              {alerts.map(alert => (
+              {activeAlerts.map(alert => (
                 <Card key={alert.id} className={`${getSeverityColor(alert.severity)}`}>
-                  <CardHeader className="pb-2">
+                  <CardHeader className="pb-2 flex flex-row items-center justify-between">
                     <CardTitle className={`text-lg ${getSeverityTextColor(alert.severity)} flex items-center gap-2`}>
                       <BellRing className="h-5 w-5"/>
-                      <span suppressHydrationWarning>{alert.severity} Öncelikli Uyarı</span>
+                      <span suppressHydrationWarning>{alert.name}</span>
                     </CardTitle>
+                    <Badge className={getSeverityBadgeClasses(alert.severity)}>{alert.severity}</Badge>
                   </CardHeader>
                   <CardContent>
-                    <p className={`${getSeverityTextColor(alert.severity)}`} suppressHydrationWarning>{alert.message}</p>
-                    <p className={`text-xs mt-1 ${getSeverityTextColor(alert.severity)} opacity-75`} suppressHydrationWarning>
-                      Kaydedildi: {new Date(alert.date).toLocaleString('tr-TR')}
+                    <p className={`${getSeverityTextColor(alert.severity)} mb-1`} suppressHydrationWarning>{alert.description || "Bu uyarı için ek açıklama yok."}</p>
+                    <p className="text-xs text-muted-foreground" suppressHydrationWarning>
+                        Koşul: {alert.conditionType} | Varlık: {alert.entityType}
+                        {alert.caliberFilter && ` | Kalibre: ${alert.caliberFilter}`}
+                        {alert.thresholdValue !== undefined && ` | Eşik: ${alert.thresholdValue}`}
+                        {alert.statusFilter && ` | Durum: ${alert.statusFilter}`}
+                    </p>
+                     <p className={`text-xs mt-1 ${getSeverityTextColor(alert.severity)} opacity-75`} suppressHydrationWarning>
+                      Kural Son Güncelleme: {new Date(alert.lastUpdated).toLocaleString('tr-TR')}
+                    </p>
+                    <p className="text-sm mt-2 p-2 bg-background/50 rounded-md border border-dashed" suppressHydrationWarning>
+                      <span className="font-semibold">Mesaj Şablonu:</span> {alert.messageTemplate}
                     </p>
                   </CardContent>
                 </Card>
