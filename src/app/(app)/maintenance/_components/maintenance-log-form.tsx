@@ -26,7 +26,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
-import type { Firearm, Magazine, MaintenanceItemStatus } from "@/types/inventory";
+import type { Firearm, Magazine, MaintenanceItemStatus, FirearmDefinition } from "@/types/inventory";
 import { firearmStatuses } from "@/app/(app)/inventory/firearms/_components/firearm-form-schema";
 import { magazineStatuses } from "@/app/(app)/inventory/magazines/_components/magazine-form-schema";
 import { useEffect, useState } from "react";
@@ -34,67 +34,90 @@ import { useEffect, useState } from "react";
 interface MaintenanceLogFormProps {
   firearms: Firearm[];
   magazines: Magazine[];
+  firearmDefinitions: FirearmDefinition[];
 }
 
-export function MaintenanceLogForm({ firearms, magazines }: MaintenanceLogFormProps) {
+export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: MaintenanceLogFormProps) {
   const { toast } = useToast();
   const router = useRouter();
   const [selectedItemType, setSelectedItemType] = useState<'firearm' | 'magazine' | undefined>(undefined);
   const [availableItems, setAvailableItems] = useState<(Firearm | Magazine)[]>([]);
   const [currentStatuses, setCurrentStatuses] = useState<readonly string[]>([]);
+  const [selectedFirearmDefId, setSelectedFirearmDefId] = useState<string | undefined>(undefined);
+  const [filteredFirearms, setFilteredFirearms] = useState<Firearm[]>([]);
 
 
   const defaultValues: Partial<MaintenanceLogFormValues> = {
-    itemId: undefined, 
+    itemId: undefined,
     itemType: undefined,
     date: format(new Date(), 'yyyy-MM-dd'),
     description: "",
-    statusChangeFrom: "", 
+    statusChangeFrom: "",
     statusChangeTo: undefined,
     technician: "",
     partsUsed: "",
   };
-  
+
   const form = useForm<MaintenanceLogFormValues>({
     resolver: zodResolver(maintenanceLogFormSchema),
     defaultValues,
     mode: "onChange",
   });
 
-  const selectedItemId = form.watch("itemId");
+  const watchedItemType = form.watch("itemType");
+  const watchedItemId = form.watch("itemId");
+  const watchedFirearmDefIdForFilter = form.watch("selectedFirearmDefIdForFilter"); // Temporary field in form state
 
   useEffect(() => {
-    if (selectedItemType === 'firearm') {
-      setAvailableItems(firearms);
+    setSelectedItemType(watchedItemType);
+    form.resetField("itemId");
+    form.setValue("statusChangeFrom", "");
+    form.resetField("statusChangeTo");
+    setSelectedFirearmDefId(undefined); // Reset firearm definition filter
+    setFilteredFirearms([]);
+
+    if (watchedItemType === 'firearm') {
       setCurrentStatuses(firearmStatuses);
-    } else if (selectedItemType === 'magazine') {
-      setAvailableItems(magazines);
+    } else if (watchedItemType === 'magazine') {
+      setAvailableItems(magazines); // For magazines, list all directly
       setCurrentStatuses(magazineStatuses);
     } else {
       setAvailableItems([]);
       setCurrentStatuses([]);
     }
-    form.resetField("itemId");
-    form.setValue("statusChangeFrom", ""); 
-    form.resetField("statusChangeTo");
+  }, [watchedItemType, firearms, magazines, form]);
+  
+  useEffect(() => {
+    if (watchedItemType === 'firearm' && watchedFirearmDefIdForFilter) {
+      setFilteredFirearms(firearms.filter(f => f.definitionId === watchedFirearmDefIdForFilter));
+      form.resetField("itemId"); // Reset item when definition changes
+    } else if (watchedItemType === 'firearm') {
+      setFilteredFirearms([]); // No definition selected, so no firearms to show for item selection
+    }
+  }, [watchedItemType, watchedFirearmDefIdForFilter, firearms, form]);
 
-  }, [selectedItemType, firearms, magazines, form]);
 
   useEffect(() => {
-    if (selectedItemId) {
-      const item = availableItems.find(i => i.id === selectedItemId);
+    if (watchedItemId) {
+      let item: Firearm | Magazine | undefined;
+      if (selectedItemType === 'firearm') {
+        item = filteredFirearms.find(i => i.id === watchedItemId);
+      } else if (selectedItemType === 'magazine') {
+        item = magazines.find(i => i.id === watchedItemId);
+      }
+      
       if (item) {
         form.setValue("statusChangeFrom", item.status as MaintenanceItemStatus);
-        form.setValue("itemType", item.itemType as 'firearm' | 'magazine');
+        form.setValue("itemType", item.itemType as 'firearm' | 'magazine'); // ensure itemType is set
       }
     } else {
       form.setValue("statusChangeFrom", "");
     }
-  }, [selectedItemId, availableItems, form]);
+  }, [watchedItemId, selectedItemType, filteredFirearms, magazines, form]);
 
 
   async function onSubmit(data: MaintenanceLogFormValues) {
-    if (!data.itemType || !data.itemId) { 
+    if (!data.itemType || !data.itemId) {
         toast({ variant: "destructive", title: "Hata", description: "Lütfen bir öğe türü ve öğe seçin." });
         return;
     }
@@ -108,71 +131,106 @@ export function MaintenanceLogForm({ firearms, magazines }: MaintenanceLogFormPr
         partsUsed: data.partsUsed,
       });
       toast({ variant: "success", title: "Başarılı", description: "Bakım kaydı başarıyla eklendi." });
-      router.push(`/inventory/${data.itemType === 'firearm' ? 'firearms' : 'magazines'}/${data.itemId}`); 
-      router.refresh(); 
+      router.push(`/inventory/${data.itemType === 'firearm' ? 'firearms' : 'magazines'}/${data.itemId}`);
+      router.refresh();
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Hata", description: error.message || "Bakım kaydı eklenirken hata oluştu." });
-      console.error("Form gönderme hatası:", error);
+      if (error.message.startsWith('Bakım kaydı için geçersiz veri') ||
+        error.message.includes('bulunamadı') ||
+        error.message.startsWith('Geçersiz öğe türü')) throw error;
+      await logAction({ actionType: "LOG_MAINTENANCE", entityType: "MaintenanceLog", entityId: data.itemId, status: "FAILURE", details: data, errorMessage: error.message });
+      throw error;
     }
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <FormField
-              control={form.control}
-              name="itemType"
-              render={({ field }) => (
-                <FormItem>
-                    <FormLabel><span suppressHydrationWarning>Öğe Türü</span></FormLabel>
-                    <Select 
-                      onValueChange={(value: 'firearm' | 'magazine' | undefined) => {
-                        field.onChange(value);
-                        setSelectedItemType(value);
-                      }} 
-                      value={field.value}
-                    >
-                        <FormControl>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Bakım yapılacak öğe türünü seçin" />
-                            </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                            <SelectItem value="firearm"><span suppressHydrationWarning>Silah</span></SelectItem>
-                            <SelectItem value="magazine"><span suppressHydrationWarning>Şarjör</span></SelectItem>
-                        </SelectContent>
-                    </Select>
-                    <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-                control={form.control}
-                name="itemId"
-                render={({ field }) => (
-                <FormItem>
-                    <FormLabel><span suppressHydrationWarning>Bakım Yapılacak Öğe</span></FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value} disabled={!selectedItemType}>
+        <FormField
+          control={form.control}
+          name="itemType"
+          render={({ field }) => (
+            <FormItem>
+                <FormLabel><span suppressHydrationWarning>Öğe Türü</span></FormLabel>
+                <Select
+                  onValueChange={(value: 'firearm' | 'magazine' | undefined) => {
+                    field.onChange(value);
+                    // setSelectedItemType(value); // This is handled by watchedItemType useEffect
+                  }}
+                  value={field.value}
+                >
                     <FormControl>
                         <SelectTrigger>
-                        <SelectValue placeholder="Önce tür seçin, sonra öğeyi seçin" />
+                            <SelectValue placeholder="Bakım yapılacak öğe türünü seçin" />
                         </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                        {availableItems.map(item => (
-                        <SelectItem key={item.id} value={item.id}>
-                            <span suppressHydrationWarning>{selectedItemType === 'firearm' ? `${(item as Firearm).name} (SN: ${(item as Firearm).serialNumber})` : `${(item as Magazine).name} (ID: ${item.id.substring(0,6)})`}</span>
-                        </SelectItem>
-                        ))}
+                        <SelectItem value="firearm"><span suppressHydrationWarning>Silah</span></SelectItem>
+                        <SelectItem value="magazine"><span suppressHydrationWarning>Şarjör</span></SelectItem>
                     </SelectContent>
-                    </Select>
-                    <FormMessage />
-                </FormItem>
-                )}
-            />
-        </div>
+                </Select>
+                <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {watchedItemType === 'firearm' && (
+           <FormField
+            control={form.control}
+            name="selectedFirearmDefIdForFilter" // Use a temporary form field for this filter
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel><span suppressHydrationWarning>Silah Türü Seçin</span></FormLabel>
+                <Select onValueChange={field.onChange} value={field.value || ""}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Önce silah türünü seçin" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="" disabled><span suppressHydrationWarning>Bir silah türü seçin...</span></SelectItem>
+                    {firearmDefinitions.map(def => (
+                      <SelectItem key={def.id} value={def.id}>
+                        <span suppressHydrationWarning>{def.name} ({def.model})</span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+
+        <FormField
+            control={form.control}
+            name="itemId"
+            render={({ field }) => (
+            <FormItem>
+                <FormLabel><span suppressHydrationWarning>Bakım Yapılacak Öğe</span></FormLabel>
+                <Select onValueChange={field.onChange} value={field.value || ""} disabled={!watchedItemType || (watchedItemType === 'firearm' && !watchedFirearmDefIdForFilter)}>
+                <FormControl>
+                    <SelectTrigger>
+                    <SelectValue placeholder={
+                        !watchedItemType ? "Önce öğe türü seçin" : 
+                        (watchedItemType === 'firearm' && !watchedFirearmDefIdForFilter) ? "Önce silah türü seçin" :
+                        "Öğeyi seçin"
+                    } />
+                    </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                     <SelectItem value="" disabled><span suppressHydrationWarning>Bir öğe seçin...</span></SelectItem>
+                    {(watchedItemType === 'firearm' ? filteredFirearms : magazines).map(item => (
+                    <SelectItem key={item.id} value={item.id}>
+                        <span suppressHydrationWarning>{watchedItemType === 'firearm' ? `${(item as Firearm).name} (SN: ${(item as Firearm).serialNumber})` : `${(item as Magazine).name} (ID: ${item.id.substring(0,6)})`}</span>
+                    </SelectItem>
+                    ))}
+                </SelectContent>
+                </Select>
+                <FormMessage />
+            </FormItem>
+            )}
+        />
+
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormField
@@ -214,13 +272,13 @@ export function MaintenanceLogForm({ firearms, magazines }: MaintenanceLogFormPr
                 render={({ field }) => (
                 <FormItem>
                     <FormLabel><span suppressHydrationWarning>Teknisyen (İsteğe Bağlı)</span></FormLabel>
-                    <FormControl><Input placeholder="örn. İlyas Usta" {...field} /></FormControl>
+                    <FormControl><Input placeholder="örn. İlyas Usta" {...field} value={field.value || ''} /></FormControl>
                     <FormMessage />
                 </FormItem>
                 )}
             />
         </div>
-        
+
         <FormField
           control={form.control}
           name="description"
@@ -256,7 +314,7 @@ export function MaintenanceLogForm({ firearms, magazines }: MaintenanceLogFormPr
                 render={({ field }) => (
                 <FormItem>
                     <FormLabel><span suppressHydrationWarning>Yeni Durum</span></FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value} disabled={!selectedItemId}>
+                    <Select onValueChange={field.onChange} value={field.value} disabled={!watchedItemId}>
                     <FormControl>
                         <SelectTrigger>
                             <SelectValue placeholder="Yeni durumu seçin" />
@@ -281,13 +339,13 @@ export function MaintenanceLogForm({ firearms, magazines }: MaintenanceLogFormPr
                 <FormItem>
                 <FormLabel><span suppressHydrationWarning>Kullanılan Parçalar (İsteğe Bağlı)</span></FormLabel>
                 <FormControl>
-                    <Textarea placeholder="Kullanılan parçaları listeleyin..." className="resize-none" {...field} />
+                    <Textarea placeholder="Kullanılan parçaları listeleyin..." className="resize-none" {...field} value={field.value || ''} />
                 </FormControl>
                 <FormMessage />
                 </FormItem>
             )}
         />
-        
+
         <Button type="submit" disabled={form.formState.isSubmitting || !form.formState.isValid}>
           {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {form.formState.isSubmitting ? <span suppressHydrationWarning>Kaydediliyor...</span> : <span suppressHydrationWarning>Bakım Kaydı Ekle</span>}

@@ -3,11 +3,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { MaintenanceLogForm } from "../_components/maintenance-log-form";
 import { Wrench, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { getFirearms, getMagazines } from "@/lib/actions/inventory.actions";
+import { getFirearms, getMagazines, getFirearmDefinitions } from "@/lib/actions/inventory.actions";
 
 export default async function NewMaintenanceLogPage() {
   const firearms = await getFirearms();
   const magazines = await getMagazines();
+  const firearmDefinitions = await getFirearmDefinitions();
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -22,10 +23,10 @@ export default async function NewMaintenanceLogPage() {
       <Card>
         <CardHeader>
           <CardTitle suppressHydrationWarning>Bakım Detayları</CardTitle>
-          <CardDescription suppressHydrationWarning>Bir envanter öğesi (Silah veya Şarjör) için yeni bakım kaydı bilgilerini girin.</CardDescription>
+          <CardDescription suppressHydrationWarning>Bir envanter öğesi için yeni bakım kaydı bilgilerini girin.</CardDescription>
         </CardHeader>
         <CardContent>
-          <MaintenanceLogForm firearms={firearms} magazines={magazines} />
+          <MaintenanceLogForm firearms={firearms} magazines={magazines} firearmDefinitions={firearmDefinitions} />
         </CardContent>
       </Card>
     </div>

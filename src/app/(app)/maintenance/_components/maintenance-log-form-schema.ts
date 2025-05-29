@@ -10,18 +10,19 @@ export const maintenanceLogFormSchema = z.object({
   itemType: z.enum(["firearm", "magazine"], {
     errorMap: () => ({ message: "Geçerli bir öğe türü seçin." }),
   }),
+  selectedFirearmDefIdForFilter: z.string().optional(), // Temporary field for UI logic, not part of final data
   date: z.string().refine(val => !isNaN(Date.parse(val)), {
     message: "Geçerli bir tarih giriniz.",
   }),
   description: z.string().min(5, { message: "Açıklama en az 5 karakter olmalıdır." }).max(1000),
-  statusChangeFrom: z.enum(allStatuses, { 
+  statusChangeFrom: z.enum(allStatuses, {
     errorMap: () => ({ message: "Geçerli bir önceki durum seçin." }),
-  }),
+  }).or(z.literal("")), // Allow empty string initially
   statusChangeTo: z.enum(allStatuses, {
     errorMap: () => ({ message: "Geçerli bir yeni durum seçin." }),
   }),
   technician: z.string().max(100).optional(),
-  partsUsed: z.string().max(500).optional(), 
+  partsUsed: z.string().max(500).optional(),
 });
 
 export type MaintenanceLogFormValues = z.infer<typeof maintenanceLogFormSchema>;
