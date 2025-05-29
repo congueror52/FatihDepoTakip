@@ -15,7 +15,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import type { FirearmDefinition } from "@/types/inventory";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import type { FirearmDefinition, SupportedCaliber } from "@/types/inventory";
+import { SUPPORTED_CALIBERS } from "@/types/inventory";
 import { firearmDefinitionFormSchema, type FirearmDefinitionFormValues } from "./firearm-definition-form-schema";
 import { addFirearmDefinitionAction, updateFirearmDefinitionAction } from "@/lib/actions/inventory.actions";
 import { useToast } from "@/hooks/use-toast";
@@ -36,7 +38,7 @@ export function FirearmDefinitionForm({ definition }: FirearmDefinitionFormProps
     name: "",
     model: "",
     manufacturer: "",
-    caliber: "",
+    caliber: SUPPORTED_CALIBERS[0], // Default to first supported caliber
     description: "",
   };
   
@@ -57,8 +59,8 @@ export function FirearmDefinitionForm({ definition }: FirearmDefinitionFormProps
       }
       router.push("/admin/firearms-definitions");
       router.refresh(); 
-    } catch (error) {
-      toast({ variant: "destructive", title: "Hata", description: `Silah tanımı ${definition ? 'güncellenirken' : 'eklenirken'} hata oluştu.` });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Hata", description: error.message || `Silah tanımı ${definition ? 'güncellenirken' : 'eklenirken'} hata oluştu.` });
       console.error("Form gönderme hatası:", error);
     }
   }
@@ -113,9 +115,18 @@ export function FirearmDefinitionForm({ definition }: FirearmDefinitionFormProps
             render={({ field }) => (
               <FormItem>
                 <FormLabel><span suppressHydrationWarning>Kalibre</span></FormLabel>
-                <FormControl>
-                  <Input placeholder="örn. 7.62x51mm, 9x19mm" {...field} />
-                </FormControl>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Bir kalibre seçin" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {SUPPORTED_CALIBERS.map(cal => (
+                      <SelectItem key={cal} value={cal}><span suppressHydrationWarning>{cal}</span></SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}

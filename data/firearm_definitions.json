@@ -1,3 +1,4 @@
+
 [
   {
     "id": "fd_1",
@@ -10,10 +11,10 @@
   },
   {
     "id": "fd_3",
-    "name": "AK-47 ",
+    "name": "AK-47",
     "model": "AK47",
     "manufacturer": "BELLİ DEĞİL",
-    "caliber": "7.62X39",
+    "caliber": "7.62x39mm",
     "description": "",
     "lastUpdated": "2025-05-28T11:19:21.550Z"
   },
@@ -21,7 +22,7 @@
     "name": "MPT-76",
     "model": "MPT-76",
     "manufacturer": "Sarsılmaz",
-    "caliber": "7.62X51",
+    "caliber": "7.62x51mm",
     "description": "",
     "id": "03b7b801-1e09-410a-a3e7-1e827415548d",
     "lastUpdated": "2025-05-28T12:22:43.540Z"
@@ -30,7 +31,7 @@
     "name": "MP5",
     "model": "MP5 MAKİNALI TABANCA",
     "manufacturer": "MKE",
-    "caliber": "9X19",
+    "caliber": "9x19mm",
     "description": "",
     "id": "f6f5ab56-1f73-4a4a-88ce-1e000446ca39",
     "lastUpdated": "2025-05-29T15:44:40.751Z"
