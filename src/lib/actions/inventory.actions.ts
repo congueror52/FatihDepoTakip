@@ -2,9 +2,10 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { unstable_noStore as noStore } from 'next/cache'; // Eklendi
+import { unstable_noStore as noStore } from 'next/cache'; 
 import type { Firearm, Magazine, Ammunition, Shipment, ShipmentItem, AmmunitionUsageLog, FirearmDefinition, AmmunitionDailyUsageLog, UsageScenario, ScenarioCaliberConsumption, SupportedCaliber, MagazineStatus, AmmunitionStatus, Depot, MaintenanceLog, MaintenanceItemStatus, FirearmStatus, InventoryItemType, ShipmentTypeDefinition, DepotInventorySnapshot, HistoricalUsageSnapshot, UpcomingRequirementsSnapshot } from '@/types/inventory';
 import { readData, writeData, generateId } from '@/lib/data-utils';
+import { logAction } from '@/lib/log-service'; // Import logAction
 import { firearmFormSchema } from '@/app/(app)/inventory/firearms/_components/firearm-form-schema';
 import { firearmDefinitionFormSchema } from '@/app/(app)/admin/firearms-definitions/_components/firearm-definition-form-schema';
 import { ammunitionDailyUsageFormSchema } from '@/app/(app)/daily-ammo-usage/_components/usage-log-form-schema';
@@ -30,62 +31,88 @@ export async function getFirearmDefinitionById(id: string): Promise<FirearmDefin
 }
 
 export async function addFirearmDefinitionAction(data: Omit<FirearmDefinition, 'id' | 'lastUpdated'>) {
-  const validatedData = firearmDefinitionFormSchema.safeParse(data);
-  if (!validatedData.success) {
-    throw new Error('Geçersiz silah tanımı verisi: ' + JSON.stringify(validatedData.error.format()));
-  }
+  try {
+    const validatedData = firearmDefinitionFormSchema.safeParse(data);
+    if (!validatedData.success) {
+      const errorMsg = 'Geçersiz silah tanımı verisi: ' + JSON.stringify(validatedData.error.format());
+      await logAction({ actionType: "CREATE", entityType: "FirearmDefinition", status: "FAILURE", details: data, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
 
-  const definitions = await getFirearmDefinitions();
-  const newDefinition: FirearmDefinition = {
-    ...validatedData.data,
-    id: await generateId(),
-    lastUpdated: new Date().toISOString(),
-  };
-  definitions.push(newDefinition);
-  await writeData('firearm_definitions.json', definitions);
-  revalidatePath('/admin/firearms-definitions');
-  revalidatePath('/admin/firearms-definitions', 'layout');
-  revalidatePath('/dashboard');
-  return newDefinition;
+    const definitions = await getFirearmDefinitions();
+    const newDefinition: FirearmDefinition = {
+      ...validatedData.data,
+      id: await generateId(),
+      lastUpdated: new Date().toISOString(),
+    };
+    definitions.push(newDefinition);
+    await writeData('firearm_definitions.json', definitions);
+    await logAction({ actionType: "CREATE", entityType: "FirearmDefinition", entityId: newDefinition.id, status: "SUCCESS", details: newDefinition });
+    
+    revalidatePath('/admin/firearms-definitions');
+    revalidatePath('/admin/firearms-definitions', 'layout');
+    revalidatePath('/dashboard');
+    return newDefinition;
+  } catch (error: any) {
+    if (error.message.startsWith('Geçersiz silah tanımı verisi')) throw error; // Already logged
+    await logAction({ actionType: "CREATE", entityType: "FirearmDefinition", status: "FAILURE", details: data, errorMessage: error.message });
+    throw error;
+  }
 }
 
 export async function updateFirearmDefinitionAction(definition: FirearmDefinition) {
-  const validatedData = firearmDefinitionFormSchema.safeParse(definition);
-   if (!validatedData.success) {
-    console.error("Doğrulama hataları:", validatedData.error.format());
-    throw new Error('Güncelleme için geçersiz silah tanımı verisi.');
+  try {
+    const validatedData = firearmDefinitionFormSchema.safeParse(definition);
+    if (!validatedData.success) {
+      const errorMsg = 'Güncelleme için geçersiz silah tanımı verisi: ' + JSON.stringify(validatedData.error.format());
+      await logAction({ actionType: "UPDATE", entityType: "FirearmDefinition", entityId: definition.id, status: "FAILURE", details: definition, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
+
+    let definitions = await getFirearmDefinitions();
+    const index = definitions.findIndex(d => d.id === definition.id);
+    if (index === -1) {
+      const errorMsg = 'Güncellenecek silah tanımı bulunamadı.';
+      await logAction({ actionType: "UPDATE", entityType: "FirearmDefinition", entityId: definition.id, status: "FAILURE", details: definition, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
+
+    const updatedDefinition = {
+      ...definitions[index],
+      ...validatedData.data,
+      lastUpdated: new Date().toISOString(),
+    };
+
+    definitions[index] = updatedDefinition;
+    await writeData('firearm_definitions.json', definitions);
+    await logAction({ actionType: "UPDATE", entityType: "FirearmDefinition", entityId: updatedDefinition.id, status: "SUCCESS", details: updatedDefinition });
+
+    revalidatePath('/admin/firearms-definitions');
+    revalidatePath(`/admin/firearms-definitions/${definition.id}/edit`);
+    revalidatePath('/admin/firearms-definitions', 'layout');
+    revalidatePath('/dashboard');
+    return updatedDefinition;
+  } catch (error: any) {
+     if (error.message.startsWith('Güncelleme için geçersiz silah tanımı verisi') || error.message.startsWith('Güncellenecek silah tanımı bulunamadı')) throw error; // Already logged
+    await logAction({ actionType: "UPDATE", entityType: "FirearmDefinition", entityId: definition.id, status: "FAILURE", details: definition, errorMessage: error.message });
+    throw error;
   }
-
-  let definitions = await getFirearmDefinitions();
-  const index = definitions.findIndex(d => d.id === definition.id);
-  if (index === -1) {
-    throw new Error('Güncellenecek silah tanımı bulunamadı.');
-  }
-
-  const updatedDefinition = {
-    ...definitions[index],
-    ...validatedData.data,
-    lastUpdated: new Date().toISOString(),
-  };
-
-  definitions[index] = updatedDefinition;
-  await writeData('firearm_definitions.json', definitions);
-  revalidatePath('/admin/firearms-definitions');
-  revalidatePath(`/admin/firearms-definitions/${definition.id}/edit`);
-  revalidatePath('/admin/firearms-definitions', 'layout');
-  revalidatePath('/dashboard');
-  return updatedDefinition;
 }
 
 export async function deleteFirearmDefinitionAction(id: string): Promise<void> {
-  let definitions = await getFirearmDefinitions();
-  // TODO: Check if any firearm instance uses this definition before deleting.
-  // For now, direct deletion.
-  definitions = definitions.filter(d => d.id !== id);
-  await writeData('firearm_definitions.json', definitions);
-  revalidatePath('/admin/firearms-definitions');
-  revalidatePath('/admin/firearms-definitions', 'layout');
-  revalidatePath('/dashboard');
+  try {
+    let definitions = await getFirearmDefinitions();
+    definitions = definitions.filter(d => d.id !== id);
+    await writeData('firearm_definitions.json', definitions);
+    await logAction({ actionType: "DELETE", entityType: "FirearmDefinition", entityId: id, status: "SUCCESS" });
+    
+    revalidatePath('/admin/firearms-definitions');
+    revalidatePath('/admin/firearms-definitions', 'layout');
+    revalidatePath('/dashboard');
+  } catch (error: any) {
+    await logAction({ actionType: "DELETE", entityType: "FirearmDefinition", entityId: id, status: "FAILURE", errorMessage: error.message });
+    throw error;
+  }
 }
 
 
@@ -102,89 +129,119 @@ export async function getFirearmById(id: string): Promise<Firearm | undefined> {
 }
 
 export async function addFirearmAction(data: Omit<Firearm, 'id' | 'lastUpdated' | 'itemType' | 'maintenanceHistory' | 'name' | 'model' | 'manufacturer' | 'caliber'> & { definitionId: string }) {
-  const validatedData = firearmFormSchema.safeParse(data);
-  if (!validatedData.success) {
-    throw new Error('Geçersiz silah verisi: ' + JSON.stringify(validatedData.error.format()));
-  }
+  try {
+    const validatedData = firearmFormSchema.safeParse(data);
+    if (!validatedData.success) {
+      const errorMsg = 'Geçersiz silah verisi: ' + JSON.stringify(validatedData.error.format());
+      await logAction({ actionType: "CREATE", entityType: "Firearm", status: "FAILURE", details: data, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
 
-  const definition = await getFirearmDefinitionById(validatedData.data.definitionId);
-  if (!definition) {
-    throw new Error('Geçersiz silah tanım IDsi.');
-  }
+    const definition = await getFirearmDefinitionById(validatedData.data.definitionId);
+    if (!definition) {
+      const errorMsg = 'Geçersiz silah tanım IDsi.';
+      await logAction({ actionType: "CREATE", entityType: "Firearm", status: "FAILURE", details: data, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
 
-  const firearms = await getFirearms();
-  const newFirearm: Firearm = {
-    ...validatedData.data,
-    id: await generateId(),
-    itemType: 'firearm',
-    name: definition.name,
-    model: definition.model,
-    manufacturer: definition.manufacturer,
-    caliber: definition.caliber,
-    lastUpdated: new Date().toISOString(),
-    maintenanceHistory: []
-  };
-  firearms.push(newFirearm);
-  await writeData('firearms.json', firearms);
-  revalidatePath('/inventory/firearms');
-  revalidatePath('/inventory/firearms', 'layout');
-  revalidatePath('/dashboard');
-  return newFirearm;
+    const firearms = await getFirearms();
+    const newFirearm: Firearm = {
+      ...validatedData.data,
+      id: await generateId(),
+      itemType: 'firearm',
+      name: definition.name,
+      model: definition.model,
+      manufacturer: definition.manufacturer,
+      caliber: definition.caliber,
+      lastUpdated: new Date().toISOString(),
+      maintenanceHistory: []
+    };
+    firearms.push(newFirearm);
+    await writeData('firearms.json', firearms);
+    await logAction({ actionType: "CREATE", entityType: "Firearm", entityId: newFirearm.id, status: "SUCCESS", details: newFirearm });
+    
+    revalidatePath('/inventory/firearms');
+    revalidatePath('/inventory/firearms', 'layout');
+    revalidatePath('/dashboard');
+    return newFirearm;
+  } catch (error: any) {
+    if (error.message.startsWith('Geçersiz silah verisi') || error.message.startsWith('Geçersiz silah tanım IDsi')) throw error;
+    await logAction({ actionType: "CREATE", entityType: "Firearm", status: "FAILURE", details: data, errorMessage: error.message });
+    throw error;
+  }
 }
 
 export async function updateFirearmAction(firearm: Firearm) {
-  const validatedData = firearmFormSchema.safeParse({
-    definitionId: firearm.definitionId,
-    serialNumber: firearm.serialNumber,
-    depotId: firearm.depotId,
-    status: firearm.status,
-    purchaseDate: firearm.purchaseDate,
-    notes: firearm.notes,
-    name: firearm.name,
-    model: firearm.model,
-    manufacturer: firearm.manufacturer,
-    caliber: firearm.caliber,
-  });
+  try {
+    const validatedData = firearmFormSchema.safeParse({
+      definitionId: firearm.definitionId,
+      serialNumber: firearm.serialNumber,
+      depotId: firearm.depotId,
+      status: firearm.status,
+      purchaseDate: firearm.purchaseDate,
+      notes: firearm.notes,
+      name: firearm.name,
+      model: firearm.model,
+      manufacturer: firearm.manufacturer,
+      caliber: firearm.caliber,
+    });
 
-  if (!validatedData.success) {
-    console.error("Doğrulama hataları:", validatedData.error.format());
-    throw new Error('Güncelleme için geçersiz silah verisi.');
+    if (!validatedData.success) {
+      const errorMsg = 'Güncelleme için geçersiz silah verisi: ' + JSON.stringify(validatedData.error.format());
+      await logAction({ actionType: "UPDATE", entityType: "Firearm", entityId: firearm.id, status: "FAILURE", details: firearm, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
+
+    let firearms = await getFirearms();
+    const index = firearms.findIndex(f => f.id === firearm.id);
+    if (index === -1) {
+      const errorMsg = 'Güncellenecek silah bulunamadı.';
+      await logAction({ actionType: "UPDATE", entityType: "Firearm", entityId: firearm.id, status: "FAILURE", details: firearm, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
+
+    const currentFirearm = firearms[index];
+    const updatedFirearm: Firearm = {
+      ...currentFirearm,
+      serialNumber: validatedData.data.serialNumber,
+      depotId: validatedData.data.depotId,
+      status: validatedData.data.status,
+      purchaseDate: validatedData.data.purchaseDate,
+      notes: validatedData.data.notes,
+      lastUpdated: new Date().toISOString(),
+    };
+
+    firearms[index] = updatedFirearm;
+    await writeData('firearms.json', firearms);
+    await logAction({ actionType: "UPDATE", entityType: "Firearm", entityId: updatedFirearm.id, status: "SUCCESS", details: updatedFirearm });
+
+    revalidatePath('/inventory/firearms');
+    revalidatePath(`/inventory/firearms/${firearm.id}`);
+    revalidatePath(`/inventory/firearms/${firearm.id}/edit`);
+    revalidatePath('/inventory/firearms', 'layout');
+    revalidatePath('/dashboard');
+    return updatedFirearm;
+  } catch (error: any) {
+    if (error.message.startsWith('Güncelleme için geçersiz silah verisi') || error.message.startsWith('Güncellenecek silah bulunamadı')) throw error;
+    await logAction({ actionType: "UPDATE", entityType: "Firearm", entityId: firearm.id, status: "FAILURE", details: firearm, errorMessage: error.message });
+    throw error;
   }
-
-  let firearms = await getFirearms();
-  const index = firearms.findIndex(f => f.id === firearm.id);
-  if (index === -1) {
-    throw new Error('Güncellenecek silah bulunamadı.');
-  }
-
-  const currentFirearm = firearms[index];
-  const updatedFirearm: Firearm = {
-    ...currentFirearm,
-    serialNumber: validatedData.data.serialNumber,
-    depotId: validatedData.data.depotId,
-    status: validatedData.data.status,
-    purchaseDate: validatedData.data.purchaseDate,
-    notes: validatedData.data.notes,
-    lastUpdated: new Date().toISOString(),
-  };
-
-  firearms[index] = updatedFirearm;
-  await writeData('firearms.json', firearms);
-  revalidatePath('/inventory/firearms');
-  revalidatePath(`/inventory/firearms/${firearm.id}`);
-  revalidatePath(`/inventory/firearms/${firearm.id}/edit`);
-  revalidatePath('/inventory/firearms', 'layout');
-  revalidatePath('/dashboard');
-  return updatedFirearm;
 }
 
 export async function deleteFirearmAction(id: string): Promise<void> {
-  let firearms = await getFirearms();
-  firearms = firearms.filter(f => f.id !== id);
-  await writeData('firearms.json', firearms);
-  revalidatePath('/inventory/firearms');
-  revalidatePath('/inventory/firearms', 'layout');
-  revalidatePath('/dashboard');
+  try {
+    let firearms = await getFirearms();
+    firearms = firearms.filter(f => f.id !== id);
+    await writeData('firearms.json', firearms);
+    await logAction({ actionType: "DELETE", entityType: "Firearm", entityId: id, status: "SUCCESS" });
+
+    revalidatePath('/inventory/firearms');
+    revalidatePath('/inventory/firearms', 'layout');
+    revalidatePath('/dashboard');
+  } catch (error: any) {
+    await logAction({ actionType: "DELETE", entityType: "Firearm", entityId: id, status: "FAILURE", errorMessage: error.message });
+    throw error;
+  }
 }
 
 // Magazines
@@ -200,77 +257,106 @@ export async function getMagazineById(id: string): Promise<Magazine | undefined>
 }
 
 export async function addMagazineAction(data: MagazineFormValues) {
-  const validatedData = magazineFormSchema.safeParse(data);
-  if (!validatedData.success) {
-    throw new Error('Geçersiz şarjör verisi: ' + JSON.stringify(validatedData.error.format()));
+  try {
+    const validatedData = magazineFormSchema.safeParse(data);
+    if (!validatedData.success) {
+      const errorMsg = 'Geçersiz şarjör verisi: ' + JSON.stringify(validatedData.error.format());
+      await logAction({ actionType: "CREATE", entityType: "Magazine", status: "FAILURE", details: data, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
+
+    const magazines = await getMagazines();
+    const quantity = validatedData.data.quantity || 1;
+    const addedMagazines: Magazine[] = [];
+
+    for (let i = 0; i < quantity; i++) {
+      const newMagazine: Magazine = {
+        name: validatedData.data.name,
+        caliber: validatedData.data.caliber,
+        capacity: validatedData.data.capacity,
+        depotId: validatedData.data.depotId,
+        status: validatedData.data.status,
+        manufacturer: validatedData.data.manufacturer,
+        purchaseDate: validatedData.data.purchaseDate,
+        notes: validatedData.data.notes,
+        compatibleFirearmDefinitionId: validatedData.data.compatibleFirearmDefinitionId,
+        serialNumber: quantity > 1 ? undefined : validatedData.data.serialNumber,
+        id: await generateId(),
+        itemType: 'magazine',
+        lastUpdated: new Date().toISOString(),
+        maintenanceHistory: [],
+      };
+      magazines.push(newMagazine);
+      addedMagazines.push(newMagazine);
+      await logAction({ actionType: "CREATE", entityType: "Magazine", entityId: newMagazine.id, status: "SUCCESS", details: newMagazine });
+    }
+
+    await writeData('magazines.json', magazines);
+    
+    revalidatePath('/inventory/magazines');
+    revalidatePath('/inventory/magazines', 'layout');
+    revalidatePath('/dashboard');
+    return addedMagazines.length > 0 ? addedMagazines[0] : undefined; // Returns the first one for single add scenarios
+  } catch (error: any) {
+     if (error.message.startsWith('Geçersiz şarjör verisi')) throw error;
+    await logAction({ actionType: "CREATE", entityType: "Magazine", status: "FAILURE", details: data, errorMessage: error.message });
+    throw error;
   }
-
-  const magazines = await getMagazines();
-  const quantity = validatedData.data.quantity || 1;
-  const addedMagazines: Magazine[] = [];
-
-  for (let i = 0; i < quantity; i++) {
-    const newMagazine: Magazine = {
-      name: validatedData.data.name,
-      caliber: validatedData.data.caliber,
-      capacity: validatedData.data.capacity,
-      depotId: validatedData.data.depotId,
-      status: validatedData.data.status,
-      manufacturer: validatedData.data.manufacturer,
-      purchaseDate: validatedData.data.purchaseDate,
-      notes: validatedData.data.notes,
-      compatibleFirearmDefinitionId: validatedData.data.compatibleFirearmDefinitionId,
-      serialNumber: quantity > 1 ? undefined : validatedData.data.serialNumber,
-      id: await generateId(),
-      itemType: 'magazine',
-      lastUpdated: new Date().toISOString(),
-      maintenanceHistory: [],
-    };
-    magazines.push(newMagazine);
-    addedMagazines.push(newMagazine);
-  }
-
-  await writeData('magazines.json', magazines);
-  revalidatePath('/inventory/magazines');
-  revalidatePath('/inventory/magazines', 'layout');
-  revalidatePath('/dashboard');
-  return addedMagazines.length > 0 ? addedMagazines[0] : undefined;
 }
 
 export async function updateMagazineAction(magazine: Magazine & { quantity?: number }) {
-   const { quantity, ...magazineDataToValidate } = magazine;
-   const validatedData = magazineFormSchema.omit({ quantity: true }).safeParse(magazineDataToValidate);
+  try {
+    const { quantity, ...magazineDataToValidate } = magazine;
+    const validatedData = magazineFormSchema.omit({ quantity: true }).safeParse(magazineDataToValidate);
 
-   if (!validatedData.success) {
-    throw new Error('Güncelleme için geçersiz şarjör verisi: ' + JSON.stringify(validatedData.error.format()));
+    if (!validatedData.success) {
+      const errorMsg = 'Güncelleme için geçersiz şarjör verisi: ' + JSON.stringify(validatedData.error.format());
+      await logAction({ actionType: "UPDATE", entityType: "Magazine", entityId: magazine.id, status: "FAILURE", details: magazine, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
+
+    let magazines = await getMagazines();
+    const index = magazines.findIndex(m => m.id === magazine.id);
+    if (index === -1) {
+      const errorMsg = 'Güncellenecek şarjör bulunamadı.';
+      await logAction({ actionType: "UPDATE", entityType: "Magazine", entityId: magazine.id, status: "FAILURE", details: magazine, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
+
+    magazines[index] = {
+      ...magazines[index],
+      ...validatedData.data,
+      lastUpdated: new Date().toISOString(),
+    };
+    await writeData('magazines.json', magazines);
+    await logAction({ actionType: "UPDATE", entityType: "Magazine", entityId: magazines[index].id, status: "SUCCESS", details: magazines[index] });
+
+    revalidatePath('/inventory/magazines');
+    revalidatePath(`/inventory/magazines/${magazine.id}/edit`);
+    revalidatePath('/inventory/magazines', 'layout');
+    revalidatePath('/dashboard');
+    return magazines[index];
+  } catch (error: any) {
+    if (error.message.startsWith('Güncelleme için geçersiz şarjör verisi') || error.message.startsWith('Güncellenecek şarjör bulunamadı')) throw error;
+    await logAction({ actionType: "UPDATE", entityType: "Magazine", entityId: magazine.id, status: "FAILURE", details: magazine, errorMessage: error.message });
+    throw error;
   }
-
-  let magazines = await getMagazines();
-  const index = magazines.findIndex(m => m.id === magazine.id);
-  if (index === -1) {
-    throw new Error('Güncellenecek şarjör bulunamadı.');
-  }
-
-  magazines[index] = {
-    ...magazines[index],
-    ...validatedData.data,
-    lastUpdated: new Date().toISOString(),
-  };
-  await writeData('magazines.json', magazines);
-  revalidatePath('/inventory/magazines');
-  revalidatePath(`/inventory/magazines/${magazine.id}/edit`);
-  revalidatePath('/inventory/magazines', 'layout');
-  revalidatePath('/dashboard');
-  return magazines[index];
 }
 
 export async function deleteMagazineAction(id: string): Promise<void> {
-  let magazines = await getMagazines();
-  magazines = magazines.filter(m => m.id !== id);
-  await writeData('magazines.json', magazines);
-  revalidatePath('/inventory/magazines');
-  revalidatePath('/inventory/magazines', 'layout');
-  revalidatePath('/dashboard');
+  try {
+    let magazines = await getMagazines();
+    magazines = magazines.filter(m => m.id !== id);
+    await writeData('magazines.json', magazines);
+    await logAction({ actionType: "DELETE", entityType: "Magazine", entityId: id, status: "SUCCESS" });
+    
+    revalidatePath('/inventory/magazines');
+    revalidatePath('/inventory/magazines', 'layout');
+    revalidatePath('/dashboard');
+  } catch (error: any) {
+    await logAction({ actionType: "DELETE", entityType: "Magazine", entityId: id, status: "FAILURE", errorMessage: error.message });
+    throw error;
+  }
 }
 
 
@@ -287,58 +373,87 @@ export async function getAmmunitionById(id: string): Promise<Ammunition | undefi
 }
 
 export async function addAmmunitionAction(data: Omit<Ammunition, 'id' | 'lastUpdated' | 'itemType'>) {
-  const validatedData = ammunitionFormSchema.safeParse(data);
-  if (!validatedData.success) {
-    throw new Error('Geçersiz mühimmat verisi: ' + JSON.stringify(validatedData.error.format()));
-  }
+  try {
+    const validatedData = ammunitionFormSchema.safeParse(data);
+    if (!validatedData.success) {
+      const errorMsg = 'Geçersiz mühimmat verisi: ' + JSON.stringify(validatedData.error.format());
+      await logAction({ actionType: "CREATE", entityType: "Ammunition", status: "FAILURE", details: data, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
 
-  const allAmmunition = await getAmmunition();
-  const newAmmunition: Ammunition = {
-    ...validatedData.data,
-    id: await generateId(),
-    itemType: 'ammunition',
-    lastUpdated: new Date().toISOString(),
-  };
-  allAmmunition.push(newAmmunition);
-  await writeData('ammunition.json', allAmmunition);
-  revalidatePath('/inventory/ammunition');
-  revalidatePath('/inventory/ammunition', 'layout');
-  revalidatePath('/dashboard');
-  return newAmmunition;
+    const allAmmunition = await getAmmunition();
+    const newAmmunition: Ammunition = {
+      ...validatedData.data,
+      id: await generateId(),
+      itemType: 'ammunition',
+      lastUpdated: new Date().toISOString(),
+    };
+    allAmmunition.push(newAmmunition);
+    await writeData('ammunition.json', allAmmunition);
+    await logAction({ actionType: "CREATE", entityType: "Ammunition", entityId: newAmmunition.id, status: "SUCCESS", details: newAmmunition });
+
+    revalidatePath('/inventory/ammunition');
+    revalidatePath('/inventory/ammunition', 'layout');
+    revalidatePath('/dashboard');
+    return newAmmunition;
+  } catch (error: any) {
+    if (error.message.startsWith('Geçersiz mühimmat verisi')) throw error;
+    await logAction({ actionType: "CREATE", entityType: "Ammunition", status: "FAILURE", details: data, errorMessage: error.message });
+    throw error;
+  }
 }
 
 export async function updateAmmunitionAction(ammunition: Ammunition) {
-  const validatedData = ammunitionFormSchema.safeParse(ammunition);
-  if (!validatedData.success) {
-    throw new Error('Güncelleme için geçersiz mühimmat verisi: ' + JSON.stringify(validatedData.error.format()));
-  }
+  try {
+    const validatedData = ammunitionFormSchema.safeParse(ammunition);
+    if (!validatedData.success) {
+      const errorMsg = 'Güncelleme için geçersiz mühimmat verisi: ' + JSON.stringify(validatedData.error.format());
+      await logAction({ actionType: "UPDATE", entityType: "Ammunition", entityId: ammunition.id, status: "FAILURE", details: ammunition, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
 
-  let allAmmunition = await getAmmunition();
-  const index = allAmmunition.findIndex(a => a.id === ammunition.id);
-  if (index === -1) {
-    throw new Error('Güncellenecek mühimmat bulunamadı.');
-  }
+    let allAmmunition = await getAmmunition();
+    const index = allAmmunition.findIndex(a => a.id === ammunition.id);
+    if (index === -1) {
+      const errorMsg = 'Güncellenecek mühimmat bulunamadı.';
+      await logAction({ actionType: "UPDATE", entityType: "Ammunition", entityId: ammunition.id, status: "FAILURE", details: ammunition, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
 
-  allAmmunition[index] = {
-     ...allAmmunition[index],
-    ...validatedData.data,
-    lastUpdated: new Date().toISOString(),
-  };
-  await writeData('ammunition.json', allAmmunition);
-  revalidatePath('/inventory/ammunition');
-  revalidatePath(`/inventory/ammunition/${ammunition.id}/edit`);
-  revalidatePath('/inventory/ammunition', 'layout');
-  revalidatePath('/dashboard');
-  return allAmmunition[index];
+    allAmmunition[index] = {
+      ...allAmmunition[index],
+      ...validatedData.data,
+      lastUpdated: new Date().toISOString(),
+    };
+    await writeData('ammunition.json', allAmmunition);
+    await logAction({ actionType: "UPDATE", entityType: "Ammunition", entityId: allAmmunition[index].id, status: "SUCCESS", details: allAmmunition[index] });
+
+    revalidatePath('/inventory/ammunition');
+    revalidatePath(`/inventory/ammunition/${ammunition.id}/edit`);
+    revalidatePath('/inventory/ammunition', 'layout');
+    revalidatePath('/dashboard');
+    return allAmmunition[index];
+  } catch (error: any) {
+    if (error.message.startsWith('Güncelleme için geçersiz mühimmat verisi') || error.message.startsWith('Güncellenecek mühimmat bulunamadı')) throw error;
+    await logAction({ actionType: "UPDATE", entityType: "Ammunition", entityId: ammunition.id, status: "FAILURE", details: ammunition, errorMessage: error.message });
+    throw error;
+  }
 }
 
 export async function deleteAmmunitionAction(id: string): Promise<void> {
-  let allAmmunition = await getAmmunition();
-  allAmmunition = allAmmunition.filter(a => a.id !== id);
-  await writeData('ammunition.json', allAmmunition);
-  revalidatePath('/inventory/ammunition');
-  revalidatePath('/inventory/ammunition', 'layout');
-  revalidatePath('/dashboard');
+  try {
+    let allAmmunition = await getAmmunition();
+    allAmmunition = allAmmunition.filter(a => a.id !== id);
+    await writeData('ammunition.json', allAmmunition);
+    await logAction({ actionType: "DELETE", entityType: "Ammunition", entityId: id, status: "SUCCESS" });
+
+    revalidatePath('/inventory/ammunition');
+    revalidatePath('/inventory/ammunition', 'layout');
+    revalidatePath('/dashboard');
+  } catch (error: any) {
+    await logAction({ actionType: "DELETE", entityType: "Ammunition", entityId: id, status: "FAILURE", errorMessage: error.message });
+    throw error;
+  }
 }
 
 
@@ -355,93 +470,144 @@ export async function getShipmentById(id: string): Promise<Shipment | undefined>
 }
 
 export async function addShipmentAction(data: Omit<Shipment, 'id' | 'lastUpdated'>): Promise<Shipment> {
-  const validatedData = shipmentFormSchema.safeParse(data);
-  if (!validatedData.success) {
-    console.error("Doğrulama hataları:", validatedData.error.format());
-    throw new Error('Geçersiz malzeme kaydı verisi.');
-  }
+  try {
+    const validatedData = shipmentFormSchema.safeParse(data);
+    if (!validatedData.success) {
+      const errorMsg = 'Geçersiz malzeme kaydı verisi: ' + JSON.stringify(validatedData.error.format());
+      await logAction({ actionType: "CREATE", entityType: "Shipment", status: "FAILURE", details: data, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
 
-  const shipmentTypeDef = await getShipmentTypeDefinitionById(validatedData.data.typeId);
-  if (!shipmentTypeDef) {
-    throw new Error("Geçersiz malzeme kayıt türü ID'si.");
-  }
+    const shipmentTypeDef = await getShipmentTypeDefinitionById(validatedData.data.typeId);
+    if (!shipmentTypeDef) {
+      const errorMsg = "Geçersiz malzeme kayıt türü ID'si.";
+      await logAction({ actionType: "CREATE", entityType: "Shipment", status: "FAILURE", details: data, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
+    // Depot validation
+    if (shipmentTypeDef.requiresSourceDepot && !validatedData.data.sourceDepotId) {
+        const errorMsg = `'${shipmentTypeDef.name}' türü için kaynak depo gereklidir.`;
+        await logAction({ actionType: "CREATE", entityType: "Shipment", status: "FAILURE", details: data, errorMessage: errorMsg });
+        throw new Error(errorMsg);
+    }
+    if (shipmentTypeDef.requiresDestinationDepot && !validatedData.data.destinationDepotId) {
+        const errorMsg = `'${shipmentTypeDef.name}' türü için hedef depo gereklidir.`;
+        await logAction({ actionType: "CREATE", entityType: "Shipment", status: "FAILURE", details: data, errorMessage: errorMsg });
+        throw new Error(errorMsg);
+    }
+    if (shipmentTypeDef.requiresSourceDepot && shipmentTypeDef.requiresDestinationDepot && validatedData.data.sourceDepotId === validatedData.data.destinationDepotId) {
+        const errorMsg = "Transfer işleminde kaynak ve hedef depo aynı olamaz.";
+        await logAction({ actionType: "CREATE", entityType: "Shipment", status: "FAILURE", details: data, errorMessage: errorMsg });
+        throw new Error(errorMsg);
+    }
 
-  if (shipmentTypeDef.requiresSourceDepot && !validatedData.data.sourceDepotId) {
-    throw new Error(`'${shipmentTypeDef.name}' türü için kaynak depo gereklidir.`);
-  }
-  if (shipmentTypeDef.requiresDestinationDepot && !validatedData.data.destinationDepotId) {
-    throw new Error(`'${shipmentTypeDef.name}' türü için hedef depo gereklidir.`);
-  }
-  if (shipmentTypeDef.requiresSourceDepot && shipmentTypeDef.requiresDestinationDepot && validatedData.data.sourceDepotId === validatedData.data.destinationDepotId) {
-    throw new Error("Transfer işleminde kaynak ve hedef depo aynı olamaz.");
-  }
+    const shipments = await getShipments();
+    const newShipment: Shipment = {
+      ...validatedData.data,
+      id: await generateId(),
+      lastUpdated: new Date().toISOString(),
+    };
+    shipments.push(newShipment);
+    await writeData('shipments.json', shipments);
+    await logAction({ actionType: "CREATE", entityType: "Shipment", entityId: newShipment.id, status: "SUCCESS", details: newShipment });
 
-
-  const shipments = await getShipments();
-  const newShipment: Shipment = {
-    ...validatedData.data,
-    id: await generateId(),
-    lastUpdated: new Date().toISOString(),
-  };
-  shipments.push(newShipment);
-  await writeData('shipments.json', shipments);
-  revalidatePath('/shipments');
-  revalidatePath('/shipments', 'layout');
-  revalidatePath('/inventory/firearms');
-  revalidatePath('/inventory/magazines');
-  revalidatePath('/inventory/ammunition');
-  revalidatePath('/dashboard');
-  return newShipment;
+    revalidatePath('/shipments');
+    revalidatePath('/shipments', 'layout');
+    revalidatePath('/inventory/firearms');
+    revalidatePath('/inventory/magazines');
+    revalidatePath('/inventory/ammunition');
+    revalidatePath('/dashboard');
+    return newShipment;
+  } catch (error: any) {
+    if (error.message.startsWith('Geçersiz malzeme kaydı verisi') || 
+        error.message.startsWith('Geçersiz malzeme kayıt türü ID\'si') ||
+        error.message.includes('kaynak depo gereklidir') ||
+        error.message.includes('hedef depo gereklidir') ||
+        error.message.includes('kaynak ve hedef depo aynı olamaz')) throw error;
+    await logAction({ actionType: "CREATE", entityType: "Shipment", status: "FAILURE", details: data, errorMessage: error.message });
+    throw error;
+  }
 }
 
 export async function updateShipmentAction(shipment: Shipment): Promise<Shipment> {
-  const validatedData = shipmentFormSchema.safeParse(shipment);
-  if (!validatedData.success) {
-    console.error("Doğrulama hataları:", validatedData.error.format());
-    throw new Error('Güncelleme için geçersiz malzeme kaydı verisi.');
-  }
+  try {
+    const validatedData = shipmentFormSchema.safeParse(shipment);
+    if (!validatedData.success) {
+      const errorMsg = 'Güncelleme için geçersiz malzeme kaydı verisi: ' + JSON.stringify(validatedData.error.format());
+      await logAction({ actionType: "UPDATE", entityType: "Shipment", entityId: shipment.id, status: "FAILURE", details: shipment, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
+    
+    const shipmentTypeDef = await getShipmentTypeDefinitionById(validatedData.data.typeId);
+    if (!shipmentTypeDef) {
+      const errorMsg = "Geçersiz malzeme kayıt türü ID'si.";
+      await logAction({ actionType: "UPDATE", entityType: "Shipment", entityId: shipment.id, status: "FAILURE", details: shipment, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
+    // Depot validation
+    if (shipmentTypeDef.requiresSourceDepot && !validatedData.data.sourceDepotId) {
+        const errorMsg = `'${shipmentTypeDef.name}' türü için kaynak depo gereklidir.`;
+        await logAction({ actionType: "UPDATE", entityType: "Shipment", entityId: shipment.id, status: "FAILURE", details: shipment, errorMessage: errorMsg });
+        throw new Error(errorMsg);
+    }
+    if (shipmentTypeDef.requiresDestinationDepot && !validatedData.data.destinationDepotId) {
+        const errorMsg = `'${shipmentTypeDef.name}' türü için hedef depo gereklidir.`;
+        await logAction({ actionType: "UPDATE", entityType: "Shipment", entityId: shipment.id, status: "FAILURE", details: shipment, errorMessage: errorMsg });
+        throw new Error(errorMsg);
+    }
+     if (shipmentTypeDef.requiresSourceDepot && shipmentTypeDef.requiresDestinationDepot && validatedData.data.sourceDepotId === validatedData.data.destinationDepotId) {
+        const errorMsg = "Transfer işleminde kaynak ve hedef depo aynı olamaz.";
+        await logAction({ actionType: "UPDATE", entityType: "Shipment", entityId: shipment.id, status: "FAILURE", details: shipment, errorMessage: errorMsg });
+        throw new Error(errorMsg);
+    }
 
-  const shipmentTypeDef = await getShipmentTypeDefinitionById(validatedData.data.typeId);
-  if (!shipmentTypeDef) {
-    throw new Error("Geçersiz malzeme kayıt türü ID'si.");
-  }
+    let shipments = await getShipments();
+    const index = shipments.findIndex(s => s.id === shipment.id);
+    if (index === -1) {
+      const errorMsg = 'Güncellenecek malzeme kaydı bulunamadı.';
+      await logAction({ actionType: "UPDATE", entityType: "Shipment", entityId: shipment.id, status: "FAILURE", details: shipment, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
 
-  if (shipmentTypeDef.requiresSourceDepot && !validatedData.data.sourceDepotId) {
-    throw new Error(`'${shipmentTypeDef.name}' türü için kaynak depo gereklidir.`);
-  }
-  if (shipmentTypeDef.requiresDestinationDepot && !validatedData.data.destinationDepotId) {
-    throw new Error(`'${shipmentTypeDef.name}' türü için hedef depo gereklidir.`);
-  }
-  if (shipmentTypeDef.requiresSourceDepot && shipmentTypeDef.requiresDestinationDepot && validatedData.data.sourceDepotId === validatedData.data.destinationDepotId) {
-    throw new Error("Transfer işleminde kaynak ve hedef depo aynı olamaz.");
-  }
+    shipments[index] = {
+      ...shipments[index],
+      ...validatedData.data,
+      lastUpdated: new Date().toISOString(),
+    };
+    await writeData('shipments.json', shipments);
+    await logAction({ actionType: "UPDATE", entityType: "Shipment", entityId: shipments[index].id, status: "SUCCESS", details: shipments[index] });
 
-  let shipments = await getShipments();
-  const index = shipments.findIndex(s => s.id === shipment.id);
-  if (index === -1) {
-    throw new Error('Güncellenecek malzeme kaydı bulunamadı.');
+    revalidatePath('/shipments');
+    revalidatePath(`/shipments/${shipment.id}/edit`);
+    revalidatePath('/shipments', 'layout');
+    revalidatePath('/dashboard');
+    return shipments[index];
+  } catch (error: any) {
+    if (error.message.startsWith('Güncelleme için geçersiz malzeme kaydı verisi') || 
+        error.message.startsWith('Geçersiz malzeme kayıt türü ID\'si') ||
+        error.message.startsWith('Güncellenecek malzeme kaydı bulunamadı') ||
+        error.message.includes('kaynak depo gereklidir') ||
+        error.message.includes('hedef depo gereklidir') ||
+        error.message.includes('kaynak ve hedef depo aynı olamaz')) throw error;
+    await logAction({ actionType: "UPDATE", entityType: "Shipment", entityId: shipment.id, status: "FAILURE", details: shipment, errorMessage: error.message });
+    throw error;
   }
-
-  shipments[index] = {
-    ...shipments[index],
-    ...validatedData.data,
-    lastUpdated: new Date().toISOString(),
-  };
-  await writeData('shipments.json', shipments);
-  revalidatePath('/shipments');
-  revalidatePath(`/shipments/${shipment.id}/edit`);
-  revalidatePath('/shipments', 'layout');
-  revalidatePath('/dashboard');
-  return shipments[index];
 }
 
 export async function deleteShipmentAction(id: string): Promise<void> {
-  let shipments = await getShipments();
-  shipments = shipments.filter(s => s.id !== id);
-  await writeData('shipments.json', shipments);
-  revalidatePath('/shipments');
-  revalidatePath('/shipments', 'layout');
-  revalidatePath('/dashboard');
+  try {
+    let shipments = await getShipments();
+    shipments = shipments.filter(s => s.id !== id);
+    await writeData('shipments.json', shipments);
+    await logAction({ actionType: "DELETE", entityType: "Shipment", entityId: id, status: "SUCCESS" });
+    
+    revalidatePath('/shipments');
+    revalidatePath('/shipments', 'layout');
+    revalidatePath('/dashboard');
+  } catch (error: any) {
+    await logAction({ actionType: "DELETE", entityType: "Shipment", entityId: id, status: "FAILURE", errorMessage: error.message });
+    throw error;
+  }
 }
 
 
@@ -451,24 +617,31 @@ export async function getAmmunitionUsageLogs(): Promise<AmmunitionUsageLog[]> {
   return readData<AmmunitionUsageLog>('ammunition_usage.json');
 }
 export async function logAmmunitionUsageAction(data: Omit<AmmunitionUsageLog, 'id'>): Promise<AmmunitionUsageLog> {
-  const logs = await getAmmunitionUsageLogs();
-  const newLog: AmmunitionUsageLog = {
-    ...data,
-    id: await generateId(),
-  };
-  logs.push(newLog);
-  await writeData('ammunition_usage.json', logs);
-  revalidatePath('/inventory/ammunition');
-  revalidatePath('/inventory/ammunition', 'layout');
-  revalidatePath('/dashboard');
-  revalidatePath('/daily-ammo-usage');
-  revalidatePath('/daily-ammo-usage', 'layout');
-  return newLog;
+  try {
+    const logs = await getAmmunitionUsageLogs();
+    const newLog: AmmunitionUsageLog = {
+      ...data,
+      id: await generateId(),
+    };
+    logs.push(newLog);
+    await writeData('ammunition_usage.json', logs);
+    await logAction({ actionType: "LOG_USAGE", entityType: "AmmunitionUsage", entityId: newLog.id, status: "SUCCESS", details: newLog });
+
+    revalidatePath('/inventory/ammunition');
+    revalidatePath('/inventory/ammunition', 'layout');
+    revalidatePath('/dashboard');
+    revalidatePath('/daily-ammo-usage');
+    revalidatePath('/daily-ammo-usage', 'layout');
+    return newLog;
+  } catch (error: any) {
+    await logAction({ actionType: "LOG_USAGE", entityType: "AmmunitionUsage", status: "FAILURE", details: data, errorMessage: error.message });
+    throw error;
+  }
 }
 
 // Ammunition Daily Usage Logs
 export async function getAmmunitionDailyUsageLogs(): Promise<AmmunitionDailyUsageLog[]> {
-  noStore(); // Önbelleğe almayı devre dışı bırak
+  noStore(); 
   const logs = await readData<AmmunitionDailyUsageLog>('ammunition_daily_usage.json');
   return logs.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
@@ -480,60 +653,87 @@ export async function getAmmunitionDailyUsageLogById(id: string): Promise<Ammuni
 }
 
 export async function addAmmunitionDailyUsageLogAction(data: Omit<AmmunitionDailyUsageLog, 'id'>) {
-  const validatedData = ammunitionDailyUsageFormSchema.safeParse(data);
-  if (!validatedData.success) {
-    console.error("Doğrulama hataları:", validatedData.error.format());
-    throw new Error('Geçersiz günlük fişek kullanımı verisi.');
-  }
+  try {
+    const validatedData = ammunitionDailyUsageFormSchema.safeParse(data);
+    if (!validatedData.success) {
+      const errorMsg = 'Geçersiz günlük fişek kullanımı verisi: ' + JSON.stringify(validatedData.error.format());
+      await logAction({ actionType: "CREATE", entityType: "DailyAmmunitionUsage", status: "FAILURE", details: data, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
 
-  const logs = await getAmmunitionDailyUsageLogs();
-  const newLog: AmmunitionDailyUsageLog = {
-    ...validatedData.data,
-    date: new Date(validatedData.data.date).toISOString(),
-    id: await generateId(),
-  };
-  logs.push(newLog);
-  await writeData('ammunition_daily_usage.json', logs);
-  revalidatePath('/daily-ammo-usage');
-  revalidatePath('/daily-ammo-usage', 'layout');
-  revalidatePath('/dashboard');
-  return newLog;
+    const logs = await getAmmunitionDailyUsageLogs();
+    const newLog: AmmunitionDailyUsageLog = {
+      ...validatedData.data,
+      date: new Date(validatedData.data.date).toISOString(),
+      id: await generateId(),
+    };
+    logs.push(newLog);
+    await writeData('ammunition_daily_usage.json', logs);
+    await logAction({ actionType: "CREATE", entityType: "DailyAmmunitionUsage", entityId: newLog.id, status: "SUCCESS", details: newLog });
+    
+    revalidatePath('/daily-ammo-usage');
+    revalidatePath('/daily-ammo-usage', 'layout');
+    revalidatePath('/dashboard');
+    return newLog;
+  } catch (error: any) {
+    if (error.message.startsWith('Geçersiz günlük fişek kullanımı verisi')) throw error;
+    await logAction({ actionType: "CREATE", entityType: "DailyAmmunitionUsage", status: "FAILURE", details: data, errorMessage: error.message });
+    throw error;
+  }
 }
 
 export async function updateAmmunitionDailyUsageLogAction(logToUpdate: AmmunitionDailyUsageLog) {
-  const validatedData = ammunitionDailyUsageFormSchema.safeParse(logToUpdate);
-  if (!validatedData.success) {
-    console.error("Doğrulama hataları:", validatedData.error.format());
-    throw new Error('Güncelleme için geçersiz günlük fişek kullanımı verisi.');
+  try {
+    const validatedData = ammunitionDailyUsageFormSchema.safeParse(logToUpdate);
+    if (!validatedData.success) {
+      const errorMsg = 'Güncelleme için geçersiz günlük fişek kullanımı verisi: ' + JSON.stringify(validatedData.error.format());
+      await logAction({ actionType: "UPDATE", entityType: "DailyAmmunitionUsage", entityId: logToUpdate.id, status: "FAILURE", details: logToUpdate, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
+
+    let logs = await getAmmunitionDailyUsageLogs();
+    const index = logs.findIndex(l => l.id === logToUpdate.id);
+    if (index === -1) {
+      const errorMsg = 'Güncellenecek günlük fişek kullanım kaydı bulunamadı.';
+      await logAction({ actionType: "UPDATE", entityType: "DailyAmmunitionUsage", entityId: logToUpdate.id, status: "FAILURE", details: logToUpdate, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
+
+    logs[index] = {
+      ...logs[index],
+      ...validatedData.data,
+      date: new Date(validatedData.data.date).toISOString(),
+    };
+
+    await writeData('ammunition_daily_usage.json', logs);
+    await logAction({ actionType: "UPDATE", entityType: "DailyAmmunitionUsage", entityId: logs[index].id, status: "SUCCESS", details: logs[index] });
+
+    revalidatePath('/daily-ammo-usage');
+    revalidatePath(`/daily-ammo-usage/${logToUpdate.id}/edit`);
+    revalidatePath('/daily-ammo-usage', 'layout');
+    revalidatePath('/dashboard');
+    return logs[index];
+  } catch (error: any) {
+    if (error.message.startsWith('Güncelleme için geçersiz günlük fişek kullanımı verisi') || error.message.startsWith('Güncellenecek günlük fişek kullanım kaydı bulunamadı')) throw error;
+    await logAction({ actionType: "UPDATE", entityType: "DailyAmmunitionUsage", entityId: logToUpdate.id, status: "FAILURE", details: logToUpdate, errorMessage: error.message });
+    throw error;
   }
-
-  let logs = await getAmmunitionDailyUsageLogs();
-  const index = logs.findIndex(l => l.id === logToUpdate.id);
-  if (index === -1) {
-    throw new Error('Güncellenecek günlük fişek kullanım kaydı bulunamadı.');
-  }
-
-  logs[index] = {
-    ...logs[index],
-    ...validatedData.data,
-    date: new Date(validatedData.data.date).toISOString(),
-  };
-
-  await writeData('ammunition_daily_usage.json', logs);
-  revalidatePath('/daily-ammo-usage');
-  revalidatePath(`/daily-ammo-usage/${logToUpdate.id}/edit`);
-  revalidatePath('/daily-ammo-usage', 'layout');
-  revalidatePath('/dashboard');
-  return logs[index];
 }
 
 export async function deleteAmmunitionDailyUsageLogAction(id: string): Promise<void> {
-  let logs = await getAmmunitionDailyUsageLogs();
-  logs = logs.filter(log => log.id !== id);
-  await writeData('ammunition_daily_usage.json', logs);
-  revalidatePath('/daily-ammo-usage');
-  revalidatePath('/daily-ammo-usage', 'layout');
-  revalidatePath('/dashboard');
+  try {
+    let logs = await getAmmunitionDailyUsageLogs();
+    logs = logs.filter(log => log.id !== id);
+    await writeData('ammunition_daily_usage.json', logs);
+    await logAction({ actionType: "DELETE", entityType: "DailyAmmunitionUsage", entityId: id, status: "SUCCESS" });
+    
+    revalidatePath('/daily-ammo-usage');
+    revalidatePath('/daily-ammo-usage', 'layout');
+    revalidatePath('/dashboard');
+  } catch (error: any) {
+    await logAction({ actionType: "DELETE", entityType: "DailyAmmunitionUsage", entityId: id, status: "FAILURE", errorMessage: error.message });
+    throw error;
+  }
 }
 
 
@@ -605,68 +805,95 @@ export async function getUsageScenarioById(id: string): Promise<UsageScenario | 
 }
 
 export async function addUsageScenarioAction(data: Omit<UsageScenario, 'id' | 'lastUpdated'>) {
-  const validatedData = usageScenarioFormSchema.safeParse(data);
-  if (!validatedData.success) {
-    console.error("Doğrulama hataları:", validatedData.error.format());
-    throw new Error('Geçersiz kullanım senaryosu verisi.');
-  }
+  try {
+    const validatedData = usageScenarioFormSchema.safeParse(data);
+    if (!validatedData.success) {
+      const errorMsg = 'Geçersiz kullanım senaryosu verisi: ' + JSON.stringify(validatedData.error.format());
+      await logAction({ actionType: "CREATE", entityType: "UsageScenario", status: "FAILURE", details: data, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
 
-  const scenarios = await getUsageScenarios();
-  const newScenario: UsageScenario = {
-    ...validatedData.data,
-    id: await generateId(),
-    lastUpdated: new Date().toISOString(),
-  };
-  scenarios.push(newScenario);
-  await writeData('usage_scenarios.json', scenarios);
-  revalidatePath('/admin/usage-scenarios');
-  revalidatePath('/admin/usage-scenarios', 'layout');
-  return newScenario;
+    const scenarios = await getUsageScenarios();
+    const newScenario: UsageScenario = {
+      ...validatedData.data,
+      id: await generateId(),
+      lastUpdated: new Date().toISOString(),
+    };
+    scenarios.push(newScenario);
+    await writeData('usage_scenarios.json', scenarios);
+    await logAction({ actionType: "CREATE", entityType: "UsageScenario", entityId: newScenario.id, status: "SUCCESS", details: newScenario });
+    
+    revalidatePath('/admin/usage-scenarios');
+    revalidatePath('/admin/usage-scenarios', 'layout');
+    return newScenario;
+  } catch (error: any) {
+    if (error.message.startsWith('Geçersiz kullanım senaryosu verisi')) throw error;
+    await logAction({ actionType: "CREATE", entityType: "UsageScenario", status: "FAILURE", details: data, errorMessage: error.message });
+    throw error;
+  }
 }
 
 export async function updateUsageScenarioAction(scenario: UsageScenario) {
-   const parsedRates = scenario.consumptionRatesPerCaliber.map(rate => ({
-    ...rate,
-    roundsPerPerson: typeof rate.roundsPerPerson === 'string' ? parseInt(rate.roundsPerPerson, 10) : rate.roundsPerPerson,
-  }));
+  try {
+    const parsedRates = scenario.consumptionRatesPerCaliber.map(rate => ({
+      ...rate,
+      roundsPerPerson: typeof rate.roundsPerPerson === 'string' ? parseInt(rate.roundsPerPerson, 10) : rate.roundsPerPerson,
+    }));
 
-  const validatedData = usageScenarioFormSchema.safeParse({
-    name: scenario.name,
-    description: scenario.description,
-    consumptionRatesPerCaliber: parsedRates,
-  });
+    const validatedData = usageScenarioFormSchema.safeParse({
+      name: scenario.name,
+      description: scenario.description,
+      consumptionRatesPerCaliber: parsedRates,
+    });
 
-   if (!validatedData.success) {
-    console.error("Doğrulama hataları:", validatedData.error.format());
-    throw new Error('Güncelleme için geçersiz kullanım senaryosu verisi.');
+    if (!validatedData.success) {
+      const errorMsg = 'Güncelleme için geçersiz kullanım senaryosu verisi: ' + JSON.stringify(validatedData.error.format());
+      await logAction({ actionType: "UPDATE", entityType: "UsageScenario", entityId: scenario.id, status: "FAILURE", details: scenario, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
+
+    let scenarios = await getUsageScenarios();
+    const index = scenarios.findIndex(s => s.id === scenario.id);
+    if (index === -1) {
+      const errorMsg = 'Güncellenecek kullanım senaryosu bulunamadı.';
+      await logAction({ actionType: "UPDATE", entityType: "UsageScenario", entityId: scenario.id, status: "FAILURE", details: scenario, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
+
+    const updatedScenario = {
+      ...scenarios[index],
+      ...validatedData.data,
+      lastUpdated: new Date().toISOString(),
+    };
+
+    scenarios[index] = updatedScenario;
+    await writeData('usage_scenarios.json', scenarios);
+    await logAction({ actionType: "UPDATE", entityType: "UsageScenario", entityId: updatedScenario.id, status: "SUCCESS", details: updatedScenario });
+    
+    revalidatePath('/admin/usage-scenarios');
+    revalidatePath(`/admin/usage-scenarios/${scenario.id}/edit`);
+    revalidatePath('/admin/usage-scenarios', 'layout');
+    return updatedScenario;
+  } catch (error: any) {
+    if (error.message.startsWith('Güncelleme için geçersiz kullanım senaryosu verisi') || error.message.startsWith('Güncellenecek kullanım senaryosu bulunamadı')) throw error;
+    await logAction({ actionType: "UPDATE", entityType: "UsageScenario", entityId: scenario.id, status: "FAILURE", details: scenario, errorMessage: error.message });
+    throw error;
   }
-
-  let scenarios = await getUsageScenarios();
-  const index = scenarios.findIndex(s => s.id === scenario.id);
-  if (index === -1) {
-    throw new Error('Güncellenecek kullanım senaryosu bulunamadı.');
-  }
-
-  const updatedScenario = {
-    ...scenarios[index],
-    ...validatedData.data,
-    lastUpdated: new Date().toISOString(),
-  };
-
-  scenarios[index] = updatedScenario;
-  await writeData('usage_scenarios.json', scenarios);
-  revalidatePath('/admin/usage-scenarios');
-  revalidatePath(`/admin/usage-scenarios/${scenario.id}/edit`);
-  revalidatePath('/admin/usage-scenarios', 'layout');
-  return updatedScenario;
 }
 
 export async function deleteUsageScenarioAction(id: string): Promise<void> {
-  let scenarios = await getUsageScenarios();
-  scenarios = scenarios.filter(s => s.id !== id);
-  await writeData('usage_scenarios.json', scenarios);
-  revalidatePath('/admin/usage-scenarios');
-  revalidatePath('/admin/usage-scenarios', 'layout');
+  try {
+    let scenarios = await getUsageScenarios();
+    scenarios = scenarios.filter(s => s.id !== id);
+    await writeData('usage_scenarios.json', scenarios);
+    await logAction({ actionType: "DELETE", entityType: "UsageScenario", entityId: id, status: "SUCCESS" });
+    
+    revalidatePath('/admin/usage-scenarios');
+    revalidatePath('/admin/usage-scenarios', 'layout');
+  } catch (error: any) {
+    await logAction({ actionType: "DELETE", entityType: "UsageScenario", entityId: id, status: "FAILURE", errorMessage: error.message });
+    throw error;
+  }
 }
 
 
@@ -683,63 +910,92 @@ export async function getDepotById(id: string): Promise<Depot | undefined> {
 }
 
 export async function addDepotAction(data: Omit<Depot, 'lastUpdated'> & {id: string}) {
-  const validatedData = depotFormSchema.safeParse(data);
-  if (!validatedData.success) {
-    throw new Error('Geçersiz depo verisi: ' + JSON.stringify(validatedData.error.format()));
-  }
+  try {
+    const validatedData = depotFormSchema.safeParse(data);
+    if (!validatedData.success) {
+      const errorMsg = 'Geçersiz depo verisi: ' + JSON.stringify(validatedData.error.format());
+      await logAction({ actionType: "CREATE", entityType: "Depot", status: "FAILURE", details: data, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
 
-  const depots = await getDepots();
-  if (depots.some(d => d.id === validatedData.data.id)) {
-      throw new Error('Bu ID ile bir depo zaten mevcut.');
-  }
+    const depots = await getDepots();
+    if (depots.some(d => d.id === validatedData.data.id)) {
+        const errorMsg = 'Bu ID ile bir depo zaten mevcut.';
+        await logAction({ actionType: "CREATE", entityType: "Depot", status: "FAILURE", details: data, errorMessage: errorMsg });
+        throw new Error(errorMsg);
+    }
 
-  const newDepot: Depot = {
-    ...validatedData.data,
-    lastUpdated: new Date().toISOString(),
-  };
-  depots.push(newDepot);
-  await writeData('depots.json', depots);
-  revalidatePath('/admin/depots');
-  revalidatePath('/admin/depots', 'layout');
-  return newDepot;
+    const newDepot: Depot = {
+      ...validatedData.data,
+      lastUpdated: new Date().toISOString(),
+    };
+    depots.push(newDepot);
+    await writeData('depots.json', depots);
+    await logAction({ actionType: "CREATE", entityType: "Depot", entityId: newDepot.id, status: "SUCCESS", details: newDepot });
+    
+    revalidatePath('/admin/depots');
+    revalidatePath('/admin/depots', 'layout');
+    return newDepot;
+  } catch (error: any) {
+    if (error.message.startsWith('Geçersiz depo verisi') || error.message.startsWith('Bu ID ile bir depo zaten mevcut')) throw error;
+    await logAction({ actionType: "CREATE", entityType: "Depot", status: "FAILURE", details: data, errorMessage: error.message });
+    throw error;
+  }
 }
 
 export async function updateDepotAction(depot: Depot) {
-  const { id, lastUpdated, ...updateData } = depot;
-  const validatedData = depotFormSchema.omit({id: true}).safeParse(updateData);
+  try {
+    const { id, lastUpdated, ...updateData } = depot;
+    const validatedData = depotFormSchema.omit({id: true}).safeParse(updateData);
 
-   if (!validatedData.success) {
-    console.error("Doğrulama hataları:", validatedData.error.format());
-    throw new Error('Güncelleme için geçersiz depo verisi.');
+    if (!validatedData.success) {
+      const errorMsg = 'Güncelleme için geçersiz depo verisi: ' + JSON.stringify(validatedData.error.format());
+      await logAction({ actionType: "UPDATE", entityType: "Depot", entityId: depot.id, status: "FAILURE", details: depot, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
+
+    let depots = await getDepots();
+    const index = depots.findIndex(d => d.id === id);
+    if (index === -1) {
+      const errorMsg = 'Güncellenecek depo bulunamadı.';
+      await logAction({ actionType: "UPDATE", entityType: "Depot", entityId: depot.id, status: "FAILURE", details: depot, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
+
+    const updatedDepot: Depot = {
+      ...depots[index],
+      ...validatedData.data,
+      lastUpdated: new Date().toISOString(),
+    };
+
+    depots[index] = updatedDepot;
+    await writeData('depots.json', depots);
+    await logAction({ actionType: "UPDATE", entityType: "Depot", entityId: updatedDepot.id, status: "SUCCESS", details: updatedDepot });
+    
+    revalidatePath('/admin/depots');
+    revalidatePath(`/admin/depots/${id}/edit`);
+    revalidatePath('/admin/depots', 'layout');
+    return updatedDepot;
+  } catch (error: any) {
+    if (error.message.startsWith('Güncelleme için geçersiz depo verisi') || error.message.startsWith('Güncellenecek depo bulunamadı')) throw error;
+    await logAction({ actionType: "UPDATE", entityType: "Depot", entityId: depot.id, status: "FAILURE", details: depot, errorMessage: error.message });
+    throw error;
   }
-
-  let depots = await getDepots();
-  const index = depots.findIndex(d => d.id === id);
-  if (index === -1) {
-    throw new Error('Güncellenecek depo bulunamadı.');
-  }
-
-  const updatedDepot: Depot = {
-    ...depots[index],
-    ...validatedData.data,
-    lastUpdated: new Date().toISOString(),
-  };
-
-  depots[index] = updatedDepot;
-  await writeData('depots.json', depots);
-  revalidatePath('/admin/depots');
-  revalidatePath(`/admin/depots/${id}/edit`);
-  revalidatePath('/admin/depots', 'layout');
-  return updatedDepot;
 }
 
 export async function deleteDepotAction(id: string): Promise<void> {
-  let depots = await getDepots();
-  // TODO: Check if this depot is used in any inventory item or shipment before deleting.
-  depots = depots.filter(d => d.id !== id);
-  await writeData('depots.json', depots);
-  revalidatePath('/admin/depots');
-  revalidatePath('/admin/depots', 'layout');
+  try {
+    let depots = await getDepots();
+    depots = depots.filter(d => d.id !== id);
+    await writeData('depots.json', depots);
+    await logAction({ actionType: "DELETE", entityType: "Depot", entityId: id, status: "SUCCESS" });
+    
+    revalidatePath('/admin/depots');
+    revalidatePath('/admin/depots', 'layout');
+  } catch (error: any) {
+    await logAction({ actionType: "DELETE", entityType: "Depot", entityId: id, status: "FAILURE", errorMessage: error.message });
+    throw error;
+  }
 }
 
 // Maintenance Logs
@@ -748,48 +1004,76 @@ export async function addMaintenanceLogToItemAction(
   itemType: 'firearm' | 'magazine',
   logData: Omit<MaintenanceLog, 'id'>
 ) {
-  if (!itemId || !itemType || !logData.date || !logData.description || !logData.statusChangeFrom || !logData.statusChangeTo) {
-    throw new Error('Bakım kaydı için eksik veri.');
+  let logEntryId: string | undefined = undefined;
+  try {
+    if (!itemId || !itemType || !logData.date || !logData.description || !logData.statusChangeFrom || !logData.statusChangeTo) {
+      const errorMsg = 'Bakım kaydı için eksik veri.';
+      await logAction({ actionType: "LOG_MAINTENANCE", entityType: "MaintenanceLog", entityId: itemId, status: "FAILURE", details: logData, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
+
+    const newLog: MaintenanceLog = {
+      ...logData,
+      id: await generateId(),
+    };
+    logEntryId = newLog.id; // Capture for potential failure log
+
+    if (itemType === 'firearm') {
+      const firearms = await getFirearms();
+      const itemIndex = firearms.findIndex(f => f.id === itemId);
+      if (itemIndex === -1) {
+        const errorMsg = 'Bakım yapılacak silah bulunamadı.';
+        await logAction({ actionType: "LOG_MAINTENANCE", entityType: "MaintenanceLog", entityId: itemId, status: "FAILURE", details: logData, errorMessage: errorMsg });
+        throw new Error(errorMsg);
+      }
+
+      firearms[itemIndex].maintenanceHistory = [...(firearms[itemIndex].maintenanceHistory || []), newLog];
+      firearms[itemIndex].status = newLog.statusChangeTo as FirearmStatus;
+      firearms[itemIndex].lastUpdated = new Date().toISOString();
+      await writeData('firearms.json', firearms);
+      
+      // Also log the update to the firearm itself
+      await logAction({ actionType: "UPDATE", entityType: "Firearm", entityId: itemId, status: "SUCCESS", details: { status: newLog.statusChangeTo, maintenanceLogAdded: newLog.id } });
+
+    } else if (itemType === 'magazine') {
+      const magazines = await getMagazines();
+      const itemIndex = magazines.findIndex(m => m.id === itemId);
+      if (itemIndex === -1) {
+        const errorMsg = 'Bakım yapılacak şarjör bulunamadı.';
+        await logAction({ actionType: "LOG_MAINTENANCE", entityType: "MaintenanceLog", entityId: itemId, status: "FAILURE", details: logData, errorMessage: errorMsg });
+        throw new Error(errorMsg);
+      }
+
+      magazines[itemIndex].maintenanceHistory = [...(magazines[itemIndex].maintenanceHistory || []), newLog];
+      magazines[itemIndex].status = newLog.statusChangeTo as MagazineStatus;
+      magazines[itemIndex].lastUpdated = new Date().toISOString();
+      await writeData('magazines.json', magazines);
+      
+      // Also log the update to the magazine itself
+      await logAction({ actionType: "UPDATE", entityType: "Magazine", entityId: itemId, status: "SUCCESS", details: { status: newLog.statusChangeTo, maintenanceLogAdded: newLog.id } });
+
+    } else {
+      const errorMsg = 'Geçersiz öğe türü.';
+      await logAction({ actionType: "LOG_MAINTENANCE", entityType: "MaintenanceLog", entityId: itemId, status: "FAILURE", details: logData, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
+    
+    await logAction({ actionType: "LOG_MAINTENANCE", entityType: "MaintenanceLog", entityId: newLog.id, status: "SUCCESS", details: newLog });
+
+    revalidatePath(`/inventory/${itemType === 'firearm' ? 'firearms' : 'magazines'}/${itemId}`);
+    revalidatePath(`/inventory/${itemType === 'firearm' ? 'firearms' : 'magazines'}`);
+    revalidatePath(`/inventory/${itemType === 'firearm' ? 'firearms' : 'magazines'}`, 'layout');
+    revalidatePath('/maintenance');
+    revalidatePath('/maintenance', 'layout');
+    revalidatePath('/dashboard');
+    return newLog;
+  } catch (error: any) {
+     if (error.message.startsWith('Bakım kaydı için eksik veri') || 
+        error.message.includes('bulunamadı') ||
+        error.message.startsWith('Geçersiz öğe türü')) throw error; // Already logged specific errors
+    await logAction({ actionType: "LOG_MAINTENANCE", entityType: "MaintenanceLog", entityId: logEntryId || itemId, status: "FAILURE", details: logData, errorMessage: error.message });
+    throw error;
   }
-
-  const newLog: MaintenanceLog = {
-    ...logData,
-    id: await generateId(),
-  };
-
-  if (itemType === 'firearm') {
-    const firearms = await getFirearms();
-    const itemIndex = firearms.findIndex(f => f.id === itemId);
-    if (itemIndex === -1) throw new Error('Bakım yapılacak silah bulunamadı.');
-
-    firearms[itemIndex].maintenanceHistory = [...(firearms[itemIndex].maintenanceHistory || []), newLog];
-    firearms[itemIndex].status = newLog.statusChangeTo as FirearmStatus;
-    firearms[itemIndex].lastUpdated = new Date().toISOString();
-    await writeData('firearms.json', firearms);
-    revalidatePath(`/inventory/firearms/${itemId}`);
-    revalidatePath('/inventory/firearms');
-    revalidatePath('/inventory/firearms', 'layout');
-
-  } else if (itemType === 'magazine') {
-    const magazines = await getMagazines();
-    const itemIndex = magazines.findIndex(m => m.id === itemId);
-    if (itemIndex === -1) throw new Error('Bakım yapılacak şarjör bulunamadı.');
-
-    magazines[itemIndex].maintenanceHistory = [...(magazines[itemIndex].maintenanceHistory || []), newLog];
-    magazines[itemIndex].status = newLog.statusChangeTo as MagazineStatus;
-    magazines[itemIndex].lastUpdated = new Date().toISOString();
-    await writeData('magazines.json', magazines);
-    revalidatePath(`/inventory/magazines/${itemId}`);
-    revalidatePath('/inventory/magazines');
-    revalidatePath('/inventory/magazines', 'layout');
-  } else {
-    throw new Error('Geçersiz öğe türü.');
-  }
-
-  revalidatePath('/maintenance');
-  revalidatePath('/maintenance', 'layout');
-  revalidatePath('/dashboard');
-  return newLog;
 }
 
 
@@ -806,59 +1090,83 @@ export async function getShipmentTypeDefinitionById(id: string): Promise<Shipmen
 }
 
 export async function addShipmentTypeDefinitionAction(data: Omit<ShipmentTypeDefinition, 'id' | 'lastUpdated'>) {
-  const validatedData = shipmentTypeDefinitionFormSchema.safeParse(data);
-  if (!validatedData.success) {
-    console.error("Validation Errors:", validatedData.error.format());
-    throw new Error('Geçersiz malzeme kayıt türü verisi.');
-  }
+  try {
+    const validatedData = shipmentTypeDefinitionFormSchema.safeParse(data);
+    if (!validatedData.success) {
+      const errorMsg = 'Geçersiz malzeme kayıt türü verisi: ' + JSON.stringify(validatedData.error.format());
+      await logAction({ actionType: "CREATE", entityType: "ShipmentTypeDefinition", status: "FAILURE", details: data, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
 
-  const definitions = await getShipmentTypeDefinitions();
-  const newDefinition: ShipmentTypeDefinition = {
-    ...validatedData.data,
-    id: await generateId(),
-    lastUpdated: new Date().toISOString(),
-  };
-  definitions.push(newDefinition);
-  await writeData('shipment_types.json', definitions);
-  revalidatePath('/admin/shipment-types');
-  revalidatePath('/admin/shipment-types', 'layout');
-  return newDefinition;
+    const definitions = await getShipmentTypeDefinitions();
+    const newDefinition: ShipmentTypeDefinition = {
+      ...validatedData.data,
+      id: await generateId(),
+      lastUpdated: new Date().toISOString(),
+    };
+    definitions.push(newDefinition);
+    await writeData('shipment_types.json', definitions);
+    await logAction({ actionType: "CREATE", entityType: "ShipmentTypeDefinition", entityId: newDefinition.id, status: "SUCCESS", details: newDefinition });
+
+    revalidatePath('/admin/shipment-types');
+    revalidatePath('/admin/shipment-types', 'layout');
+    return newDefinition;
+  } catch (error: any) {
+    if (error.message.startsWith('Geçersiz malzeme kayıt türü verisi')) throw error;
+    await logAction({ actionType: "CREATE", entityType: "ShipmentTypeDefinition", status: "FAILURE", details: data, errorMessage: error.message });
+    throw error;
+  }
 }
 
 export async function updateShipmentTypeDefinitionAction(definition: ShipmentTypeDefinition) {
-  const validatedData = shipmentTypeDefinitionFormSchema.safeParse(definition);
-   if (!validatedData.success) {
-    console.error("Validation Errors:", validatedData.error.format());
-    throw new Error('Güncelleme için geçersiz malzeme kayıt türü verisi.');
+  try {
+    const validatedData = shipmentTypeDefinitionFormSchema.safeParse(definition);
+    if (!validatedData.success) {
+      const errorMsg = 'Güncelleme için geçersiz malzeme kayıt türü verisi: ' + JSON.stringify(validatedData.error.format());
+      await logAction({ actionType: "UPDATE", entityType: "ShipmentTypeDefinition", entityId: definition.id, status: "FAILURE", details: definition, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
+
+    let definitions = await getShipmentTypeDefinitions();
+    const index = definitions.findIndex(d => d.id === definition.id);
+    if (index === -1) {
+      const errorMsg = 'Güncellenecek malzeme kayıt türü bulunamadı.';
+      await logAction({ actionType: "UPDATE", entityType: "ShipmentTypeDefinition", entityId: definition.id, status: "FAILURE", details: definition, errorMessage: errorMsg });
+      throw new Error(errorMsg);
+    }
+
+    const updatedDefinition = {
+      ...definitions[index],
+      ...validatedData.data,
+      lastUpdated: new Date().toISOString(),
+    };
+
+    definitions[index] = updatedDefinition;
+    await writeData('shipment_types.json', definitions);
+    await logAction({ actionType: "UPDATE", entityType: "ShipmentTypeDefinition", entityId: updatedDefinition.id, status: "SUCCESS", details: updatedDefinition });
+    
+    revalidatePath('/admin/shipment-types');
+    revalidatePath(`/admin/shipment-types/${definition.id}/edit`);
+    revalidatePath('/admin/shipment-types', 'layout');
+    return updatedDefinition;
+  } catch (error: any) {
+    if (error.message.startsWith('Güncelleme için geçersiz malzeme kayıt türü verisi') || error.message.startsWith('Güncellenecek malzeme kayıt türü bulunamadı')) throw error;
+    await logAction({ actionType: "UPDATE", entityType: "ShipmentTypeDefinition", entityId: definition.id, status: "FAILURE", details: definition, errorMessage: error.message });
+    throw error;
   }
-
-  let definitions = await getShipmentTypeDefinitions();
-  const index = definitions.findIndex(d => d.id === definition.id);
-  if (index === -1) {
-    throw new Error('Güncellenecek malzeme kayıt türü bulunamadı.');
-  }
-
-  const updatedDefinition = {
-    ...definitions[index],
-    ...validatedData.data,
-    lastUpdated: new Date().toISOString(),
-  };
-
-  definitions[index] = updatedDefinition;
-  await writeData('shipment_types.json', definitions);
-  revalidatePath('/admin/shipment-types');
-  revalidatePath(`/admin/shipment-types/${definition.id}/edit`);
-  revalidatePath('/admin/shipment-types', 'layout');
-  return updatedDefinition;
 }
 
 export async function deleteShipmentTypeDefinitionAction(id: string): Promise<void> {
-  let definitions = await getShipmentTypeDefinitions();
-  // TODO: Check if any shipment instance uses this type definition before deleting.
-  definitions = definitions.filter(d => d.id !== id);
-  await writeData('shipment_types.json', definitions);
-  revalidatePath('/admin/shipment-types');
-  revalidatePath('/admin/shipment-types', 'layout');
-}
+  try {
+    let definitions = await getShipmentTypeDefinitions();
+    definitions = definitions.filter(d => d.id !== id);
+    await writeData('shipment_types.json', definitions);
+    await logAction({ actionType: "DELETE", entityType: "ShipmentTypeDefinition", entityId: id, status: "SUCCESS" });
 
-    
+    revalidatePath('/admin/shipment-types');
+    revalidatePath('/admin/shipment-types', 'layout');
+  } catch (error: any) {
+    await logAction({ actionType: "DELETE", entityType: "ShipmentTypeDefinition", entityId: id, status: "FAILURE", errorMessage: error.message });
+    throw error;
+  }
+}
