@@ -96,14 +96,14 @@ export function AuditLogsTableClient({ logs: initialLogs }: AuditLogsTableClient
 
     // Construct the CSV data string
     const csvData = [
-      headers.join(","),
+      headers.join(";"), // Changed comma to semicolon
       ...rows.map(row => 
-        row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(",")
+        row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(";") // Changed comma to semicolon
       )
     ].join("\n");
 
-    // Prepend "sep=," for Excel to correctly interpret commas as separators, especially in some regional settings
-    const csvPayload = "sep=,\n" + csvData;
+    // Prepend "sep=;" for Excel to correctly interpret semicolons as separators
+    const csvPayload = "sep=;\n" + csvData;
 
     const dataUri = "data:text/csv;charset=utf-8," + encodeURIComponent(csvPayload);
 
@@ -166,3 +166,4 @@ export function AuditLogsTableClient({ logs: initialLogs }: AuditLogsTableClient
     </>
   );
 }
+
