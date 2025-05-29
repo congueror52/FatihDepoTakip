@@ -12,9 +12,9 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2 } from "lucide-react"; // Removed MoreHorizontal, DropdownMenu components
+import { Edit, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,18 +27,41 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { deleteMagazineAction } from "@/lib/actions/inventory.actions";
-// import { DEPOT_LOCATIONS } from "@/types/inventory"; // Removed
+import { format } from "date-fns";
+import { tr } from "date-fns/locale";
 
 interface MagazinesTableClientProps {
   magazines: Magazine[];
-  depots: Depot[]; // Added depots prop
+  depots: Depot[];
 }
 
-export function MagazinesTableClient({ magazines: initialMagazines, depots }: MagazinesTableClientProps) { // Added depots to props
+const FormattedTimestamp = ({ timestamp }: { timestamp: string }) => {
+  const [formattedDate, setFormattedDate] = useState(timestamp); // Initial render with ISO string or whatever server sends
+
+  useEffect(() => {
+    try {
+      // Format the date on the client side after hydration
+      setFormattedDate(format(new Date(timestamp), "P", { locale: tr })); // Using "P" for short date
+    } catch (e) {
+      // If timestamp is invalid, keep the original string
+      console.warn("Invalid date for formatting:", timestamp);
+      setFormattedDate(timestamp);
+    }
+  }, [timestamp]);
+
+  return <>{formattedDate}</>;
+};
+
+
+export function MagazinesTableClient({ magazines: initialMagazines, depots }: MagazinesTableClientProps) {
   const [magazines, setMagazines] = useState<Magazine[]>(initialMagazines);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedMagazineId, setSelectedMagazineId] = useState<string | null>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    setMagazines(initialMagazines);
+  }, [initialMagazines]);
 
   const handleDelete = async () => {
     if (!selectedMagazineId) return;
@@ -46,7 +69,7 @@ export function MagazinesTableClient({ magazines: initialMagazines, depots }: Ma
       await deleteMagazineAction(selectedMagazineId);
       setMagazines(magazines.filter(m => m.id !== selectedMagazineId));
       toast({ variant: "success", title: "Başarılı", description: "Şarjör başarıyla silindi." });
-    } catch (error: any) { // Explicitly type error as any
+    } catch (error: any) {
       toast({ variant: "destructive", title: "Hata", description: (error as Error).message || "Şarjör silinemedi." });
     } finally {
       setIsDeleteDialogOpen(false);
@@ -71,7 +94,7 @@ export function MagazinesTableClient({ magazines: initialMagazines, depots }: Ma
   };
   
   const getDepotName = (depotId: string) => {
-    const depot = depots.find(d => d.id === depotId); // Use passed depots prop
+    const depot = depots.find(d => d.id === depotId); 
     return depot ? depot.name : depotId;
   }
 
@@ -86,13 +109,14 @@ export function MagazinesTableClient({ magazines: initialMagazines, depots }: Ma
             <TableHead><span suppressHydrationWarning>Kapasite</span></TableHead>
             <TableHead><span suppressHydrationWarning>Depo</span></TableHead>
             <TableHead><span suppressHydrationWarning>Durum</span></TableHead>
+            <TableHead><span suppressHydrationWarning>Son Güncelleme</span></TableHead>
             <TableHead className="text-right"><span suppressHydrationWarning>Eylemler</span></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {magazines.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={7} className="text-center" suppressHydrationWarning>Şarjör bulunamadı.</TableCell>
+              <TableCell colSpan={8} className="text-center" suppressHydrationWarning>Şarjör bulunamadı.</TableCell>
             </TableRow>
           ) : (
             magazines.map((magazine) => (
@@ -107,6 +131,7 @@ export function MagazinesTableClient({ magazines: initialMagazines, depots }: Ma
                     {magazine.status}
                   </Badge>
                 </TableCell>
+                <TableCell><FormattedTimestamp timestamp={magazine.lastUpdated} /></TableCell>
                 <TableCell className="text-right space-x-2">
                   <Button variant="outline" size="sm" asChild>
                     <Link href={`/inventory/magazines/${magazine.id}/edit`} className="flex items-center">
