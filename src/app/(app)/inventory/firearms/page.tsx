@@ -3,15 +3,15 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, Target, ShieldX, Wrench, ShieldCheck, Construction, ServerCrash, Info, Download } from "lucide-react"; // Upload kaldırıldı
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { PlusCircle, Target, ShieldX, Wrench, ShieldCheck, Construction, ServerCrash, Info, Download } from "lucide-react"; 
 import Link from "next/link";
-import { getFirearms, getFirearmDefinitions, getDepots, exportFirearmsToCsvAction } from "@/lib/actions/inventory.actions"; // importFirearmsFromCsvAction kaldırıldı
+import { getFirearms, getFirearmDefinitions, getDepots } from "@/lib/actions/inventory.actions"; 
 import { FirearmsTableClient } from "./_components/firearms-table-client";
 import type { FirearmStatus, Firearm, Depot, FirearmDefinition } from "@/types/inventory";
 import { firearmStatuses } from "./_components/firearm-form-schema"; 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-// Input kaldırıldı
 
 export default function FirearmsPage() {
   const [firearms, setFirearms] = useState<Firearm[]>([]);
@@ -19,7 +19,6 @@ export default function FirearmsPage() {
   const [depots, setDepots] = useState<Depot[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
-  // fileInputRef kaldırıldı
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -75,40 +74,6 @@ export default function FirearmsPage() {
     };
   }).filter(summary => summary.totalCount > 0); 
 
-  // handleFileChange fonksiyonu kaldırıldı
-
-  const handleExportToCsv = async () => {
-    try {
-      setIsLoading(true);
-      const csvString = await exportFirearmsToCsvAction();
-      if (!csvString) {
-        toast({ variant: "default", title: "Bilgi", description: "Dışa aktarılacak silah bulunmamaktadır." });
-        return;
-      }
-      const BOM = "\uFEFF"; 
-      const blob = new Blob([BOM + csvString], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement("a");
-      if (link.download !== undefined) { 
-        const url = URL.createObjectURL(blob);
-        link.setAttribute("href", url);
-        link.setAttribute("download", "silah_envanteri.csv");
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-      } else {
-         window.open('data:text/csv;charset=utf-8,' + BOM + encodeURIComponent(csvString));
-      }
-      toast({ variant: "success", title: "Başarılı", description: "Silah envanteri CSV olarak dışa aktarıldı." });
-    } catch (error: any) {
-      toast({ variant: "destructive", title: "Hata", description: error.message || "CSV dışa aktarılırken bir hata oluştu." });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
@@ -117,10 +82,6 @@ export default function FirearmsPage() {
           <h1 className="text-3xl font-bold tracking-tight" suppressHydrationWarning>Silah Envanteri</h1>
         </div>
         <div className="flex items-center gap-2">
-          {/* CSV Yükleme Input ve Butonu kaldırıldı */}
-          <Button onClick={handleExportToCsv} variant="outline" disabled={isLoading}>
-            <Download className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>CSV'ye Aktar</span>
-          </Button>
           <Link href="/inventory/firearms/new">
             <Button disabled={isLoading}>
               <PlusCircle className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>Silah Ekle</span>
@@ -171,19 +132,27 @@ export default function FirearmsPage() {
         </Card>
       )}
       
-      <Card>
-        <CardHeader>
-          <CardTitle suppressHydrationWarning>Tüm Silahlar</CardTitle>
-          <CardDescription suppressHydrationWarning>Envanterdeki tüm silahları yönetin ve takip edin.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <p className="text-center py-4" suppressHydrationWarning>Silahlar yükleniyor...</p>
-          ) : (
-            <FirearmsTableClient firearms={firearms} depots={depots} onRefresh={fetchData} />
-          )}
-        </CardContent>
-      </Card>
+      <Accordion type="single" collapsible className="w-full">
+        <AccordionItem value="all-firearms" className="rounded-lg border bg-card text-card-foreground shadow-sm">
+          <AccordionTrigger className="p-6 text-left hover:no-underline">
+            <div className="flex flex-1 flex-col items-start">
+              <CardTitle suppressHydrationWarning>Tüm Silahlar</CardTitle>
+              <CardDescription suppressHydrationWarning>
+                Envanterdeki tüm silahları yönetin ve takip edin. (Göstermek için tıklayın)
+              </CardDescription>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="p-6 pt-0">
+              {isLoading ? (
+                <p className="text-center py-4" suppressHydrationWarning>Silahlar yükleniyor...</p>
+              ) : (
+                <FirearmsTableClient firearms={firearms} depots={depots} onRefresh={fetchData} />
+              )}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </div>
   );
 }
