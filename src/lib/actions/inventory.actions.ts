@@ -1229,7 +1229,7 @@ export async function addMaintenanceLogToItemAction(
     
     await logAction({ actionType: "CREATE", entityType: "MaintenanceLog", entityId: newLog.id, status: "SUCCESS", details: newLog });
 
-    revalidatePath(`/inventory/${itemType === 'firearm' ? 'silahlar' : 'sarjorler'}/${itemId}`);
+    revalidatePath(`/inventory/${itemType === 'firearm' ? 'firearms' : 'magazines'}/${itemId}`); // Corrected paths
     revalidatePath(`/inventory/${itemType === 'firearm' ? 'firearms' : 'magazines'}`);
     revalidatePath(`/inventory/${itemType === 'firearm' ? 'firearms' : 'magazines'}`, 'layout');
     revalidatePath('/maintenance');
@@ -1481,4 +1481,5 @@ export async function getRecentAuditLogs(limit: number = 5): Promise<AuditLogEnt
     return []; 
   }
 }
+
 
