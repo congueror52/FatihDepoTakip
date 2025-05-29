@@ -1,14 +1,15 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, ListChecks, CheckCircle, XCircle, Wrench, AlertTriangle, ServerCrash } from "lucide-react"; // Added more icons
+import { PlusCircle, ListChecks, CheckCircle, XCircle, Wrench, AlertTriangle, ServerCrash } from "lucide-react"; 
 import Link from "next/link";
 import { MagazinesTableClient } from "./_components/magazines-table-client"; 
-import { getMagazines } from "@/lib/actions/inventory.actions"; 
+import { getMagazines, getDepots } from "@/lib/actions/inventory.actions"; // Added getDepots
 import type { MagazineStatus } from "@/types/inventory";
 
 export default async function MagazinesPage() {
   const magazines = await getMagazines(); 
+  const depots = await getDepots(); // Fetch depots
 
   const statusCounts = magazines.reduce((acc, magazine) => {
     acc[magazine.status] = (acc[magazine.status] || 0) + 1;
@@ -47,7 +48,6 @@ export default async function MagazinesPage() {
             </CardHeader>
             <CardContent>
               <div className={`text-2xl font-bold ${card.textColor}`}>{card.count}</div>
-              {/* <p className="text-xs text-muted-foreground pt-1">Toplam envanterin %X'i</p> */}
             </CardContent>
           </Card>
         ))}
@@ -59,7 +59,7 @@ export default async function MagazinesPage() {
           <CardDescription suppressHydrationWarning>Envanterdeki tüm şarjörleri yönetin ve takip edin.</CardDescription>
         </CardHeader>
         <CardContent>
-          <MagazinesTableClient magazines={magazines} /> 
+          <MagazinesTableClient magazines={magazines} depots={depots} /> {/* Pass depots prop */}
         </CardContent>
       </Card>
     </div>

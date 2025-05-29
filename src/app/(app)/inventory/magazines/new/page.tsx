@@ -3,10 +3,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { MagazineForm } from "../_components/magazine-form";
 import { ListChecks, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { getFirearmDefinitions } from "@/lib/actions/inventory.actions"; // Import getFirearmDefinitions
+import { getFirearmDefinitions, getDepots } from "@/lib/actions/inventory.actions"; // Import getDepots
 
 export default async function NewMagazinePage() {
-  const firearmDefinitions = await getFirearmDefinitions(); // Fetch firearm definitions
+  const firearmDefinitions = await getFirearmDefinitions(); 
+  const depots = await getDepots(); // Fetch depots
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -24,7 +25,7 @@ export default async function NewMagazinePage() {
           <CardDescription suppressHydrationWarning>Yeni şarjör için bir silah türü seçerek veya manuel olarak bilgileri girin.</CardDescription>
         </CardHeader>
         <CardContent>
-          <MagazineForm firearmDefinitions={firearmDefinitions} /> {/* Pass firearmDefinitions to the form */}
+          <MagazineForm firearmDefinitions={firearmDefinitions} depots={depots} /> {/* Pass firearmDefinitions and depots to the form */}
         </CardContent>
       </Card>
     </div>

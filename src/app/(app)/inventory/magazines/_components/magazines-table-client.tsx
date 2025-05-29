@@ -1,7 +1,7 @@
 
 'use client';
 
-import type { Magazine } from "@/types/inventory";
+import type { Magazine, Depot } from "@/types/inventory"; // Added Depot
 import {
   Table,
   TableBody,
@@ -28,13 +28,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { deleteMagazineAction } from "@/lib/actions/inventory.actions";
-import { DEPOT_LOCATIONS } from "@/types/inventory";
+// import { DEPOT_LOCATIONS } from "@/types/inventory"; // Removed
 
 interface MagazinesTableClientProps {
   magazines: Magazine[];
+  depots: Depot[]; // Added depots prop
 }
 
-export function MagazinesTableClient({ magazines: initialMagazines }: MagazinesTableClientProps) {
+export function MagazinesTableClient({ magazines: initialMagazines, depots }: MagazinesTableClientProps) { // Added depots to props
   const [magazines, setMagazines] = useState<Magazine[]>(initialMagazines);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedMagazineId, setSelectedMagazineId] = useState<string | null>(null);
@@ -46,8 +47,8 @@ export function MagazinesTableClient({ magazines: initialMagazines }: MagazinesT
       await deleteMagazineAction(selectedMagazineId);
       setMagazines(magazines.filter(m => m.id !== selectedMagazineId));
       toast({ variant: "success", title: "Başarılı", description: "Şarjör başarıyla silindi." });
-    } catch (error) {
-      toast({ variant: "destructive", title: "Hata", description: "Şarjör silinemedi." });
+    } catch (error: any) { // Explicitly type error as any
+      toast({ variant: "destructive", title: "Hata", description: (error as Error).message || "Şarjör silinemedi." });
     } finally {
       setIsDeleteDialogOpen(false);
       setSelectedMagazineId(null);
@@ -71,7 +72,7 @@ export function MagazinesTableClient({ magazines: initialMagazines }: MagazinesT
   };
   
   const getDepotName = (depotId: string) => {
-    const depot = DEPOT_LOCATIONS.find(d => d.id === depotId);
+    const depot = depots.find(d => d.id === depotId); // Use passed depots prop
     return depot ? depot.name : depotId;
   }
 
@@ -122,12 +123,6 @@ export function MagazinesTableClient({ magazines: initialMagazines }: MagazinesT
                            <Edit className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>Düzenle</span>
                          </Link>
                       </DropdownMenuItem>
-                       {/* Detail page link can be added here if a detail page is created */}
-                      {/* <DropdownMenuItem asChild>
-                        <Link href={`/inventory/magazines/${magazine.id}`} className="flex items-center">
-                          <Eye className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>Detayları Görüntüle</span>
-                        </Link>
-                      </DropdownMenuItem> */}
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={() => openDeleteDialog(magazine.id)} className="text-destructive flex items-center">
                         <Trash2 className="mr-2 h-4 w-4" /> <span suppressHydrationWarning>Sil</span>

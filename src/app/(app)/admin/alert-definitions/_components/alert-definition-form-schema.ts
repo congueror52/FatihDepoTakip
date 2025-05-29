@@ -4,10 +4,10 @@ import {
   ALERT_ENTITY_TYPES, 
   ALERT_CONDITION_TYPES, 
   ALERT_SEVERITIES,
-  SUPPORTED_CALIBERS,
-  firearmStatuses,
-  magazineStatuses
+  SUPPORTED_CALIBERS
 } from "@/types/inventory";
+import { firearmStatuses } from "@/app/(app)/inventory/firearms/_components/firearm-form-schema";
+import { magazineStatuses } from "@/app/(app)/inventory/magazines/_components/magazine-form-schema";
 
 const allItemStatuses = [...new Set([...firearmStatuses, ...magazineStatuses])] as [string, ...string[]];
 

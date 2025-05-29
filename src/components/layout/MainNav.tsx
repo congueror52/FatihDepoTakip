@@ -25,7 +25,7 @@ import {
   FileCheck2,
   Warehouse,
   ListOrdered,
-  BellCog // New Icon for Alert Definitions
+  BellDot 
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
@@ -48,7 +48,7 @@ const menuItems = [
       { href: '/admin/usage-scenarios', label: 'Kullanım Senaryoları', icon: FileCheck2 },
       { href: '/admin/depots', label: 'Depo Tanımları', icon: Warehouse },
       { href: '/admin/shipment-types', label: 'Malzeme Kayıt Türleri', icon: ListOrdered },
-      { href: '/admin/alert-definitions', label: 'Uyarı Tanımları', icon: BellCog },
+      { href: '/admin/alert-definitions', label: 'Uyarı Tanımları', icon: BellDot }, 
     ]
   }
 ];

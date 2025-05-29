@@ -1,6 +1,6 @@
 
 import { z } from "zod";
-import { DEPOT_LOCATIONS, SUPPORTED_CALIBERS } from "@/types/inventory";
+import { SUPPORTED_CALIBERS } from "@/types/inventory"; // Removed DEPOT_LOCATIONS import
 
 export const magazineStatuses = ['Hizmette', 'Bakımda', 'Arızalı', 'Kayıp', 'Hizmet Dışı'] as const;
 
@@ -12,9 +12,7 @@ export const magazineFormSchema = z.object({
   }),
   capacity: z.coerce.number().int().min(1, { message: "Kapasite en az 1 olmalıdır." }),
   quantity: z.coerce.number().int().min(1, { message: "Miktar en az 1 olmalıdır." }).default(1), // For batch adding
-  depotId: z.enum(DEPOT_LOCATIONS.map(d => d.id) as [string, ...string[]], {
-    errorMap: () => ({ message: "Lütfen geçerli bir depo seçin." }),
-  }),
+  depotId: z.string().min(1, { message: "Lütfen geçerli bir depo seçin." }), // Changed to generic string validation
   status: z.enum(magazineStatuses, {
     errorMap: () => ({ message: "Lütfen geçerli bir durum seçin." }),
   }),

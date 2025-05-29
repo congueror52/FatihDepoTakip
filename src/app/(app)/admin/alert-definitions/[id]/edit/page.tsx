@@ -1,13 +1,13 @@
 
-import { getAlertDefinitionById } from "@/lib/actions/inventory.actions"; // Corrected action name
+import { getAlertDefinitionById } from "@/lib/actions/inventory.actions"; 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertDefinitionForm } from "../../_components/alert-definition-form";
-import { BellCog, ArrowLeft } from "lucide-react"; // Changed icon
+import { BellDot, ArrowLeft } from "lucide-react"; 
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 export default async function EditAlertDefinitionPage({ params }: { params: { id: string } }) {
-  const definition = await getAlertDefinitionById(params.id); // Corrected action name
+  const definition = await getAlertDefinitionById(params.id); 
 
   if (!definition) {
     notFound();
@@ -20,7 +20,7 @@ export default async function EditAlertDefinitionPage({ params }: { params: { id
         <span suppressHydrationWarning>Uyarı Tanımları Listesine Geri Dön</span>
       </Link>
       <div className="flex items-center gap-2 mb-6">
-        <BellCog className="h-8 w-8" /> {/* Changed icon */}
+        <BellDot className="h-8 w-8" /> 
         <h1 className="text-3xl font-bold tracking-tight" suppressHydrationWarning>Uyarı Tanımını Düzenle</h1>
       </div>
       <Card>

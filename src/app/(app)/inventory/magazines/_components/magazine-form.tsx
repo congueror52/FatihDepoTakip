@@ -22,8 +22,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import type { Magazine, FirearmDefinition } from "@/types/inventory";
-import { DEPOT_LOCATIONS, SUPPORTED_CALIBERS } from "@/types/inventory";
+import type { Magazine, FirearmDefinition, Depot } from "@/types/inventory"; // Added Depot
+import { SUPPORTED_CALIBERS } from "@/types/inventory"; // Removed DEPOT_LOCATIONS
 import { magazineFormSchema, magazineStatuses, type MagazineFormValues } from "./magazine-form-schema";
 import { addMagazineAction, updateMagazineAction } from "@/lib/actions/inventory.actions";
 import { useToast } from "@/hooks/use-toast";
@@ -39,9 +39,10 @@ import { useState, useEffect } from "react";
 interface MagazineFormProps {
   magazine?: Magazine;
   firearmDefinitions: FirearmDefinition[];
+  depots: Depot[]; // Added depots prop
 }
 
-export function MagazineForm({ magazine, firearmDefinitions }: MagazineFormProps) {
+export function MagazineForm({ magazine, firearmDefinitions, depots }: MagazineFormProps) { // Added depots to props
   const { toast } = useToast();
   const router = useRouter();
   const [selectedFirearmDefId, setSelectedFirearmDefId] = useState<string | undefined>(magazine?.compatibleFirearmDefinitionId || undefined);
@@ -65,7 +66,7 @@ export function MagazineForm({ magazine, firearmDefinitions }: MagazineFormProps
     capacity: 30,
     quantity: 1, // Default quantity for new magazines
     status: 'Hizmette',
-    depotId: DEPOT_LOCATIONS[0].id,
+    depotId: depots.length > 0 ? depots[0].id : "", // Default to first available depot
     manufacturer: "",
     purchaseDate: undefined,
     notes: "",
@@ -254,7 +255,8 @@ export function MagazineForm({ magazine, firearmDefinitions }: MagazineFormProps
                     <SelectTrigger><SelectValue placeholder="Bir depo seçin" /></SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {DEPOT_LOCATIONS.map(depot => (
+                    {depots.length === 0 && <SelectItem value="" disabled><span suppressHydrationWarning>Depo bulunamadı</span></SelectItem>}
+                    {depots.map(depot => (
                       <SelectItem key={depot.id} value={depot.id}><span suppressHydrationWarning>{depot.name}</span></SelectItem>
                     ))}
                   </SelectContent>
