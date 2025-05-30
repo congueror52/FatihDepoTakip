@@ -134,21 +134,21 @@ export default async function AmmunitionPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Warehouse className="h-6 w-6 text-primary" />
+              <Warehouse className="h-6 w-6 text-amber-600 dark:text-amber-400" />
               <span suppressHydrationWarning>Depo Bazlı Mühimmat Özeti</span>
             </CardTitle>
             <CardDescription suppressHydrationWarning>Her bir depodaki mühimmat miktarlarını kalibre bazında görüntüleyin.</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {depotSummaries.map((summary) => (
-              <Card key={summary.depotId} className="shadow-md">
+              <Card key={summary.depotId} className="shadow-md bg-amber-50 dark:bg-amber-900/40 border-amber-200 dark:border-amber-700/60">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-lg flex items-center gap-2">
+                  <CardTitle className="text-lg flex items-center gap-2 text-amber-800 dark:text-amber-300">
                     <Warehouse className="h-5 w-5 text-muted-foreground" /> 
                     <span suppressHydrationWarning>{summary.depotName}</span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-1 text-sm">
+                <CardContent className="space-y-1 text-sm text-amber-700 dark:text-amber-300">
                   {summary.calibers.length > 0 ? (
                     summary.calibers.map(item => (
                       <div key={item.caliber} className="flex justify-between items-center">
