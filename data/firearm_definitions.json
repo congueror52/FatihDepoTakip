@@ -1,4 +1,3 @@
-
 [
   {
     "id": "fd_1",
@@ -35,5 +34,14 @@
     "description": "",
     "id": "f6f5ab56-1f73-4a4a-88ce-1e000446ca39",
     "lastUpdated": "2025-05-29T15:44:40.751Z"
+  },
+  {
+    "name": "SAR 109 T",
+    "model": "SAR 109 T",
+    "manufacturer": "Sarsılmaz",
+    "caliber": "9x19mm",
+    "description": "",
+    "id": "ff612aa0-a9aa-4343-9d2b-bbd305d538e1",
+    "lastUpdated": "2025-05-30T19:32:12.335Z"
   }
 ]

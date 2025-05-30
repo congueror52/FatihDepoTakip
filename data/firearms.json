@@ -92,5 +92,35 @@
     "caliber": "5.56x45mm",
     "lastUpdated": "2025-05-30T17:56:28.097Z",
     "maintenanceHistory": []
+  },
+  {
+    "definitionId": "f6f5ab56-1f73-4a4a-88ce-1e000446ca39",
+    "serialNumber": "1234567",
+    "depotId": "depotA",
+    "status": "Poligonda",
+    "notes": "deneme",
+    "id": "865447f9-bd23-4cd2-9846-c5cd5311ff7e",
+    "itemType": "firearm",
+    "name": "MP5",
+    "model": "MP5 MAKİNALI TABANCA",
+    "manufacturer": "MKE",
+    "caliber": "9x19mm",
+    "lastUpdated": "2025-05-30T19:28:45.440Z",
+    "maintenanceHistory": []
+  },
+  {
+    "definitionId": "ff612aa0-a9aa-4343-9d2b-bbd305d538e1",
+    "serialNumber": "12344",
+    "depotId": "depotA",
+    "status": "Depoda",
+    "notes": "",
+    "id": "13a1a539-d1ca-4a79-ae50-742fbd41b451",
+    "itemType": "firearm",
+    "name": "SAR 109 T",
+    "model": "SAR 109 T",
+    "manufacturer": "Sarsılmaz",
+    "caliber": "9x19mm",
+    "lastUpdated": "2025-05-30T19:32:43.934Z",
+    "maintenanceHistory": []
   }
 ]

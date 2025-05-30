@@ -8171,5 +8171,258 @@
     "entityType": "Magazine",
     "entityId": "678663e4-97d6-480e-9128-a2535267ab49",
     "status": "SUCCESS"
+  },
+  {
+    "id": "7bd8ca4d-814e-4631-a61e-08e97da04c3d",
+    "timestamp": "2025-05-30T19:25:46.708Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Magazine",
+    "entityId": "2bf39045-6239-44a8-bbb5-91c18e7dac40",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "738e92c9-bba8-456e-9a64-577c34473233",
+    "timestamp": "2025-05-30T19:25:53.248Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Magazine",
+    "entityId": "a82ec3a1-0b6e-405e-9ecb-4d7cde1aeaef",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "a1952c37-57ee-4b13-a2fa-88a19b602ce4",
+    "timestamp": "2025-05-30T19:25:57.542Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Magazine",
+    "entityId": "02aebfb5-39e8-4606-b550-a668f0a3b2d0",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "547db978-9299-4256-adf9-b6c5950b3877",
+    "timestamp": "2025-05-30T19:26:01.242Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Magazine",
+    "entityId": "4b073ed5-6fde-46bb-8542-ce672c7fcbb1",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "5f73df73-266c-4342-82b1-8b68b2dadf81",
+    "timestamp": "2025-05-30T19:26:11.278Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Magazine",
+    "entityId": "62dc83ae-e540-43ab-95e1-d894373ace4c",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "9b020319-ffff-47d0-8f16-75c4ba4ede28",
+    "timestamp": "2025-05-30T19:26:15.681Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Magazine",
+    "entityId": "2990b73e-e578-4097-8cc9-4925513c31de",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "e3a947a4-7b8a-483e-b8ae-19b60dca2c8c",
+    "timestamp": "2025-05-30T19:26:19.995Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Magazine",
+    "entityId": "d1032a58-34e8-4b07-a3fc-746b78e6e970",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "7583b0ca-39b9-44ee-98f8-c3b97d753aad",
+    "timestamp": "2025-05-30T19:26:25.141Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Magazine",
+    "entityId": "03359032-f612-4f9f-a7ef-71c620cb3dc1",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "3cdbe28f-adb6-463d-ab8a-b493b97d10c7",
+    "timestamp": "2025-05-30T19:26:30.019Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Magazine",
+    "entityId": "1a6fed5d-c51c-4540-bab2-a0a050429c76",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "61a9f5ed-af58-4a37-8fa5-e47412ae2a3f",
+    "timestamp": "2025-05-30T19:26:55.897Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Magazine",
+    "entityId": "ca36f290-8311-447d-87e2-145e83dfb14f",
+    "status": "SUCCESS",
+    "details": {
+      "name": "MPT-76 Şarjörü",
+      "caliber": "7.62x51mm",
+      "capacity": 30,
+      "depotId": "depotA",
+      "status": "Destekte",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "03b7b801-1e09-410a-a3e7-1e827415548d",
+      "serialNumber": "",
+      "id": "ca36f290-8311-447d-87e2-145e83dfb14f",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-30T19:26:55.885Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "e6e73101-75ea-47ec-a03e-a8cd45029f12",
+    "timestamp": "2025-05-30T19:27:17.079Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "UPDATE",
+    "entityType": "Magazine",
+    "entityId": "ca36f290-8311-447d-87e2-145e83dfb14f",
+    "status": "SUCCESS",
+    "details": {
+      "name": "MPT-76 Şarjörü",
+      "caliber": "7.62x51mm",
+      "capacity": 30,
+      "depotId": "depotA",
+      "status": "Poligonda",
+      "manufacturer": "",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "compatibleFirearmDefinitionId": "03b7b801-1e09-410a-a3e7-1e827415548d",
+      "serialNumber": "",
+      "id": "ca36f290-8311-447d-87e2-145e83dfb14f",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-30T19:27:17.037Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "2f161d49-683b-4631-b000-0879dfcba4c7",
+    "timestamp": "2025-05-30T19:28:45.460Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Firearm",
+    "entityId": "865447f9-bd23-4cd2-9846-c5cd5311ff7e",
+    "status": "SUCCESS",
+    "details": {
+      "definitionId": "f6f5ab56-1f73-4a4a-88ce-1e000446ca39",
+      "serialNumber": "1234567",
+      "depotId": "depotA",
+      "status": "Poligonda",
+      "notes": "deneme",
+      "id": "865447f9-bd23-4cd2-9846-c5cd5311ff7e",
+      "itemType": "firearm",
+      "name": "MP5",
+      "model": "MP5 MAKİNALI TABANCA",
+      "manufacturer": "MKE",
+      "caliber": "9x19mm",
+      "lastUpdated": "2025-05-30T19:28:45.440Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "24f8ac68-7b3a-4c7f-8997-72f7fb80281f",
+    "timestamp": "2025-05-30T19:32:12.351Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "FirearmDefinition",
+    "entityId": "ff612aa0-a9aa-4343-9d2b-bbd305d538e1",
+    "status": "SUCCESS",
+    "details": {
+      "name": "SAR 109 T",
+      "model": "SAR 109 T",
+      "manufacturer": "Sarsılmaz",
+      "caliber": "9x19mm",
+      "description": "",
+      "id": "ff612aa0-a9aa-4343-9d2b-bbd305d538e1",
+      "lastUpdated": "2025-05-30T19:32:12.335Z"
+    }
+  },
+  {
+    "id": "493e7c6c-e987-43bd-aec7-52424a9aa597",
+    "timestamp": "2025-05-30T19:32:43.957Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Firearm",
+    "entityId": "13a1a539-d1ca-4a79-ae50-742fbd41b451",
+    "status": "SUCCESS",
+    "details": {
+      "definitionId": "ff612aa0-a9aa-4343-9d2b-bbd305d538e1",
+      "serialNumber": "12344",
+      "depotId": "depotA",
+      "status": "Depoda",
+      "notes": "",
+      "id": "13a1a539-d1ca-4a79-ae50-742fbd41b451",
+      "itemType": "firearm",
+      "name": "SAR 109 T",
+      "model": "SAR 109 T",
+      "manufacturer": "Sarsılmaz",
+      "caliber": "9x19mm",
+      "lastUpdated": "2025-05-30T19:32:43.934Z",
+      "maintenanceHistory": []
+    }
   }
 ]

@@ -96,21 +96,21 @@ export default async function AmmunitionPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <PackageSearch className="h-6 w-6 text-primary" />
+            <PackageSearch className="h-6 w-6 text-violet-600 dark:text-violet-400" />
             <span suppressHydrationWarning>Genel Kalibre Durumu</span>
           </CardTitle>
           <CardDescription suppressHydrationWarning>Her bir fişek kalibresi için toplam stok, kullanılan ve kalan miktarlar.</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4">
           {caliberOverallStatus.map((status) => (
-            <Card key={status.caliber} className="shadow-sm">
+            <Card key={status.caliber} className="shadow-sm bg-violet-50 dark:bg-violet-900/40 border-violet-200 dark:border-violet-700/60">
               <CardHeader className="pb-2 pt-4">
-                <CardTitle className="text-lg flex items-center gap-2">
+                <CardTitle className="text-lg flex items-center gap-2 text-violet-800 dark:text-violet-300">
                   <Box className="h-5 w-5 text-muted-foreground" /> 
                   <span suppressHydrationWarning>{status.caliber} Durumu</span>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-1 text-sm">
+              <CardContent className="space-y-1 text-sm text-violet-700 dark:text-violet-300">
                 <div className="flex justify-between items-center">
                   <span className="flex items-center gap-1"><List className="h-4 w-4 text-blue-500" /> <span suppressHydrationWarning>Toplam Stok:</span></span>
                   <span className="font-semibold">{status.totalStock.toLocaleString()} <span className="text-xs text-muted-foreground" suppressHydrationWarning>adet</span></span>

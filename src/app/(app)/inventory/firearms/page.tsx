@@ -50,9 +50,9 @@ export default function FirearmsPage() {
 
   const summaryCards: { title: string; count: number; icon: React.ElementType; statusKey: FirearmStatus, bgColor?: string, textColor?: string, borderColor?: string }[] = [
     { title: "Depodaki Silahlar", count: statusCounts['Depoda'] || 0, icon: Warehouse, statusKey: 'Depoda', bgColor: 'bg-green-50 dark:bg-green-900/30', textColor: 'text-green-700 dark:text-green-400', borderColor: 'border-green-200 dark:border-green-700' },
-    { title: "Poligondaki Silahlar", count: statusCounts['Poligonda'] || 0, icon: MapPin, statusKey: 'Poligonda', bgColor: 'bg-green-50 dark:bg-green-900/30', textColor: 'text-green-700 dark:text-green-400', borderColor: 'border-green-200 dark:border-green-700' },
-    { title: "Desteğe Teslim Edilenler", count: statusCounts['Destekte'] || 0, icon: PackageCheck, statusKey: 'Destekte', bgColor: 'bg-red-50 dark:bg-red-900/30', textColor: 'text-red-700 dark:text-red-400', borderColor: 'border-red-200 dark:border-red-700' },
     { title: "Depoda Arızalı Silahlar", count: statusCounts['Depoda Arızalı'] || 0, icon: ShieldX, statusKey: 'Depoda Arızalı', bgColor: 'bg-red-50 dark:bg-red-900/30', textColor: 'text-red-700 dark:text-red-400', borderColor: 'border-red-200 dark:border-red-700' },
+    { title: "Desteğe Teslim Edilenler", count: statusCounts['Destekte'] || 0, icon: PackageCheck, statusKey: 'Destekte', bgColor: 'bg-red-50 dark:bg-red-900/30', textColor: 'text-red-700 dark:text-red-400', borderColor: 'border-red-200 dark:border-red-700' },
+    { title: "Poligondaki Silahlar", count: statusCounts['Poligonda'] || 0, icon: MapPin, statusKey: 'Poligonda', bgColor: 'bg-green-50 dark:bg-green-900/30', textColor: 'text-green-700 dark:text-green-400', borderColor: 'border-green-200 dark:border-green-700' },
     { title: "Rapor Yazılacaklar", count: statusCounts['Rapor Bekliyor'] || 0, icon: ClipboardEdit, statusKey: 'Rapor Bekliyor', bgColor: 'bg-blue-50 dark:bg-blue-900/30', textColor: 'text-blue-700 dark:text-blue-400', borderColor: 'border-blue-200 dark:border-blue-700' },
   ];
 
@@ -118,19 +118,19 @@ export default function FirearmsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-                <Info className="h-6 w-6 text-blue-600" />
+                <Info className="h-6 w-6 text-sky-600 dark:text-sky-400" />
                 <span suppressHydrationWarning>Silah Türüne Göre Detaylı Durum</span>
             </CardTitle>
             <CardDescription suppressHydrationWarning>Envanterdeki her bir silah türünün mevcut durum özeti.</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {summaryByDefinition.map(summary => (
-              <Card key={summary.definition.id} className="shadow-md">
+              <Card key={summary.definition.id} className="shadow-md bg-sky-50 dark:bg-sky-900/40 border-sky-200 dark:border-sky-700/60">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-lg" suppressHydrationWarning>{summary.definition.name} ({summary.definition.model})</CardTitle>
-                  <CardDescription suppressHydrationWarning>Kalibre: {summary.definition.caliber}</CardDescription>
+                  <CardTitle className="text-lg text-sky-800 dark:text-sky-300" suppressHydrationWarning>{summary.definition.name} ({summary.definition.model})</CardTitle>
+                  <CardDescription className="text-sky-600 dark:text-sky-400" suppressHydrationWarning>Kalibre: {summary.definition.caliber}</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-1 text-sm">
+                <CardContent className="space-y-1 text-sm text-sky-700 dark:text-sky-300">
                   <p><strong><span suppressHydrationWarning>Toplam:</span></strong> {summary.totalCount}</p>
                   {Object.entries(summary.statusCounts).map(([status, count]) => (
                     <p key={status}><span suppressHydrationWarning>{status as string}:</span> {count}</p>
@@ -166,4 +166,3 @@ export default function FirearmsPage() {
     </div>
   );
 }
-
