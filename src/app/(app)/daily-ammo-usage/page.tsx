@@ -43,21 +43,37 @@ export default async function AmmunitionDailyUsagePage() {
         </CardHeader>
         <CardContent className="space-y-4">
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <Card>
-                    <CardHeader className="pb-2"><CardTitle className="text-sm font-medium" suppressHydrationWarning>Toplam 9x19mm</CardTitle></CardHeader>
-                    <CardContent><p className="text-2xl font-bold">{totalUsage['9x19mm'].toLocaleString()}</p></CardContent>
+                <Card className="bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700/60">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-sm font-medium text-green-700 dark:text-green-400" suppressHydrationWarning>Toplam 9x19mm</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-2xl font-bold text-green-700 dark:text-green-400">{totalUsage['9x19mm'].toLocaleString()}</p>
+                    </CardContent>
                 </Card>
-                 <Card>
-                    <CardHeader className="pb-2"><CardTitle className="text-sm font-medium" suppressHydrationWarning>Toplam 5.56x45mm</CardTitle></CardHeader>
-                    <CardContent><p className="text-2xl font-bold">{totalUsage['5.56x45mm'].toLocaleString()}</p></CardContent>
+                 <Card className="bg-orange-50 dark:bg-orange-900/30 border-orange-200 dark:border-orange-700/60">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-sm font-medium text-orange-700 dark:text-orange-400" suppressHydrationWarning>Toplam 5.56x45mm</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-2xl font-bold text-orange-700 dark:text-orange-400">{totalUsage['5.56x45mm'].toLocaleString()}</p>
+                    </CardContent>
                 </Card>
-                 <Card>
-                    <CardHeader className="pb-2"><CardTitle className="text-sm font-medium" suppressHydrationWarning>Toplam 7.62x39mm</CardTitle></CardHeader>
-                    <CardContent><p className="text-2xl font-bold">{totalUsage['7.62x39mm'].toLocaleString()}</p></CardContent>
+                 <Card className="bg-purple-50 dark:bg-purple-900/30 border-purple-200 dark:border-purple-700/60">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-sm font-medium text-purple-700 dark:text-purple-400" suppressHydrationWarning>Toplam 7.62x39mm</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-2xl font-bold text-purple-700 dark:text-purple-400">{totalUsage['7.62x39mm'].toLocaleString()}</p>
+                    </CardContent>
                 </Card>
-                 <Card>
-                    <CardHeader className="pb-2"><CardTitle className="text-sm font-medium" suppressHydrationWarning>Toplam 7.62x51mm</CardTitle></CardHeader>
-                    <CardContent><p className="text-2xl font-bold">{totalUsage['7.62x51mm'].toLocaleString()}</p></CardContent>
+                 <Card className="bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700/60">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-sm font-medium text-red-700 dark:text-red-400" suppressHydrationWarning>Toplam 7.62x51mm</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-2xl font-bold text-red-700 dark:text-red-400">{totalUsage['7.62x51mm'].toLocaleString()}</p>
+                    </CardContent>
                 </Card>
             </div>
             <Card className="bg-blue-100/70 border border-blue-200/80 dark:bg-blue-800/40 dark:border-blue-600/70">
