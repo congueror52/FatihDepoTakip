@@ -33,13 +33,13 @@ export default async function AmmunitionDailyUsagePage() {
         </Link>
       </div>
 
-      <Card>
+      <Card className="bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700/60">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-blue-800 dark:text-blue-300">
             <BarChart3 className="h-6 w-6" />
             <span suppressHydrationWarning>Kullanım Özeti (Tüm Kayıtlar)</span>
           </CardTitle>
-          <CardDescription suppressHydrationWarning>Kaydedilen tüm günlük kullanımlara dayalı özet bilgiler.</CardDescription>
+          <CardDescription className="text-blue-700 dark:text-blue-400" suppressHydrationWarning>Kaydedilen tüm günlük kullanımlara dayalı özet bilgiler.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -60,15 +60,15 @@ export default async function AmmunitionDailyUsagePage() {
                     <CardContent><p className="text-2xl font-bold">{totalUsage['7.62x51mm'].toLocaleString()}</p></CardContent>
                 </Card>
             </div>
-            <Card className="bg-amber-50 border border-amber-200 dark:bg-amber-900/30 dark:border-amber-700">
+            <Card className="bg-blue-100/70 border border-blue-200/80 dark:bg-blue-800/40 dark:border-blue-600/70">
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-base flex items-center gap-2 text-amber-700 dark:text-amber-400">
+                    <CardTitle className="text-base flex items-center gap-2 text-blue-700 dark:text-blue-300">
                         <Info className="h-5 w-5"/>
                         <span suppressHydrationWarning>Gelişmiş Özet Bilgileri</span>
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <p className="text-sm text-amber-600 dark:text-amber-300" suppressHydrationWarning>
+                    <p className="text-sm text-blue-600 dark:text-blue-300" suppressHydrationWarning>
                         Kalan fişek miktarları ve tahmini yeterlilik süresi gibi daha detaylı özetler için, sistemin toplam mühimmat stoklarını bilmesi gerekmektedir. Bu özellikler sonraki aşamalarda eklenecektir.
                     </p>
                 </CardContent>
