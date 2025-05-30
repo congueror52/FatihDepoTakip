@@ -8516,5 +8516,137 @@
     "entityType": "Shipment",
     "entityId": "0c801ab7-df52-4aa5-b542-b44604a98f85",
     "status": "SUCCESS"
+  },
+  {
+    "id": "da0d9ca9-a37e-4ace-8b3c-283e655c70dd",
+    "timestamp": "2025-05-30T19:56:07.864Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Shipment",
+    "entityId": "baba01f8-0eaf-4333-8891-f6a629ace612",
+    "status": "SUCCESS",
+    "details": {
+      "date": "2025-05-30T00:00:00.000Z",
+      "typeId": "type_incoming",
+      "items": [
+        {
+          "id": "252f3f7c-c3bb-4658-ae5e-e406848c15d5",
+          "name": "BALİSTİK YELEK",
+          "itemType": "other",
+          "quantity": 1
+        }
+      ],
+      "destinationDepotId": "depotA",
+      "supplier": "",
+      "trackingNumber": "",
+      "notes": "",
+      "id": "baba01f8-0eaf-4333-8891-f6a629ace612",
+      "lastUpdated": "2025-05-30T19:56:07.836Z"
+    }
+  },
+  {
+    "id": "9a6d6fb1-2f38-4180-b232-8ef177509130",
+    "timestamp": "2025-05-30T19:56:30.869Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "ShipmentTypeDefinition",
+    "entityId": "type_prev_period_transfer",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "99283541-8afe-4f75-a228-0ebd94993cbf",
+    "timestamp": "2025-05-30T19:56:34.699Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "ShipmentTypeDefinition",
+    "entityId": "type_transfer",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "16df1626-6287-48e3-b1da-ccd2f5c7040d",
+    "timestamp": "2025-05-30T19:56:38.445Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "ShipmentTypeDefinition",
+    "entityId": "type_outgoing",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "b640c785-3a40-446e-a994-98f574408c25",
+    "timestamp": "2025-05-30T19:56:41.303Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "ShipmentTypeDefinition",
+    "entityId": "type_incoming",
+    "status": "FAILURE",
+    "errorMessage": "Bu kayıt türünü kullanan malzeme kayıtları (sevkiyatlar) mevcut. Önce bu kayıtları silin veya farklı bir türe taşıyın."
+  },
+  {
+    "id": "62240850-511f-4001-b0ab-cfc08ce55fad",
+    "timestamp": "2025-05-30T19:57:19.883Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "ShipmentTypeDefinition",
+    "entityId": "fabe47c5-b04e-4f33-83f0-90a55660e029",
+    "status": "SUCCESS",
+    "details": {
+      "name": "ACM EĞİTİMİ",
+      "description": "de",
+      "requiresSourceDepot": true,
+      "requiresDestinationDepot": true,
+      "id": "fabe47c5-b04e-4f33-83f0-90a55660e029",
+      "lastUpdated": "2025-05-30T19:57:19.870Z"
+    }
+  },
+  {
+    "id": "3b539427-d68f-4234-91e5-108de9068b37",
+    "timestamp": "2025-05-30T20:06:32.860Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "OtherMaterial",
+    "entityId": "c265ef46-371c-49f2-9428-d2951dd050c9",
+    "status": "SUCCESS",
+    "details": {
+      "name": "çelik yelek",
+      "category": "koruyucu ekipman",
+      "quantity": 1,
+      "depotId": "depotA",
+      "status": "Depoda",
+      "purchaseDate": "2025-05-30T00:00:00.000Z",
+      "notes": "",
+      "manufacturer": "nurol",
+      "id": "c265ef46-371c-49f2-9428-d2951dd050c9",
+      "itemType": "other",
+      "lastUpdated": "2025-05-30T20:06:32.854Z",
+      "maintenanceHistory": []
+    }
   }
 ]

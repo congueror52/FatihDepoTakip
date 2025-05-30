@@ -1,4 +1,3 @@
-
 [
   {
     "id": "type_incoming",
@@ -9,27 +8,11 @@
     "lastUpdated": "2023-01-01T00:00:00.000Z"
   },
   {
-    "id": "type_outgoing",
-    "name": "Giden Malzeme",
-    "description": "Depodan dış bir hedefe malzeme çıkışı.",
-    "requiresSourceDepot": true,
-    "requiresDestinationDepot": false,
-    "lastUpdated": "2023-01-01T00:00:00.000Z"
-  },
-  {
-    "id": "type_transfer",
-    "name": "Depolar Arası Transfer",
-    "description": "İki depo arasında malzeme transferi.",
+    "name": "ACM EĞİTİMİ",
+    "description": "de",
     "requiresSourceDepot": true,
     "requiresDestinationDepot": true,
-    "lastUpdated": "2023-01-01T00:00:00.000Z"
-  },
-  {
-    "id": "type_prev_period_transfer",
-    "name": "Geçen Dönemden Devreden",
-    "description": "Önceki bir dönemden mevcut döneme aktarılan malzeme.",
-    "requiresSourceDepot": false,
-    "requiresDestinationDepot": true,
-    "lastUpdated": "2023-01-01T00:00:00.000Z"
+    "id": "fabe47c5-b04e-4f33-83f0-90a55660e029",
+    "lastUpdated": "2025-05-30T19:57:19.870Z"
   }
 ]

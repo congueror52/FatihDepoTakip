@@ -1,2 +1,16 @@
-
-[]
+[
+  {
+    "name": "çelik yelek",
+    "category": "koruyucu ekipman",
+    "quantity": 1,
+    "depotId": "depotA",
+    "status": "Depoda",
+    "purchaseDate": "2025-05-30T00:00:00.000Z",
+    "notes": "",
+    "manufacturer": "nurol",
+    "id": "c265ef46-371c-49f2-9428-d2951dd050c9",
+    "itemType": "other",
+    "lastUpdated": "2025-05-30T20:06:32.854Z",
+    "maintenanceHistory": []
+  }
+]
