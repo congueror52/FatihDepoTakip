@@ -39,7 +39,6 @@ const menuItems = [
   { href: '/inventory/ammunition', label: 'Mühimmat', icon: Box },
   { href: '/inventory/other-materials', label: 'Diğer Malzemeler', icon: Package },
   { href: '/daily-ammo-usage', label: 'Günlük Fişek Kullanımı', icon: ClipboardList },
-  // { href: '/shipments', label: 'Malzeme Kaydı', icon: Truck }, // Moved to Admin
   { href: '/maintenance', label: 'Bakım', icon: Wrench },
   { href: '/alerts', label: 'Sistem Uyarıları', icon: ShieldAlert },
   {
@@ -50,7 +49,7 @@ const menuItems = [
       { href: '/admin/firearms-definitions', label: 'Silah Tanımları', icon: Target },
       { href: '/admin/usage-scenarios', label: 'Kullanım Senaryoları', icon: FileCheck2 },
       { href: '/admin/depots', label: 'Depo Tanımları', icon: Warehouse },
-      { href: '/shipments', label: 'Malzeme Kayıt Takibi', icon: Truck }, // Added here
+      { href: '/shipments', label: 'Malzeme Kayıt Takibi', icon: Truck },
       { href: '/admin/shipment-types', label: 'Malzeme Kayıt Türleri', icon: ListOrdered },
       { href: '/admin/alert-definitions', label: 'Uyarı Tanımları', icon: BellDot },
       { href: '/admin/audit-logs', label: 'Denetim Kayıtları', icon: FileText },
@@ -61,12 +60,19 @@ const menuItems = [
 export function MainNav() {
   const pathname = usePathname();
   const [openMenus, setOpenMenus] = useState<{[key: string]: boolean}>({});
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const toggleMenu = (label: string) => {
     setOpenMenus(prev => ({...prev, [label]: !prev[label]}));
   };
 
   useEffect(() => {
+    if (!isMounted) return; // Only run this effect after client has mounted
+
     const initialOpenMenus: {[key: string]: boolean} = {};
     let parentLabelToOpen: string | null = null;
 
@@ -81,32 +87,36 @@ export function MainNav() {
       initialOpenMenus[parentLabelToOpen] = true;
     }
     setOpenMenus(initialOpenMenus);
-  }, [pathname]);
+  }, [pathname, isMounted]);
 
 
   return (
     <SidebarMenu className="p-4">
       {menuItems.map((item) => (
-        <SidebarMenuItem key={item.label}>
+        <SidebarMenuItem key={item.href || item.label}>
           {item.isParent && item.children ? (
             <>
               <SidebarMenuButton
                 onClick={() => toggleMenu(item.label)}
                 className="justify-between"
                 isActive={item.children.some(child => pathname.startsWith(child.href))}
+                suppressHydrationWarning
               >
                 <div className="flex items-center gap-2">
                   <item.icon className="h-5 w-5" />
                   <span suppressHydrationWarning>{item.label}</span>
                 </div>
-                {openMenus[item.label] ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                {isMounted && openMenus[item.label] ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
               </SidebarMenuButton>
-              {openMenus[item.label] && (
+              {isMounted && openMenus[item.label] && (
                 <SidebarMenuSub>
                   {item.children.map(child => (
                      <SidebarMenuItem key={child.href}>
                         <Link href={child.href} legacyBehavior passHref>
-                          <SidebarMenuSubButton isActive={pathname.startsWith(child.href)}>
+                          <SidebarMenuSubButton 
+                            isActive={pathname.startsWith(child.href)}
+                            suppressHydrationWarning
+                          >
                             <child.icon className={cn("h-4 w-4", pathname.startsWith(child.href) ? "text-sidebar-primary" : "")} />
                             <span suppressHydrationWarning>{child.label}</span>
                           </SidebarMenuSubButton>
@@ -118,7 +128,10 @@ export function MainNav() {
             </>
           ) : (
             <Link href={item.href!} legacyBehavior passHref>
-              <SidebarMenuButton isActive={pathname.startsWith(item.href!)}>
+              <SidebarMenuButton 
+                isActive={pathname.startsWith(item.href!)}
+                suppressHydrationWarning
+              >
                 <item.icon className="h-5 w-5" />
                 <span suppressHydrationWarning>{item.label}</span>
               </SidebarMenuButton>
@@ -129,3 +142,4 @@ export function MainNav() {
     </SidebarMenu>
   );
 }
+
