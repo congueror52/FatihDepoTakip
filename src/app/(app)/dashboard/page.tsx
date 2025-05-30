@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Briefcase, Users, ShieldAlert, BarChart3, Activity, Target, ListChecks, BellRing, ListTree, LineChart as LineChartIcon } from 'lucide-react';
+import { Briefcase, Users, ShieldAlert, BarChart3, Activity, Target, ListChecks, BellRing, ListTree, LineChart as LineChartIcon, Box as BoxIcon } from 'lucide-react'; // Added BoxIcon
 import Link from 'next/link';
 import { 
   getFirearms, 
@@ -9,14 +9,14 @@ import {
   getTriggeredAlerts, 
   getRecentAuditLogs,
   getAmmunitionDailyUsageLogs,
-  getMonthlyScenarioUsageForChart // Yeni eklenen fonksiyon
+  getMonthlyScenarioUsageForChart 
 } from '@/lib/actions/inventory.actions';
 import type { AlertDefinition, SupportedCaliber } from '@/types/inventory'; 
 import { SUPPORTED_CALIBERS } from '@/types/inventory'; 
 import { Badge } from '@/components/ui/badge'; 
 import type { AuditLogEntry } from '@/types/audit';
 import { AmmunitionUsageSummaryChart } from './_components/ammunition-usage-summary-chart'; 
-import { MonthlyScenarioUsageChart } from './_components/monthly-scenario-usage-chart'; // Yeni grafik bileşeni
+import { MonthlyScenarioUsageChart } from './_components/monthly-scenario-usage-chart'; 
 
 
 export default async function DashboardPage() {
@@ -26,7 +26,7 @@ export default async function DashboardPage() {
   const triggeredAlerts = await getTriggeredAlerts(); 
   const recentAuditLogs = await getRecentAuditLogs(5);
   const dailyUsageLogs = await getAmmunitionDailyUsageLogs(); 
-  const monthlyScenarioUsageData = await getMonthlyScenarioUsageForChart(); // Veri çekme
+  const monthlyScenarioUsageData = await getMonthlyScenarioUsageForChart(); 
 
   const totalOtherItems = 0; 
 
@@ -110,64 +110,61 @@ export default async function DashboardPage() {
     <div className="flex flex-col gap-6">
       <h1 className="text-3xl font-bold tracking-tight" suppressHydrationWarning>ÖZET BİLGİLER</h1>
       
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5"> {/* Adjusted to 5 columns for better fit */}
+        <Card className="bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <Link href="/inventory/firearms" className="hover:underline">
-              <CardTitle className="text-sm font-medium" suppressHydrationWarning>Toplam Silah</CardTitle>
+              <CardTitle className="text-sm font-medium text-green-700 dark:text-green-400" suppressHydrationWarning>Toplam Silah</CardTitle>
             </Link>
-            <Target className="h-4 w-4 text-muted-foreground" />
+            <Target className="h-4 w-4 text-green-700 dark:text-green-400 opacity-80" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{summaryData.totalFirearms}</div>
+            <div className="text-2xl font-bold text-green-700 dark:text-green-400">{summaryData.totalFirearms}</div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <Link href="/inventory/magazines" className="hover:underline">
-              <CardTitle className="text-sm font-medium" suppressHydrationWarning>Toplam Şarjör</CardTitle>
+              <CardTitle className="text-sm font-medium text-blue-700 dark:text-blue-400" suppressHydrationWarning>Toplam Şarjör</CardTitle>
             </Link>
-            <ListChecks className="h-4 w-4 text-muted-foreground" />
+            <ListChecks className="h-4 w-4 text-blue-700 dark:text-blue-400 opacity-80" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{summaryData.totalMagazines}</div>
+            <div className="text-2xl font-bold text-blue-700 dark:text-blue-400">{summaryData.totalMagazines}</div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="bg-purple-50 dark:bg-purple-900/30 border-purple-200 dark:border-purple-700">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <Link href="/inventory/ammunition" className="hover:underline">
-              <CardTitle className="text-sm font-medium" suppressHydrationWarning>Mühimmat Adedi</CardTitle>
+              <CardTitle className="text-sm font-medium text-purple-700 dark:text-purple-400" suppressHydrationWarning>Mühimmat Adedi</CardTitle>
             </Link>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-box h-4 w-4 text-muted-foreground"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.29 7 12 12 20.71 7"/><line x1="12" x2="12" y1="22" y2="12"/></svg>
+            <BoxIcon className="h-4 w-4 text-purple-700 dark:text-purple-400 opacity-80" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{summaryData.totalAmmunitionRounds.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-purple-700 dark:text-purple-400">{summaryData.totalAmmunitionRounds.toLocaleString()}</div>
           </CardContent>
         </Card>
-         <Card>
+         <Card className="bg-orange-50 dark:bg-orange-900/30 border-orange-200 dark:border-orange-700">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium" suppressHydrationWarning>Toplam Diğer Malzemeler</CardTitle>
-            <Briefcase className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-orange-700 dark:text-orange-400" suppressHydrationWarning>Toplam Diğer Malzemeler</CardTitle>
+            <Briefcase className="h-4 w-4 text-orange-700 dark:text-orange-400 opacity-80" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalOtherItems}</div>
+            <div className="text-2xl font-bold text-orange-700 dark:text-orange-400">{totalOtherItems}</div>
           </CardContent>
         </Card>
-      </div>
-      
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className={triggeredAlerts.length > 0 ? "bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700" : "bg-gray-50 dark:bg-gray-900/30 border-gray-200 dark:border-gray-700"}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <Link href="/alerts" className="hover:underline">
-              <CardTitle className="text-sm font-medium">
+              <CardTitle className={`text-sm font-medium ${triggeredAlerts.length > 0 ? 'text-red-700 dark:text-red-400' : 'text-gray-700 dark:text-gray-400'}`}>
                 <span suppressHydrationWarning>Aktif Uyarılar</span>
               </CardTitle>
             </Link>
-            <ShieldAlert className={`h-4 w-4 ${triggeredAlerts.length > 0 ? 'text-destructive' : 'text-muted-foreground'}`} />
+            <ShieldAlert className={`h-4 w-4 ${triggeredAlerts.length > 0 ? 'text-red-700 dark:text-red-400' : 'text-gray-700 dark:text-gray-400'} opacity-80`} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{triggeredAlerts.length}</div>
-            <p className="text-xs text-muted-foreground" suppressHydrationWarning>
+            <div className={`text-2xl font-bold ${triggeredAlerts.length > 0 ? 'text-red-700 dark:text-red-400' : 'text-gray-700 dark:text-gray-400'}`}>{triggeredAlerts.length}</div>
+            <p className={`text-xs ${triggeredAlerts.length > 0 ? 'text-red-600 dark:text-red-500' : 'text-gray-600 dark:text-gray-500'}`} suppressHydrationWarning>
               {triggeredAlerts.length === 0 ? "aktif uyarı bulunmuyor" : (triggeredAlerts.length === 1 ? "aktif uyarı" : `${triggeredAlerts.length} aktif uyarı`)}
             </p>
           </CardContent>
@@ -271,3 +268,4 @@ export default async function DashboardPage() {
     </div>
   );
 }
+
