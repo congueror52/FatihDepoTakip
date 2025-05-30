@@ -1,23 +1,24 @@
 
-export type DepotId = string; 
+export type DepotId = string;
 
 // Updated Status Types
 export type FirearmStatus = 'Depoda' | 'Destekte' | 'Depoda Arızalı' | 'Poligonda' | 'Rapor Bekliyor';
 export type MagazineStatus = 'Depoda' | 'Destekte' | 'Depoda Arızalı' | 'Poligonda' | 'Rapor Bekliyor';
 export type AmmunitionStatus = 'Mevcut' | 'Düşük Stok' | 'Kritik Stok' | 'Tükenmek Üzere';
-export type MaintenanceItemStatus = FirearmStatus | MagazineStatus;
+export type OtherMaterialStatus = 'Depoda' | 'Kullanımda' | 'Arızalı' | 'Bakımda' | 'Hizmet Dışı'; // New status type
+export type MaintenanceItemStatus = FirearmStatus | MagazineStatus | OtherMaterialStatus; // Added OtherMaterialStatus
 
 export type InventoryItemType = 'firearm' | 'magazine' | 'ammunition' | 'other';
 
 
 export interface BaseItem {
   id: string;
-  name: string; 
+  name: string;
   depotId: DepotId;
   notes?: string;
   lastUpdated: string; // ISO date string
   purchaseDate?: string; // ISO date string
-  manufacturer?: string; 
+  manufacturer?: string;
 }
 
 export const SUPPORTED_CALIBERS = ["9x19mm", "5.56x45mm", "7.62x39mm", "7.62x51mm"] as const;
@@ -26,20 +27,20 @@ export type SupportedCaliber = typeof SUPPORTED_CALIBERS[number];
 // Master definition for a firearm type
 export interface FirearmDefinition {
   id: string;
-  name: string; 
-  model: string; 
-  manufacturer?: string; 
-  caliber: SupportedCaliber; 
+  name: string;
+  model: string;
+  manufacturer?: string;
+  caliber: SupportedCaliber;
   description?: string;
   lastUpdated: string;
 }
 
 export interface Firearm extends BaseItem {
   itemType: 'firearm';
-  definitionId: string; 
+  definitionId: string;
   serialNumber: string;
-  model: string; 
-  caliber: SupportedCaliber; 
+  model: string;
+  caliber: SupportedCaliber;
   status: FirearmStatus;
   maintenanceHistory?: MaintenanceLog[];
 }
@@ -49,8 +50,8 @@ export interface Magazine extends BaseItem {
   caliber: SupportedCaliber;
   capacity: number;
   status: MagazineStatus;
-  compatibleFirearmDefinitionId?: string; 
-  serialNumber?: string; 
+  compatibleFirearmDefinitionId?: string;
+  serialNumber?: string;
   maintenanceHistory?: MaintenanceLog[];
 }
 
@@ -58,23 +59,31 @@ export interface Ammunition extends BaseItem {
   itemType: 'ammunition';
   caliber: SupportedCaliber;
   quantity: number;
-  bulletType?: string; 
+  bulletType?: string;
   lotNumber?: string;
-  status: AmmunitionStatus; 
+  status: AmmunitionStatus;
 }
 
-export type InventoryItem = Firearm | Magazine | Ammunition;
+export interface OtherMaterial extends BaseItem {
+  itemType: 'other';
+  category?: string; // e.g., "Koruyucu Ekipman", "Eğitim Malzemesi"
+  quantity: number; // Could be 1 for individually tracked items
+  status: OtherMaterialStatus;
+  maintenanceHistory?: MaintenanceLog[];
+}
+
+export type InventoryItem = Firearm | Magazine | Ammunition | OtherMaterial;
 
 
 export interface ShipmentItem {
-  id: string; 
-  name: string; 
+  id: string;
+  name: string;
   itemType: InventoryItemType;
   quantity: number;
   caliber?: SupportedCaliber;
-  model?: string; 
-  serialNumber?: string; 
-  capacity?: number; 
+  model?: string;
+  serialNumber?: string;
+  capacity?: number;
 }
 
 export interface ShipmentTypeDefinition {
@@ -88,44 +97,44 @@ export interface ShipmentTypeDefinition {
 
 export interface Shipment {
   id: string;
-  date: string; 
-  typeId: string; 
+  date: string;
+  typeId: string;
   items: ShipmentItem[];
   notes?: string;
-  supplier?: string; 
+  supplier?: string;
   trackingNumber?: string;
-  sourceDepotId?: DepotId; 
-  destinationDepotId?: DepotId; 
+  sourceDepotId?: DepotId;
+  destinationDepotId?: DepotId;
   lastUpdated: string;
 }
 
 
 export interface MaintenanceLog {
   id:string;
-  date: string; 
+  date: string;
   description: string;
   statusChangeFrom: MaintenanceItemStatus;
   statusChangeTo: MaintenanceItemStatus;
   technician?: string;
-  partsUsed?: string; 
+  partsUsed?: string;
 }
 
 export interface AmmunitionUsageLog {
   id: string;
-  date: string; 
-  ammunitionId: string; 
+  date: string;
+  ammunitionId: string;
   quantityUsed: number;
   depotId: DepotId;
-  purpose?: string; 
-  userId?: string; 
+  purpose?: string;
+  userId?: string;
   notes?: string;
 }
 
 export interface AmmunitionDailyUsageLog {
   id: string;
-  date: string; 
+  date: string;
   personnelCount: number;
-  usageScenarioId?: string; 
+  usageScenarioId?: string;
   used_9x19mm: number;
   used_5_56x45mm: number;
   used_7_62x39mm: number;
@@ -138,7 +147,7 @@ export const INVENTORY_ITEM_TYPES: {value: InventoryItemType, label: string}[] =
     {value: 'firearm', label: 'Silah'},
     {value: 'magazine', label: 'Şarjör'},
     {value: 'ammunition', label: 'Mühimmat'},
-    {value: 'other', label: 'Diğer Malzemeler'},
+    {value: 'other', label: 'Diğer Malzeme'},
 ];
 
 
@@ -155,12 +164,12 @@ export interface UsageScenario {
 }
 
 export interface Depot {
-  id: DepotId; 
-  name: string; 
+  id: DepotId;
+  name: string;
   address?: string;
   contactPerson?: string;
   notes?: string;
-  lastUpdated: string; 
+  lastUpdated: string;
 }
 
 
@@ -189,16 +198,16 @@ export interface AlertDefinition {
   description?: string;
   entityType: AlertEntityType;
   conditionType: AlertConditionType;
-  depotId?: DepotId; 
-  caliberFilter?: SupportedCaliber; 
-  thresholdValue?: number; 
-  statusFilter?: FirearmStatus | MagazineStatus; 
-  daysBeforeMaintenance?: number; 
-  
+  depotId?: DepotId;
+  caliberFilter?: SupportedCaliber;
+  thresholdValue?: number;
+  statusFilter?: FirearmStatus | MagazineStatus;
+  daysBeforeMaintenance?: number;
+
   severity: AlertSeverity;
-  messageTemplate: string; 
+  messageTemplate: string;
   isActive: boolean;
-  lastUpdated: string; 
+  lastUpdated: string;
 }
 
 
@@ -206,6 +215,7 @@ export interface AlertDefinition {
 export type FirearmsDb = Firearm[];
 export type MagazinesDb = Magazine[];
 export type AmmunitionDb = Ammunition[];
+export type OtherMaterialsDb = OtherMaterial[]; // New DB type
 export type ShipmentsDb = Shipment[];
 export type AmmunitionUsageDb = AmmunitionUsageLog[];
 export type FirearmDefinitionsDb = FirearmDefinition[];

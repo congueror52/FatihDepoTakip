@@ -18,7 +18,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { maintenanceLogFormSchema, type MaintenanceLogFormValues } from "./maintenance-log-form-schema";
 import { addMaintenanceLogToItemAction } from "@/lib/actions/inventory.actions";
-import { logAction } from "@/lib/log-service";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { CalendarIcon, Loader2, Wrench } from "lucide-react";
@@ -27,20 +26,22 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
-import type { Firearm, Magazine, MaintenanceItemStatus, FirearmDefinition, MagazineStatus, FirearmStatus } from "@/types/inventory";
+import type { Firearm, Magazine, OtherMaterial, MaintenanceItemStatus, FirearmDefinition, MagazineStatus, FirearmStatus, OtherMaterialStatus } from "@/types/inventory"; // Added OtherMaterial, OtherMaterialStatus
 import { firearmStatuses as firearmStatusesArray } from "@/app/(app)/inventory/firearms/_components/firearm-form-schema";
 import { magazineStatuses as magazineStatusesArray } from "@/app/(app)/inventory/magazines/_components/magazine-form-schema";
+import { otherMaterialStatuses as otherMaterialStatusesArray } from "@/app/(app)/inventory/other-materials/_components/other-material-form-schema"; // New import
 import { useEffect, useState } from "react";
 
 interface MaintenanceLogFormProps {
   firearms: Firearm[];
   magazines: Magazine[];
+  otherMaterials: OtherMaterial[]; // New prop
   firearmDefinitions: FirearmDefinition[];
 }
 
-const allPossibleStatuses = [...new Set([...firearmStatusesArray, ...magazineStatusesArray])] as [string, ...string[]];
+const allPossibleStatuses = [...new Set([...firearmStatusesArray, ...magazineStatusesArray, ...otherMaterialStatusesArray])] as [string, ...string[]];
 
-export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: MaintenanceLogFormProps) {
+export function MaintenanceLogForm({ firearms, magazines, otherMaterials, firearmDefinitions }: MaintenanceLogFormProps) {
   const { toast } = useToast();
   const router = useRouter();
   const [filteredFirearms, setFilteredFirearms] = useState<Firearm[]>([]);
@@ -53,7 +54,7 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
     selectedFirearmDefIdForFilter: undefined,
     date: format(new Date(), 'yyyy-MM-dd'),
     description: "",
-    statusChangeFrom: "", 
+    statusChangeFrom: "",
     statusChangeTo: undefined,
     technician: "",
     partsUsed: "",
@@ -73,26 +74,30 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
     form.resetField("itemId");
     form.setValue("statusChangeFrom", "");
     form.resetField("statusChangeTo");
-    
+
     if (watchedItemType === 'firearm') {
       setCurrentStatuses(firearmStatusesArray);
     } else if (watchedItemType === 'magazine') {
       setCurrentStatuses(magazineStatusesArray);
-      form.setValue("selectedFirearmDefIdForFilter", undefined); 
-      setFilteredFirearms([]); 
+      form.setValue("selectedFirearmDefIdForFilter", undefined);
+      setFilteredFirearms([]);
+    } else if (watchedItemType === 'other') { // Added 'other'
+      setCurrentStatuses(otherMaterialStatusesArray);
+      form.setValue("selectedFirearmDefIdForFilter", undefined);
+      setFilteredFirearms([]);
     } else {
       setCurrentStatuses([]);
       form.setValue("selectedFirearmDefIdForFilter", undefined);
       setFilteredFirearms([]);
     }
   }, [watchedItemType, form]);
-  
+
   useEffect(() => {
     if (watchedItemType === 'firearm' && watchedFirearmDefIdForFilter) {
       setFilteredFirearms(firearms.filter(f => f.definitionId === watchedFirearmDefIdForFilter));
-      form.resetField("itemId"); 
+      form.resetField("itemId");
     } else if (watchedItemType === 'firearm' && !watchedFirearmDefIdForFilter) {
-      setFilteredFirearms([]); 
+      setFilteredFirearms([]);
       form.resetField("itemId");
     }
   }, [watchedItemType, watchedFirearmDefIdForFilter, firearms, form]);
@@ -100,30 +105,27 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
 
   useEffect(() => {
     if (watchedItemId) {
-      let item: Firearm | Magazine | undefined;
+      let item: Firearm | Magazine | OtherMaterial | undefined; // Added OtherMaterial
       if (watchedItemType === 'firearm') {
         item = (watchedFirearmDefIdForFilter ? filteredFirearms : firearms).find(i => i.id === watchedItemId);
       } else if (watchedItemType === 'magazine') {
         item = magazines.find(i => i.id === watchedItemId);
+      } else if (watchedItemType === 'other') { // Added 'other'
+        item = otherMaterials.find(i => i.id === watchedItemId);
       }
-      
+
       if (item) {
         const currentItemStatus = item.status as MaintenanceItemStatus;
         if (allPossibleStatuses.includes(currentItemStatus)) {
             form.setValue("statusChangeFrom", currentItemStatus, { shouldValidate: true });
         } else {
-            // If the item's current status is not in the list of possible statuses (e.g. old data),
-            // set statusChangeFrom to an empty string to pass Zod validation.
-            // The read-only input will still show the actual (old) status for user information if needed,
-            // or we simply show empty, relying on the user to know the context.
-            // For schema validity, it must be "" or one of the enum values.
             form.setValue("statusChangeFrom", "", { shouldValidate: true });
         }
       }
     } else {
       form.setValue("statusChangeFrom", "", { shouldValidate: true });
     }
-  }, [watchedItemId, watchedItemType, filteredFirearms, firearms, magazines, form, watchedFirearmDefIdForFilter]);
+  }, [watchedItemId, watchedItemType, filteredFirearms, firearms, magazines, otherMaterials, form, watchedFirearmDefIdForFilter]);
 
 
   async function onSubmit(data: MaintenanceLogFormValues) {
@@ -133,7 +135,7 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
     }
     let logEntryId: string | undefined = undefined;
     try {
-      const { selectedFirearmDefIdForFilter, ...logSubmitData } = data; 
+      const { selectedFirearmDefIdForFilter, ...logSubmitData } = data;
 
       const result = await addMaintenanceLogToItemAction(logSubmitData.itemId, logSubmitData.itemType, {
         date: new Date(logSubmitData.date).toISOString(),
@@ -145,16 +147,16 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
       });
       logEntryId = result.id;
       toast({ variant: "success", title: "Başarılı", description: "Bakım kaydı başarıyla eklendi." });
-      router.push(`/inventory/${data.itemType === 'firearm' ? 'firearms' : 'magazines'}/${data.itemId}`);
+      router.push(`/inventory/${data.itemType === 'other' ? 'other-materials' : data.itemType + 's'}/${data.itemId}`);
       router.refresh();
     } catch (error: any) {
-      await logAction({ 
-        actionType: "CREATE", 
-        entityType: "MaintenanceLog", 
-        entityId: logEntryId || data.itemId, 
-        status: "FAILURE", 
-        details: data, 
-        errorMessage: error.message 
+      await logAction({
+        actionType: "LOG_MAINTENANCE",
+        entityType: "MaintenanceLog",
+        entityId: logEntryId || data.itemId,
+        status: "FAILURE",
+        details: data,
+        errorMessage: error.message
       });
       toast({ variant: "destructive", title: "Hata", description: error.message || "Bakım kaydı eklenirken bir hata oluştu." });
       console.error("Bakım kaydı gönderme hatası:", error);
@@ -162,14 +164,17 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
   }
 
   const getDisplayLabel = (statusValue: string) => {
-    const itemTypeSuffix = watchedItemType === 'firearm' ? ' Silahlar' : (watchedItemType === 'magazine' ? ' Şarjörler' : '');
+    const itemTypeSuffix = watchedItemType === 'firearm' ? ' Silahlar' : (watchedItemType === 'magazine' ? ' Şarjörler' : (watchedItemType === 'other' ? ' Malzemeler' : ''));
     switch (statusValue) {
         case "Depoda Arızalı": return `Depoda Arızalı${itemTypeSuffix.trim()}`;
         case "Depoda": return `Depodaki${itemTypeSuffix.trim()}`;
         case "Destekte": return "Desteğe Teslim Edilenler";
         case "Poligonda": return `Poligondaki${itemTypeSuffix.trim()}`;
         case "Rapor Bekliyor": return "Rapor Yazılacaklar";
-        default: return statusValue; 
+        case "Kullanımda": return `Kullanımdaki${itemTypeSuffix.trim()}`;
+        case "Bakımda": return `Bakımdaki${itemTypeSuffix.trim()}`;
+        case "Hizmet Dışı": return `Hizmet Dışı${itemTypeSuffix.trim()}`;
+        default: return statusValue;
     }
   };
 
@@ -184,7 +189,7 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
             <FormItem>
                 <FormLabel><span suppressHydrationWarning>Öğe Türü</span></FormLabel>
                 <Select
-                  onValueChange={(value) => field.onChange(value as 'firearm' | 'magazine' | undefined)}
+                  onValueChange={(value) => field.onChange(value as 'firearm' | 'magazine' | 'other' | undefined)}
                   value={field.value}
                 >
                     <FormControl>
@@ -195,6 +200,7 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
                     <SelectContent>
                         <SelectItem value="firearm"><span suppressHydrationWarning>Silah</span></SelectItem>
                         <SelectItem value="magazine"><span suppressHydrationWarning>Şarjör</span></SelectItem>
+                        <SelectItem value="other"><span suppressHydrationWarning>Diğer Malzeme</span></SelectItem>
                     </SelectContent>
                 </Select>
                 <FormMessage />
@@ -209,7 +215,7 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
             render={({ field }) => (
               <FormItem>
                 <FormLabel><span suppressHydrationWarning>Silah Türü Seçin</span></FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select onValueChange={field.onChange} value={field.value ?? undefined}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Bakımı yapılacak silahın türünü seçin" />
@@ -235,20 +241,27 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
             render={({ field }) => (
             <FormItem>
                 <FormLabel><span suppressHydrationWarning>Bakım Yapılacak Öğe</span></FormLabel>
-                <Select onValueChange={field.onChange} value={field.value} disabled={!watchedItemType || (watchedItemType === 'firearm' && !watchedFirearmDefIdForFilter)}>
+                <Select onValueChange={field.onChange} value={field.value ?? undefined} disabled={!watchedItemType || (watchedItemType === 'firearm' && !watchedFirearmDefIdForFilter)}>
                 <FormControl>
                     <SelectTrigger>
                     <SelectValue placeholder={
-                        !watchedItemType ? "Önce öğe türü seçin" : 
+                        !watchedItemType ? "Önce öğe türü seçin" :
                         (watchedItemType === 'firearm' && !watchedFirearmDefIdForFilter) ? "Önce silah türü seçin" :
                         "Öğeyi seçin"
                     } />
                     </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                    {(watchedItemType === 'firearm' ? (watchedFirearmDefIdForFilter ? filteredFirearms : firearms) : magazines).map(item => (
+                    {(watchedItemType === 'firearm' ? (watchedFirearmDefIdForFilter ? filteredFirearms : []) : // Show empty if type selected but def not
+                     watchedItemType === 'magazine' ? magazines :
+                     watchedItemType === 'other' ? otherMaterials : []
+                    ).map(item => (
                     <SelectItem key={item.id} value={item.id}>
-                        <span suppressHydrationWarning>{watchedItemType === 'firearm' ? `${(item as Firearm).name} (SN: ${(item as Firearm).serialNumber || 'N/A'})` : `${(item as Magazine).name} (ID: ${item.id.substring(0,6)}... Cal: ${item.caliber})`}</span>
+                        <span suppressHydrationWarning>{
+                            watchedItemType === 'firearm' ? `${(item as Firearm).name} (SN: ${(item as Firearm).serialNumber || 'N/A'})` :
+                            watchedItemType === 'magazine' ? `${(item as Magazine).name} (Kapasite: ${(item as Magazine).capacity}, Kalibre: ${(item as Magazine).caliber})` :
+                            (item as OtherMaterial).name
+                        }</span>
                     </SelectItem>
                     ))}
                 </SelectContent>
@@ -328,7 +341,7 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
                 <FormItem>
                     <FormLabel><span suppressHydrationWarning>Önceki Durum</span></FormLabel>
                     <FormControl>
-                        <Input {...field} readOnly className="bg-muted/50" value={field.value || ''} />
+                        <Input {...field} readOnly className="bg-muted/50" value={getDisplayLabel(field.value || '')} />
                     </FormControl>
                     <FormDescription><span suppressHydrationWarning>Bu alan öğe seçildiğinde otomatik dolar.</span></FormDescription>
                     <FormMessage />
@@ -341,7 +354,7 @@ export function MaintenanceLogForm({ firearms, magazines, firearmDefinitions }: 
                 render={({ field }) => (
                 <FormItem>
                     <FormLabel><span suppressHydrationWarning>Yeni Durum</span></FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value} disabled={!watchedItemId}>
+                    <Select onValueChange={field.onChange} value={field.value ?? undefined} disabled={!watchedItemId}>
                     <FormControl>
                         <SelectTrigger>
                             <SelectValue placeholder="Yeni durumu seçin" />

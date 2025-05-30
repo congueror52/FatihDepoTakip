@@ -1,34 +1,33 @@
 
 export type LogActionType = "CREATE" | "UPDATE" | "DELETE" | "LOG_USAGE" | "LOG_MAINTENANCE";
-export type LogEntityType = 
-  | "FirearmDefinition" 
-  | "Firearm" 
-  | "Magazine" 
-  | "Ammunition" 
-  | "Depot" 
-  | "UsageScenario" 
-  | "DailyAmmunitionUsage" 
-  | "Shipment" 
+export type LogEntityType =
+  | "FirearmDefinition"
+  | "Firearm"
+  | "Magazine"
+  | "Ammunition"
+  | "OtherMaterial" // New Entity Type
+  | "Depot"
+  | "UsageScenario"
+  | "DailyAmmunitionUsage"
+  | "Shipment"
   | "ShipmentTypeDefinition"
   | "MaintenanceLog"
   | "AmmunitionUsage" // General usage, might be deprecated
-  | "AlertDefinition"; // New Entity Type
+  | "AlertDefinition";
 
 export interface AuditLogEntry {
   id: string;
   timestamp: string; // ISO string
   actor: {
-    id: string; 
+    id: string;
     name: string; // e.g., "Admin Kullanıcısı"
-    type: "USER" | "SYSTEM"; 
+    type: "USER" | "SYSTEM";
   };
   actionType: LogActionType;
   entityType: LogEntityType;
-  entityId?: string;   
+  entityId?: string;
   status: "SUCCESS" | "FAILURE";
-  details?: any; 
+  details?: any;
   previousDetails?: any; // For updates, if needed, though can be complex
-  errorMessage?: string; 
+  errorMessage?: string;
 }
-
-    

@@ -18,7 +18,7 @@ import {
   ShieldAlert,
   ListChecks,
   Target,
-  Settings, 
+  Settings,
   ChevronDown,
   ChevronUp,
   ClipboardList,
@@ -26,7 +26,8 @@ import {
   Warehouse,
   ListOrdered,
   BellDot,
-  FileText // Icon for Audit Logs
+  FileText,
+  Package // Icon for Other Materials
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
@@ -36,6 +37,7 @@ const menuItems = [
   { href: '/inventory/firearms', label: 'Silahlar', icon: Target },
   { href: '/inventory/magazines', label: 'Şarjörler', icon: ListChecks },
   { href: '/inventory/ammunition', label: 'Mühimmat', icon: Box },
+  { href: '/inventory/other-materials', label: 'Diğer Malzemeler', icon: Package }, // New Menu Item
   { href: '/daily-ammo-usage', label: 'Günlük Fişek Kullanımı', icon: ClipboardList },
   { href: '/shipments', label: 'Malzeme Kaydı', icon: Truck },
   { href: '/maintenance', label: 'Bakım', icon: Wrench },
@@ -49,7 +51,7 @@ const menuItems = [
       { href: '/admin/usage-scenarios', label: 'Kullanım Senaryoları', icon: FileCheck2 },
       { href: '/admin/depots', label: 'Depo Tanımları', icon: Warehouse },
       { href: '/admin/shipment-types', label: 'Malzeme Kayıt Türleri', icon: ListOrdered },
-      { href: '/admin/alert-definitions', label: 'Uyarı Tanımları', icon: BellDot }, 
+      { href: '/admin/alert-definitions', label: 'Uyarı Tanımları', icon: BellDot },
       { href: '/admin/audit-logs', label: 'Denetim Kayıtları', icon: FileText },
     ]
   }
@@ -87,7 +89,7 @@ export function MainNav() {
         <SidebarMenuItem key={item.label}>
           {item.isParent && item.children ? (
             <>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={() => toggleMenu(item.label)}
                 className="justify-between"
                 isActive={item.children.some(child => pathname.startsWith(child.href))}
@@ -126,5 +128,3 @@ export function MainNav() {
     </SidebarMenu>
   );
 }
-
-    

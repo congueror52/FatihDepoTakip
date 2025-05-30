@@ -8424,5 +8424,97 @@
       "lastUpdated": "2025-05-30T19:32:43.934Z",
       "maintenanceHistory": []
     }
+  },
+  {
+    "id": "9d56997e-1812-4d33-89f9-e5a2450d33cf",
+    "timestamp": "2025-05-30T19:45:11.684Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Shipment",
+    "entityId": "0c801ab7-df52-4aa5-b542-b44604a98f85",
+    "status": "SUCCESS",
+    "details": {
+      "date": "2025-05-30T00:00:00.000Z",
+      "typeId": "type_incoming",
+      "items": [
+        {
+          "id": "6950bdb3-01d0-4db8-99b8-fd5acfd69fe1",
+          "name": "BALİSTİK YELEK",
+          "itemType": "other",
+          "quantity": 1
+        },
+        {
+          "id": "efad2361-ad3c-4a90-93d2-a39fd2b0a5a0",
+          "name": "BALİSTİK YELEK",
+          "itemType": "other",
+          "quantity": 1
+        },
+        {
+          "id": "b4da0444-030b-4530-96b6-8388f42d9c04",
+          "name": "BALİSTİK YELEK",
+          "itemType": "other",
+          "quantity": 1
+        },
+        {
+          "id": "6a1dcb0b-13dd-4e4a-86a5-a5728376cabc",
+          "name": "BALİSTİK YELEK",
+          "itemType": "other",
+          "quantity": 1
+        },
+        {
+          "id": "582e7295-be71-4366-ac50-86fd1233f091",
+          "name": "BALİSTİK YELEK",
+          "itemType": "other",
+          "quantity": 1
+        },
+        {
+          "id": "da5b0fe7-8cc9-49fe-89c1-bc7e18036675",
+          "name": "BALİSTİK YELEK",
+          "itemType": "other",
+          "quantity": 1
+        },
+        {
+          "id": "5540e1df-a0a1-4b15-a376-214c2caaf39a",
+          "name": "BALİSTİK YELEK",
+          "itemType": "other",
+          "quantity": 1
+        },
+        {
+          "id": "a4ec65d3-9cc1-45a6-a3b2-02250bf92712",
+          "name": "BALİSTİK YELEK",
+          "itemType": "other",
+          "quantity": 1
+        },
+        {
+          "id": "2d83a375-052f-422a-bb8d-725c071b60a4",
+          "name": "BALİSTİK YELEK",
+          "itemType": "other",
+          "quantity": 1
+        }
+      ],
+      "destinationDepotId": "depotB",
+      "supplier": "",
+      "trackingNumber": "",
+      "notes": "",
+      "id": "0c801ab7-df52-4aa5-b542-b44604a98f85",
+      "lastUpdated": "2025-05-30T19:45:11.664Z"
+    }
+  },
+  {
+    "id": "8a91873a-5063-4ffc-890d-01b064abd2e2",
+    "timestamp": "2025-05-30T19:47:53.705Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Shipment",
+    "entityId": "0c801ab7-df52-4aa5-b542-b44604a98f85",
+    "status": "SUCCESS"
   }
 ]

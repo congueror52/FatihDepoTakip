@@ -1,41 +1,42 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Briefcase, Users, ShieldAlert, BarChart3, Activity, Target, ListChecks, BellRing, ListTree, LineChart as LineChartIcon, Box as BoxIcon } from 'lucide-react'; // Added BoxIcon
+import { Briefcase, Users, ShieldAlert, BarChart3, Activity, Target, ListChecks, BellRing, ListTree, LineChart as LineChartIcon, Box as BoxIcon, Package as PackageIcon } from 'lucide-react'; // Added PackageIcon
 import Link from 'next/link';
-import { 
-  getFirearms, 
-  getMagazines, 
-  getAmmunition, 
-  getTriggeredAlerts, 
+import {
+  getFirearms,
+  getMagazines,
+  getAmmunition,
+  getOtherMaterials, // Added
+  getTriggeredAlerts,
   getRecentAuditLogs,
   getAmmunitionDailyUsageLogs,
-  getMonthlyScenarioUsageForChart 
+  getMonthlyScenarioUsageForChart
 } from '@/lib/actions/inventory.actions';
-import type { AlertDefinition, SupportedCaliber } from '@/types/inventory'; 
-import { SUPPORTED_CALIBERS } from '@/types/inventory'; 
-import { Badge } from '@/components/ui/badge'; 
+import type { AlertDefinition, SupportedCaliber } from '@/types/inventory';
+import { SUPPORTED_CALIBERS } from '@/types/inventory';
+import { Badge } from '@/components/ui/badge';
 import type { AuditLogEntry } from '@/types/audit';
-import { AmmunitionUsageSummaryChart } from './_components/ammunition-usage-summary-chart'; 
-import { MonthlyScenarioUsageChart } from './_components/monthly-scenario-usage-chart'; 
+import { AmmunitionUsageSummaryChart } from './_components/ammunition-usage-summary-chart';
+import { MonthlyScenarioUsageChart } from './_components/monthly-scenario-usage-chart';
 
 
 export default async function DashboardPage() {
   const firearms = await getFirearms();
   const magazines = await getMagazines();
-  const ammunitionStock = await getAmmunition(); 
-  const triggeredAlerts = await getTriggeredAlerts(); 
+  const ammunitionStock = await getAmmunition();
+  const otherMaterialsStock = await getOtherMaterials(); // Fetch other materials
+  const triggeredAlerts = await getTriggeredAlerts();
   const recentAuditLogs = await getRecentAuditLogs(5);
-  const dailyUsageLogs = await getAmmunitionDailyUsageLogs(); 
-  const monthlyScenarioUsageData = await getMonthlyScenarioUsageForChart(); 
-
-  const totalOtherItems = 0; 
+  const dailyUsageLogs = await getAmmunitionDailyUsageLogs();
+  const monthlyScenarioUsageData = await getMonthlyScenarioUsageForChart();
 
   const summaryData = {
     totalFirearms: firearms.length,
     totalMagazines: magazines.length,
     totalAmmunitionRounds: ammunitionStock.reduce((sum, ammo) => sum + ammo.quantity, 0),
+    totalOtherItems: otherMaterialsStock.reduce((sum, item) => sum + item.quantity, 0), // Sum quantities for other items
   };
-  
+
   const getSeverityBadgeClasses = (severity: AlertDefinition['severity']) => {
     switch (severity) {
       case 'Yüksek': return 'bg-red-500 hover:bg-red-600';
@@ -50,25 +51,26 @@ export default async function DashboardPage() {
     Firearm: "Silah",
     Magazine: "Şarjör",
     Ammunition: "Mühimmat",
+    OtherMaterial: "Diğer Malzeme", // Added
     Depot: "Depo",
     UsageScenario: "Kullanım Senaryosu",
     DailyAmmunitionUsage: "Günlük Fişek Kullanımı",
     Shipment: "Malzeme Kaydı",
     ShipmentTypeDefinition: "Malzeme Kayıt Türü",
     MaintenanceLog: "Bakım Kaydı",
-    AmmunitionUsage: "Mühimmat Kullanımı", 
+    AmmunitionUsage: "Mühimmat Kullanımı",
     AlertDefinition: "Uyarı Tanımı",
   };
 
   const formatLogEntryDescription = (log: AuditLogEntry): string => {
     const translatedEntityType = entityTypeTranslations[log.entityType] || log.entityType;
-    
+
     let identifier = log.details?.name || log.entityId || log.details?.id;
 
     if (typeof identifier === 'string' && identifier.length > 20) {
       identifier = `${identifier.substring(0, 17)}...`;
     } else if (!identifier) {
-      identifier = ''; 
+      identifier = '';
     }
 
     const identifierText = identifier ? `"${identifier}"` : '';
@@ -77,15 +79,15 @@ export default async function DashboardPage() {
       case 'CREATE':
         return `${translatedEntityType} ${identifierText} oluşturuldu.`;
       case 'UPDATE':
-        if ((log.entityType === 'Firearm' || log.entityType === 'Magazine') && log.details?.maintenanceLogAdded && log.details?.status) {
+        if ((log.entityType === 'Firearm' || log.entityType === 'Magazine' || log.entityType === 'OtherMaterial') && log.details?.maintenanceLogAdded && log.details?.status) {
              return `${translatedEntityType} ${identifierText} için bakım yapıldı, yeni durum: ${log.details.status}.`;
         }
         return `${translatedEntityType} ${identifierText} güncellendi.`;
       case 'DELETE':
         return `${translatedEntityType} ${identifierText} silindi.`;
-      case 'LOG_USAGE': 
+      case 'LOG_USAGE':
         return `Mühimmat kullanımı kaydedildi: ${log.details?.ammunitionId || identifierText}`;
-      case 'LOG_MAINTENANCE': 
+      case 'LOG_MAINTENANCE':
          return `${translatedEntityType} ${identifierText} oluşturuldu.`;
       default:
         return `${log.actionType} işlemi ${translatedEntityType} ${identifierText} üzerinde yapıldı.`;
@@ -109,8 +111,8 @@ export default async function DashboardPage() {
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-3xl font-bold tracking-tight" suppressHydrationWarning>ÖZET BİLGİLER</h1>
-      
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5"> {/* Adjusted to 5 columns for better fit */}
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
         <Card className="bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <Link href="/inventory/firearms" className="hover:underline">
@@ -146,11 +148,13 @@ export default async function DashboardPage() {
         </Card>
          <Card className="bg-orange-50 dark:bg-orange-900/30 border-orange-200 dark:border-orange-700">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-orange-700 dark:text-orange-400" suppressHydrationWarning>Toplam Diğer Malzemeler</CardTitle>
-            <Briefcase className="h-4 w-4 text-orange-700 dark:text-orange-400 opacity-80" />
+             <Link href="/inventory/other-materials" className="hover:underline">
+                <CardTitle className="text-sm font-medium text-orange-700 dark:text-orange-400" suppressHydrationWarning>Toplam Diğer Malzemeler</CardTitle>
+             </Link>
+            <PackageIcon className="h-4 w-4 text-orange-700 dark:text-orange-400 opacity-80" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-700 dark:text-orange-400">{totalOtherItems}</div>
+            <div className="text-2xl font-bold text-orange-700 dark:text-orange-400">{summaryData.totalOtherItems.toLocaleString()}</div>
           </CardContent>
         </Card>
         <Card className={triggeredAlerts.length > 0 ? "bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700" : "bg-gray-50 dark:bg-gray-900/30 border-gray-200 dark:border-gray-700"}>
@@ -182,7 +186,7 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-      
+
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <Card className="lg:col-span-4">
           <CardHeader>
@@ -221,51 +225,36 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-      
-      {triggeredAlerts.length === 0 && ( 
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <BellRing className="h-5 w-5 text-muted-foreground" />
-                        <span suppressHydrationWarning>Son Uyarılar</span>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-muted-foreground"><span suppressHydrationWarning>Dikkate değer son uyarı bulunmamaktadır.</span></p>
-                     <Link href="/alerts" className="text-sm text-primary hover:underline float-right mt-2">
-                        <span suppressHydrationWarning>Tanımlı Uyarılara Git</span>
-                    </Link>
-                </CardContent>
-            </Card>
-        )}
-         {triggeredAlerts.length > 0 && (
+
         <Card>
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                    <BellRing className="h-5 w-5 text-destructive" />
+                    <BellRing className="h-5 w-5 text-muted-foreground" />
                     <span suppressHydrationWarning>Son Uyarılar</span>
                 </CardTitle>
-                <CardDescription suppressHydrationWarning>Sistemdeki en son {Math.min(triggeredAlerts.length, 5)} önemli uyarı.</CardDescription>
+                 <CardDescription suppressHydrationWarning>Sistemdeki en son {Math.min(triggeredAlerts.length, 5)} önemli uyarı.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-                {triggeredAlerts.slice(0, 5).map(alert => (
-                    <div key={alert.id} className="flex items-start justify-between p-3 border rounded-md shadow-sm">
-                        <div>
-                            <p className="font-medium text-sm" suppressHydrationWarning>{alert.name}</p>
-                            <p className="text-xs text-muted-foreground" suppressHydrationWarning>
-                                {alert.messageTemplate.substring(0, 100) + '...'} - <span suppressHydrationWarning>Tanım Güncelleme: {new Date(alert.lastUpdated).toLocaleDateString('tr-TR')}</span>
-                            </p>
+                {triggeredAlerts.length === 0 ? (
+                    <p className="text-muted-foreground"><span suppressHydrationWarning>Dikkate değer son uyarı bulunmamaktadır.</span></p>
+                ) : (
+                    triggeredAlerts.slice(0, 5).map(alert => (
+                        <div key={alert.id} className="flex items-start justify-between p-3 border rounded-md shadow-sm">
+                            <div>
+                                <p className="font-medium text-sm" suppressHydrationWarning>{alert.name}</p>
+                                <p className="text-xs text-muted-foreground" suppressHydrationWarning>
+                                    {alert.messageTemplate.substring(0, 100) + '...'} - <span suppressHydrationWarning>Tanım Güncelleme: {new Date(alert.lastUpdated).toLocaleDateString('tr-TR')}</span>
+                                </p>
+                            </div>
+                            <Badge className={getSeverityBadgeClasses(alert.severity)}>{alert.severity}</Badge>
                         </div>
-                        <Badge className={getSeverityBadgeClasses(alert.severity)}>{alert.severity}</Badge>
-                    </div>
-                ))}
+                    ))
+                )}
                  <Link href="/alerts" className="text-sm text-primary hover:underline float-right mt-2">
                     <span suppressHydrationWarning>Tüm Uyarıları Gör</span>
                 </Link>
             </CardContent>
         </Card>
-      )}
     </div>
   );
 }
-
