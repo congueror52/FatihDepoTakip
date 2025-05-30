@@ -5062,5 +5062,181 @@
       "lastUpdated": "2025-05-29T20:10:31.716Z",
       "maintenanceHistory": []
     }
+  },
+  {
+    "id": "aba62cc3-a61c-4373-bf6f-6595dc4ae2f1",
+    "timestamp": "2025-05-29T20:17:53.915Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "UPDATE",
+    "entityType": "Firearm",
+    "entityId": "b24d1cf4-1a85-4ea8-9c4d-c65b8a18254f",
+    "status": "SUCCESS",
+    "details": {
+      "definitionId": "03b7b801-1e09-410a-a3e7-1e827415548d",
+      "serialNumber": "444444",
+      "depotId": "depotA",
+      "status": "Poligonda",
+      "notes": "",
+      "id": "b24d1cf4-1a85-4ea8-9c4d-c65b8a18254f",
+      "itemType": "firearm",
+      "name": "MPT-76",
+      "model": "MPT-76",
+      "manufacturer": "Sarsılmaz",
+      "caliber": "7.62X51",
+      "lastUpdated": "2025-05-29T20:17:53.889Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "5477fde0-1995-403a-a7f8-d0b1f39d8252",
+    "timestamp": "2025-05-29T20:18:19.199Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "UPDATE",
+    "entityType": "Firearm",
+    "entityId": "79784471-27b0-45b0-9466-2fb8fc584fd5",
+    "status": "SUCCESS",
+    "details": {
+      "definitionId": "fd_3",
+      "serialNumber": "az554245",
+      "depotId": "depotB",
+      "status": "Depoda",
+      "purchaseDate": "2025-05-28T00:00:00.000Z",
+      "notes": "kadro atışında kullanılıyor ",
+      "id": "79784471-27b0-45b0-9466-2fb8fc584fd5",
+      "itemType": "firearm",
+      "name": "AK-47 ",
+      "model": "AK47",
+      "manufacturer": "BELLİ DEĞİL",
+      "caliber": "7.62X39",
+      "lastUpdated": "2025-05-29T20:18:19.157Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "bb21c37f-0a7a-486b-bfc1-70f0691478a8",
+    "timestamp": "2025-05-29T20:26:58.674Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Firearm",
+    "entityId": "4b26af3b-c7da-49f7-8dab-75d4262f2de6",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "039f8320-25f4-47e3-945b-d1e7462d45f0",
+    "timestamp": "2025-05-29T20:27:13.238Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Firearm",
+    "entityId": "79784471-27b0-45b0-9466-2fb8fc584fd5",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0e06d539-30e7-4f11-a77b-c0dd37ff4429",
+    "timestamp": "2025-05-29T20:27:26.462Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Firearm",
+    "entityId": "f772813a-26de-4455-a558-c875c6acc884",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "9419282d-f2c6-41cb-8dce-0e8ad2c5e19e",
+    "timestamp": "2025-05-29T20:27:39.279Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Firearm",
+    "entityId": "e03ae53d-3a78-48dc-991a-d178d85f48ea",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "e21b8e8b-0941-42f9-bced-c8fbf0f18273",
+    "timestamp": "2025-05-29T20:27:49.066Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Firearm",
+    "entityId": "307dfd2c-47dc-4e84-a3af-f7574a2f79ff",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "97c9d063-eec4-4820-b96e-a4ec3dcc4aea",
+    "timestamp": "2025-05-29T20:28:00.019Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Firearm",
+    "entityId": "2f602254-ccab-4e9b-877e-9889274d6d39",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "e217ccd4-568e-4083-9644-07ff77a2c489",
+    "timestamp": "2025-05-29T20:28:12.214Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Firearm",
+    "entityId": "b24d1cf4-1a85-4ea8-9c4d-c65b8a18254f",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "e017b08f-deed-46c9-812a-966ebab922eb",
+    "timestamp": "2025-05-29T20:29:04.476Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Firearm",
+    "entityId": "5e75290f-951e-4bc0-aef8-341ccb60bc1c",
+    "status": "SUCCESS",
+    "details": {
+      "definitionId": "fd_3",
+      "serialNumber": "az554245",
+      "depotId": "depotB",
+      "status": "Depoda",
+      "notes": "",
+      "id": "5e75290f-951e-4bc0-aef8-341ccb60bc1c",
+      "itemType": "firearm",
+      "name": "AK-47",
+      "model": "AK47",
+      "manufacturer": "BELLİ DEĞİL",
+      "caliber": "7.62x39mm",
+      "lastUpdated": "2025-05-29T20:29:04.446Z",
+      "maintenanceHistory": []
+    }
   }
 ]
