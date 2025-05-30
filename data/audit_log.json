@@ -5238,5 +5238,313 @@
       "lastUpdated": "2025-05-29T20:29:04.446Z",
       "maintenanceHistory": []
     }
+  },
+  {
+    "id": "9c98a64c-2652-41e0-8b61-65563159a3f7",
+    "timestamp": "2025-05-30T07:18:04.386Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Magazine",
+    "entityId": "4ce5ce30-5e37-4b62-ac51-22ecb3ae0cfd",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "e62053db-bd6d-4357-a321-33d07ce1be93",
+    "timestamp": "2025-05-30T07:18:08.082Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Magazine",
+    "entityId": "ff61d666-44e2-44c5-b592-648a6f9f5798",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "96f3365a-f45f-4639-8fec-ae20e894ea9e",
+    "timestamp": "2025-05-30T07:18:11.911Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Magazine",
+    "entityId": "ab94cd65-2bd8-485b-8557-2303629c8fbd",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "862331a3-5170-416d-871a-81270c481304",
+    "timestamp": "2025-05-30T07:18:16.153Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Magazine",
+    "entityId": "b93f1947-bfdd-483b-b403-4eba32a1b037",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "e91f6032-31f0-4860-933e-dcea8d406edb",
+    "timestamp": "2025-05-30T07:19:20.005Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "UPDATE",
+    "entityType": "Magazine",
+    "entityId": "548b92cf-dabf-4bea-988c-ea7d903da407",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotA",
+      "status": "Depoda",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "548b92cf-dabf-4bea-988c-ea7d903da407",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-30T07:19:19.987Z",
+      "maintenanceHistory": [],
+      "serialNumber": "",
+      "manufacturer": "",
+      "notes": ""
+    }
+  },
+  {
+    "id": "772f7f23-d247-4bf1-a81a-778bc760af8d",
+    "timestamp": "2025-05-30T07:19:35.438Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "UPDATE",
+    "entityType": "Magazine",
+    "entityId": "58d7c32a-9def-4aad-ae58-7d888f5dc52a",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotA",
+      "status": "Depoda Arızalı",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "58d7c32a-9def-4aad-ae58-7d888f5dc52a",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-30T07:19:35.421Z",
+      "maintenanceHistory": [],
+      "serialNumber": "",
+      "manufacturer": "",
+      "notes": ""
+    }
+  },
+  {
+    "id": "6f07c79a-9364-4768-ab06-b9e6bda6694c",
+    "timestamp": "2025-05-30T07:19:46.629Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "UPDATE",
+    "entityType": "Magazine",
+    "entityId": "740b81ce-2c24-400a-b63b-138d53c82e54",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotA",
+      "status": "Destekte",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "740b81ce-2c24-400a-b63b-138d53c82e54",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-30T07:19:46.620Z",
+      "maintenanceHistory": [],
+      "serialNumber": "",
+      "manufacturer": "",
+      "notes": ""
+    }
+  },
+  {
+    "id": "ca0444d6-a52f-47f2-ab91-f2de29a01e61",
+    "timestamp": "2025-05-30T07:19:56.200Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "UPDATE",
+    "entityType": "Magazine",
+    "entityId": "0cd48607-c792-4e08-ac31-b93c3e442d60",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotA",
+      "status": "Poligonda",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "0cd48607-c792-4e08-ac31-b93c3e442d60",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-30T07:19:56.188Z",
+      "maintenanceHistory": [],
+      "serialNumber": "",
+      "manufacturer": "",
+      "notes": ""
+    }
+  },
+  {
+    "id": "b76f5d23-b6b6-4e0a-992c-e125f523884a",
+    "timestamp": "2025-05-30T07:20:05.076Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "UPDATE",
+    "entityType": "Magazine",
+    "entityId": "f00b4d26-37c3-4dd7-a331-d53ef72e47c2",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "caliber": "5.56x45mm",
+      "capacity": 30,
+      "depotId": "depotA",
+      "status": "Rapor Bekliyor",
+      "compatibleFirearmDefinitionId": "fd_1",
+      "id": "f00b4d26-37c3-4dd7-a331-d53ef72e47c2",
+      "itemType": "magazine",
+      "lastUpdated": "2025-05-30T07:20:05.066Z",
+      "maintenanceHistory": [],
+      "serialNumber": "",
+      "manufacturer": "",
+      "notes": ""
+    }
+  },
+  {
+    "id": "ad910a0c-3878-4397-bd86-c59933b8dfb3",
+    "timestamp": "2025-05-30T12:08:16.207Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Firearm",
+    "entityId": "e06f5a02-1c6c-4a49-a164-a4e93771f896",
+    "status": "SUCCESS",
+    "details": {
+      "definitionId": "fd_1",
+      "serialNumber": "123455",
+      "depotId": "depotA",
+      "status": "Depoda",
+      "purchaseDate": "2025-05-26T00:00:00.000Z",
+      "notes": "DENEME KAYDI",
+      "id": "e06f5a02-1c6c-4a49-a164-a4e93771f896",
+      "itemType": "firearm",
+      "name": "Sar 223 P",
+      "model": "Sar 223 P",
+      "manufacturer": "Sarsılmaz",
+      "caliber": "5.56x45mm",
+      "lastUpdated": "2025-05-30T12:08:16.198Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "88c0a218-2917-42dd-858f-146b7619560d",
+    "timestamp": "2025-05-30T12:27:05.542Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Firearm",
+    "entityId": "65863143-3f18-4947-884c-084ff307a459",
+    "status": "SUCCESS",
+    "details": {
+      "definitionId": "03b7b801-1e09-410a-a3e7-1e827415548d",
+      "serialNumber": "11447778",
+      "depotId": "depotA",
+      "status": "Depoda Arızalı",
+      "purchaseDate": "2025-05-27T00:00:00.000Z",
+      "notes": "",
+      "id": "65863143-3f18-4947-884c-084ff307a459",
+      "itemType": "firearm",
+      "name": "MPT-76",
+      "model": "MPT-76",
+      "manufacturer": "Sarsılmaz",
+      "caliber": "7.62x51mm",
+      "lastUpdated": "2025-05-30T12:27:05.536Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "227ccc30-0531-4def-8048-2a4201de231e",
+    "timestamp": "2025-05-30T12:32:36.245Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Firearm",
+    "entityId": "94e4a7b3-82b3-4f41-8cb3-246a208ce49e",
+    "status": "SUCCESS",
+    "details": {
+      "definitionId": "fd_3",
+      "serialNumber": "14477777",
+      "depotId": "depotA",
+      "status": "Poligonda",
+      "purchaseDate": "2025-05-30T00:00:00.000Z",
+      "notes": "",
+      "id": "94e4a7b3-82b3-4f41-8cb3-246a208ce49e",
+      "itemType": "firearm",
+      "name": "AK-47",
+      "model": "AK47",
+      "manufacturer": "BELLİ DEĞİL",
+      "caliber": "7.62x39mm",
+      "lastUpdated": "2025-05-30T12:32:36.239Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "4a86caab-f05b-46f3-9166-1bc54ee73f23",
+    "timestamp": "2025-05-30T17:50:39.191Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Firearm",
+    "entityId": "ac8f07b4-7679-49c5-93f2-c6aa97411d43",
+    "status": "SUCCESS",
+    "details": {
+      "definitionId": "fd_3",
+      "serialNumber": "232442",
+      "depotId": "depotB",
+      "status": "Rapor Bekliyor",
+      "purchaseDate": "2025-05-29T00:00:00.000Z",
+      "notes": "",
+      "id": "ac8f07b4-7679-49c5-93f2-c6aa97411d43",
+      "itemType": "firearm",
+      "name": "AK-47",
+      "model": "AK47",
+      "manufacturer": "BELLİ DEĞİL",
+      "caliber": "7.62x39mm",
+      "lastUpdated": "2025-05-30T17:50:39.185Z",
+      "maintenanceHistory": []
+    }
   }
 ]
