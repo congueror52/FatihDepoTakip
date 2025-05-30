@@ -122,19 +122,19 @@ export default function MagazinesPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-                <Info className="h-6 w-6 text-blue-600" />
+                <Info className="h-6 w-6 text-teal-600 dark:text-teal-400" /> 
                 <span suppressHydrationWarning>Silah Türüne Göre Uyumlu Şarjör Durumu</span>
             </CardTitle>
             <CardDescription suppressHydrationWarning>Her bir silah türü ile uyumlu şarjörlerin mevcut durum özeti.</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {summaryByFirearmDefinition.map(summary => (
-              <Card key={summary.definition.id} className="shadow-md">
+              <Card key={summary.definition.id} className="shadow-md bg-teal-50 dark:bg-teal-900/40 border-teal-200 dark:border-teal-700/60">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-lg" suppressHydrationWarning>{summary.definition.name} ({summary.definition.model}) Uyumlu Şarjörler</CardTitle>
-                  <CardDescription suppressHydrationWarning>Kalibre: {summary.definition.caliber}</CardDescription>
+                  <CardTitle className="text-lg text-teal-800 dark:text-teal-300" suppressHydrationWarning>{summary.definition.name} ({summary.definition.model}) Uyumlu Şarjörler</CardTitle>
+                  <CardDescription className="text-teal-600 dark:text-teal-400" suppressHydrationWarning>Kalibre: {summary.definition.caliber}</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-1 text-sm">
+                <CardContent className="space-y-1 text-sm text-teal-700 dark:text-teal-300">
                   <p><strong><span suppressHydrationWarning>Toplam Uyumlu Şarjör:</span></strong> {summary.totalCount}</p>
                   {Object.entries(summary.statusCounts).map(([status, count]) => (
                     <p key={status}><span suppressHydrationWarning>{status as string}:</span> {count}</p>
