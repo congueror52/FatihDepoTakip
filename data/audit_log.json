@@ -8106,5 +8106,70 @@
     "entityType": "Magazine",
     "entityId": "993cc0bc-8f32-4689-8a65-fba6b32da7a8",
     "status": "SUCCESS"
+  },
+  {
+    "id": "b68cb406-7f7c-4fb7-9fb0-5d86996c57b4",
+    "timestamp": "2025-05-30T19:23:27.820Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Magazine",
+    "entityId": "cd8ed4c8-f432-4fb3-822b-4df8acf66e15",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "8d71ec91-d5ee-4002-ba37-35d5ae80e8b9",
+    "timestamp": "2025-05-30T19:23:54.105Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Magazine",
+    "entityId": "c7a3a63a-f7eb-49d1-a124-6af60bc5743f",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "390c5e01-7047-41ad-851d-0668ec7bd768",
+    "timestamp": "2025-05-30T19:23:57.979Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Magazine",
+    "entityId": "8c32d264-dc42-460d-9504-9d2eed7f4085",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "bbd243a1-f3c2-464a-87c1-9ebddf9456c6",
+    "timestamp": "2025-05-30T19:24:05.728Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Magazine",
+    "entityId": "d93225c3-e0c4-4ef1-8508-eed589d8d4a2",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "57d33cbc-23fa-4f1a-8d70-6b6387a95487",
+    "timestamp": "2025-05-30T19:24:17.880Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Magazine",
+    "entityId": "678663e4-97d6-480e-9128-a2535267ab49",
+    "status": "SUCCESS"
   }
 ]

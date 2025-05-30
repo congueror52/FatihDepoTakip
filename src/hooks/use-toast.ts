@@ -10,7 +10,7 @@ import type {
 } from "@/components/ui/toast"
 
 const TOAST_LIMIT = 1
-const DEFAULT_TOAST_DURATION = 3000 // Default visibility duration for toasts
+const DEFAULT_TOAST_DURATION = 2000 // Default visibility duration for toasts (changed to 2 seconds)
 const TOAST_ANIMATION_CLEANUP_DELAY = 1000 // Delay after dismissal for animations before removing from state
 
 type ToasterToast = ToastProps & {
