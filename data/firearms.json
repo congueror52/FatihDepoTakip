@@ -77,5 +77,20 @@
     "caliber": "7.62x39mm",
     "lastUpdated": "2025-05-30T17:50:39.185Z",
     "maintenanceHistory": []
+  },
+  {
+    "definitionId": "fd_1",
+    "serialNumber": "33333",
+    "depotId": "depotB",
+    "status": "Depoda Arızalı",
+    "notes": "",
+    "id": "a8c5f6e8-db6f-4304-90de-3a044efed61a",
+    "itemType": "firearm",
+    "name": "Sar 223 P",
+    "model": "Sar 223 P",
+    "manufacturer": "Sarsılmaz",
+    "caliber": "5.56x45mm",
+    "lastUpdated": "2025-05-30T17:56:28.097Z",
+    "maintenanceHistory": []
   }
 ]
