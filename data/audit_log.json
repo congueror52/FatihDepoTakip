@@ -8648,5 +8648,18 @@
       "lastUpdated": "2025-05-30T20:06:32.854Z",
       "maintenanceHistory": []
     }
+  },
+  {
+    "id": "9a845cde-c1d4-415f-8aa1-b8fc35efe873",
+    "timestamp": "2025-05-30T20:08:04.064Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Shipment",
+    "entityId": "baba01f8-0eaf-4333-8891-f6a629ace612",
+    "status": "SUCCESS"
   }
 ]

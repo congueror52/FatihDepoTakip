@@ -27,7 +27,7 @@ import {
   ListOrdered,
   BellDot,
   FileText,
-  Package // Icon for Other Materials
+  Package
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
@@ -37,9 +37,9 @@ const menuItems = [
   { href: '/inventory/firearms', label: 'Silahlar', icon: Target },
   { href: '/inventory/magazines', label: 'Şarjörler', icon: ListChecks },
   { href: '/inventory/ammunition', label: 'Mühimmat', icon: Box },
-  { href: '/inventory/other-materials', label: 'Diğer Malzemeler', icon: Package }, // New Menu Item
+  { href: '/inventory/other-materials', label: 'Diğer Malzemeler', icon: Package },
   { href: '/daily-ammo-usage', label: 'Günlük Fişek Kullanımı', icon: ClipboardList },
-  { href: '/shipments', label: 'Malzeme Kaydı', icon: Truck },
+  // { href: '/shipments', label: 'Malzeme Kaydı', icon: Truck }, // Moved to Admin
   { href: '/maintenance', label: 'Bakım', icon: Wrench },
   { href: '/alerts', label: 'Sistem Uyarıları', icon: ShieldAlert },
   {
@@ -50,6 +50,7 @@ const menuItems = [
       { href: '/admin/firearms-definitions', label: 'Silah Tanımları', icon: Target },
       { href: '/admin/usage-scenarios', label: 'Kullanım Senaryoları', icon: FileCheck2 },
       { href: '/admin/depots', label: 'Depo Tanımları', icon: Warehouse },
+      { href: '/shipments', label: 'Malzeme Kayıt Takibi', icon: Truck }, // Added here
       { href: '/admin/shipment-types', label: 'Malzeme Kayıt Türleri', icon: ListOrdered },
       { href: '/admin/alert-definitions', label: 'Uyarı Tanımları', icon: BellDot },
       { href: '/admin/audit-logs', label: 'Denetim Kayıtları', icon: FileText },
