@@ -1,3 +1,4 @@
+
 "use client"
 
 // Inspired by react-hot-toast library
@@ -9,13 +10,15 @@ import type {
 } from "@/components/ui/toast"
 
 const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 3000 // Updated from 2000 to 3000
+const DEFAULT_TOAST_DURATION = 3000 // Default visibility duration for toasts
+const TOAST_ANIMATION_CLEANUP_DELAY = 1000 // Delay after dismissal for animations before removing from state
 
 type ToasterToast = ToastProps & {
   id: string
   title?: React.ReactNode
   description?: React.ReactNode
   action?: ToastActionElement
+  duration?: number; // Add duration to the toast object
 }
 
 const actionTypes = {
@@ -69,7 +72,7 @@ const addToRemoveQueue = (toastId: string) => {
       type: "REMOVE_TOAST",
       toastId: toastId,
     })
-  }, TOAST_REMOVE_DELAY)
+  }, TOAST_ANIMATION_CLEANUP_DELAY) // Use the animation cleanup delay
 
   toastTimeouts.set(toastId, timeout)
 }
@@ -93,8 +96,6 @@ export const reducer = (state: State, action: Action): State => {
     case "DISMISS_TOAST": {
       const { toastId } = action
 
-      // ! Side effects ! - This could be extracted into a dismissToast() action,
-      // but I'll keep it here for simplicity
       if (toastId) {
         addToRemoveQueue(toastId)
       } else {
@@ -140,15 +141,15 @@ function dispatch(action: Action) {
   })
 }
 
-type Toast = Omit<ToasterToast, "id">
+type Toast = Omit<ToasterToast, "id" | "open" | "onOpenChange">; // Removed open and onOpenChange from input type
 
-function toast({ ...props }: Toast) {
+function toast(props: Toast) { // props will include variant, title, description, action, and optionally duration
   const id = genId()
 
-  const update = (props: ToasterToast) =>
+  const update = (updateProps: Partial<ToasterToast>) => // updateProps can update any part of ToasterToast
     dispatch({
       type: "UPDATE_TOAST",
-      toast: { ...props, id },
+      toast: { ...updateProps, id },
     })
   const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
 
@@ -158,6 +159,7 @@ function toast({ ...props }: Toast) {
       ...props,
       id,
       open: true,
+      duration: props.duration || DEFAULT_TOAST_DURATION, // Set duration here
       onOpenChange: (open) => {
         if (!open) dismiss()
       },
