@@ -27,7 +27,7 @@ import {
   ListOrdered,
   BellDot,
   FileText,
-  Package
+  Package as PackageIcon // Aliased to avoid potential conflicts
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
@@ -37,7 +37,7 @@ const menuItems = [
   { href: '/inventory/firearms', label: 'Silahlar', icon: Target },
   { href: '/inventory/magazines', label: 'Şarjörler', icon: ListChecks },
   { href: '/inventory/ammunition', label: 'Mühimmat', icon: Box },
-  { href: '/inventory/other-materials', label: 'Diğer Malzemeler', icon: Package },
+  { href: '/inventory/other-materials', label: 'Diğer Malzemeler', icon: PackageIcon },
   { href: '/daily-ammo-usage', label: 'Günlük Fişek Kullanımı', icon: ClipboardList },
   { href: '/maintenance', label: 'Bakım', icon: Wrench },
   { href: '/alerts', label: 'Sistem Uyarıları', icon: ShieldAlert },
@@ -49,12 +49,12 @@ const menuItems = [
       { href: '/admin/firearms-definitions', label: 'Silah Tanımları', icon: Target },
       { href: '/admin/usage-scenarios', label: 'Kullanım Senaryoları', icon: FileCheck2 },
       { href: '/admin/depots', label: 'Depo Tanımları', icon: Warehouse },
-      { href: '/shipments', label: 'Malzeme Kayıt Takibi', icon: Truck },
       { href: '/admin/shipment-types', label: 'Malzeme Kayıt Türleri', icon: ListOrdered },
+      { href: '/shipments', label: 'Malzeme Kayıt Takibi', icon: Truck },
       { href: '/admin/alert-definitions', label: 'Uyarı Tanımları', icon: BellDot },
       { href: '/admin/audit-logs', label: 'Denetim Kayıtları', icon: FileText },
-    ]
-  }
+    ],
+  },
 ];
 
 export function MainNav() {
@@ -71,7 +71,7 @@ export function MainNav() {
   };
 
   useEffect(() => {
-    if (!isMounted) return; // Only run this effect after client has mounted
+    if (!isMounted) return;
 
     const initialOpenMenus: {[key: string]: boolean} = {};
     let parentLabelToOpen: string | null = null;
@@ -103,7 +103,7 @@ export function MainNav() {
                 suppressHydrationWarning
               >
                 <div className="flex items-center gap-2">
-                  <item.icon className="h-5 w-5" />
+                  <item.icon className="h-5 w-5" suppressHydrationWarning />
                   <span suppressHydrationWarning>{item.label}</span>
                 </div>
                 {isMounted && openMenus[item.label] ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -117,7 +117,7 @@ export function MainNav() {
                             isActive={pathname.startsWith(child.href)}
                             suppressHydrationWarning
                           >
-                            <child.icon className={cn("h-4 w-4", pathname.startsWith(child.href) ? "text-sidebar-primary" : "")} />
+                            <child.icon className={cn("h-4 w-4", pathname.startsWith(child.href) ? "text-sidebar-primary" : "")} suppressHydrationWarning />
                             <span suppressHydrationWarning>{child.label}</span>
                           </SidebarMenuSubButton>
                         </Link>
@@ -132,7 +132,7 @@ export function MainNav() {
                 isActive={pathname.startsWith(item.href!)}
                 suppressHydrationWarning
               >
-                <item.icon className="h-5 w-5" />
+                <item.icon className="h-5 w-5" suppressHydrationWarning />
                 <span suppressHydrationWarning>{item.label}</span>
               </SidebarMenuButton>
             </Link>
@@ -142,4 +142,3 @@ export function MainNav() {
     </SidebarMenu>
   );
 }
-
