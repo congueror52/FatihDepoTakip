@@ -8661,5 +8661,18 @@
     "entityType": "Shipment",
     "entityId": "baba01f8-0eaf-4333-8891-f6a629ace612",
     "status": "SUCCESS"
+  },
+  {
+    "id": "e1648206-fb77-41df-9e0b-43bb6f8d6b91",
+    "timestamp": "2025-05-30T20:37:48.722Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "OtherMaterial",
+    "entityId": "c265ef46-371c-49f2-9428-d2951dd050c9",
+    "status": "SUCCESS"
   }
 ]

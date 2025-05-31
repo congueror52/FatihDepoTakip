@@ -3,6 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { PlusCircle, ListChecks, Warehouse, ShieldX, PackageCheck, MapPin, ClipboardEdit, Info, Loader2 } from "lucide-react"; 
 import Link from "next/link";
 import { MagazinesTableClient } from "./_components/magazines-table-client"; 
@@ -146,15 +147,27 @@ export default function MagazinesPage() {
         </Card>
       )}
       
-      <Card>
-        <CardHeader>
-          <CardTitle suppressHydrationWarning>Tüm Şarjörler</CardTitle>
-          <CardDescription suppressHydrationWarning>Envanterdeki tüm şarjörleri yönetin ve takip edin.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <MagazinesTableClient magazines={magazines} depots={depots} />
-        </CardContent>
-      </Card>
+      <Accordion type="single" collapsible className="w-full">
+        <AccordionItem value="all-magazines" className="rounded-lg border bg-card text-card-foreground shadow-sm">
+           <AccordionTrigger className="p-6 text-left hover:no-underline">
+            <div className="flex flex-1 flex-col items-start">
+              <CardTitle suppressHydrationWarning>Tüm Şarjörler</CardTitle>
+              <CardDescription suppressHydrationWarning>
+                Envanterdeki tüm şarjörleri yönetin ve takip edin. (Göstermek için tıklayın)
+              </CardDescription>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="p-6 pt-0">
+              {isLoading ? (
+                <p className="text-center py-4" suppressHydrationWarning>Şarjörler yükleniyor...</p>
+              ) : (
+                <MagazinesTableClient magazines={magazines} depots={depots} />
+              )}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </div>
   );
 }
