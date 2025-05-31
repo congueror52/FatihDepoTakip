@@ -30,12 +30,7 @@ export default async function DashboardPage() {
   const dailyUsageLogs = await getAmmunitionDailyUsageLogs();
   const monthlyScenarioUsageData = await getMonthlyScenarioUsageForChart();
 
-  const summaryData = {
-    totalFirearms: firearms.length,
-    totalMagazines: magazines.length,
-    totalAmmunitionRounds: ammunitionStock.reduce((sum, ammo) => sum + ammo.quantity, 0),
-    totalOtherItems: otherMaterialsStock.reduce((sum, item) => sum + item.quantity, 0), // Sum quantities for other items
-  };
+  // Summary cards are removed as per previous request
 
   const getSeverityBadgeClasses = (severity: AlertDefinition['severity']) => {
     switch (severity) {
@@ -51,7 +46,7 @@ export default async function DashboardPage() {
     Firearm: "Silah",
     Magazine: "Şarjör",
     Ammunition: "Mühimmat",
-    OtherMaterial: "Diğer Malzeme", // Added
+    OtherMaterial: "Diğer Malzeme",
     Depot: "Depo",
     UsageScenario: "Kullanım Senaryosu",
     DailyAmmunitionUsage: "Günlük Fişek Kullanımı",
@@ -64,15 +59,12 @@ export default async function DashboardPage() {
 
   const formatLogEntryDescription = (log: AuditLogEntry): string => {
     const translatedEntityType = entityTypeTranslations[log.entityType] || log.entityType;
-
     let identifier = log.details?.name || log.entityId || log.details?.id;
-
     if (typeof identifier === 'string' && identifier.length > 20) {
       identifier = `${identifier.substring(0, 17)}...`;
     } else if (!identifier) {
       identifier = '';
     }
-
     const identifierText = identifier ? `"${identifier}"` : '';
 
     switch (log.actionType) {
@@ -102,9 +94,15 @@ export default async function DashboardPage() {
     return acc;
   }, {} as Record<SupportedCaliber, number>);
 
+  const stockByCaliber = ammunitionStock.reduce((acc, ammo) => {
+    acc[ammo.caliber] = (acc[ammo.caliber] || 0) + ammo.quantity;
+    return acc;
+  }, {} as Record<SupportedCaliber, number>);
+
   const ammunitionUsageChartData = SUPPORTED_CALIBERS.map(caliber => ({
     name: caliber,
     'Kullanılan': usageByCaliber[caliber] || 0,
+    'Mevcut Stok': stockByCaliber[caliber] || 0,
   }));
 
 
@@ -112,68 +110,7 @@ export default async function DashboardPage() {
     <div className="flex flex-col gap-6">
       <h1 className="text-3xl font-bold tracking-tight" suppressHydrationWarning>ÖZET BİLGİLER</h1>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-        <Card className="bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <Link href="/inventory/firearms" className="hover:underline">
-              <CardTitle className="text-sm font-medium text-green-700 dark:text-green-400" suppressHydrationWarning>Toplam Silah</CardTitle>
-            </Link>
-            <Target className="h-4 w-4 text-green-700 dark:text-green-400 opacity-80" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-700 dark:text-green-400">{summaryData.totalFirearms}</div>
-          </CardContent>
-        </Card>
-        <Card className="bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <Link href="/inventory/magazines" className="hover:underline">
-              <CardTitle className="text-sm font-medium text-blue-700 dark:text-blue-400" suppressHydrationWarning>Toplam Şarjör</CardTitle>
-            </Link>
-            <ListChecks className="h-4 w-4 text-blue-700 dark:text-blue-400 opacity-80" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-700 dark:text-blue-400">{summaryData.totalMagazines}</div>
-          </CardContent>
-        </Card>
-        <Card className="bg-purple-50 dark:bg-purple-900/30 border-purple-200 dark:border-purple-700">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <Link href="/inventory/ammunition" className="hover:underline">
-              <CardTitle className="text-sm font-medium text-purple-700 dark:text-purple-400" suppressHydrationWarning>Mühimmat Adedi</CardTitle>
-            </Link>
-            <BoxIcon className="h-4 w-4 text-purple-700 dark:text-purple-400 opacity-80" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-purple-700 dark:text-purple-400">{summaryData.totalAmmunitionRounds.toLocaleString()}</div>
-          </CardContent>
-        </Card>
-         <Card className="bg-orange-50 dark:bg-orange-900/30 border-orange-200 dark:border-orange-700">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-             <Link href="/inventory/other-materials" className="hover:underline">
-                <CardTitle className="text-sm font-medium text-orange-700 dark:text-orange-400" suppressHydrationWarning>Toplam Diğer Malzemeler</CardTitle>
-             </Link>
-            <PackageIcon className="h-4 w-4 text-orange-700 dark:text-orange-400 opacity-80" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-orange-700 dark:text-orange-400">{summaryData.totalOtherItems.toLocaleString()}</div>
-          </CardContent>
-        </Card>
-        <Card className={triggeredAlerts.length > 0 ? "bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700" : "bg-gray-50 dark:bg-gray-900/30 border-gray-200 dark:border-gray-700"}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <Link href="/alerts" className="hover:underline">
-              <CardTitle className={`text-sm font-medium ${triggeredAlerts.length > 0 ? 'text-red-700 dark:text-red-400' : 'text-gray-700 dark:text-gray-400'}`}>
-                <span suppressHydrationWarning>Aktif Uyarılar</span>
-              </CardTitle>
-            </Link>
-            <ShieldAlert className={`h-4 w-4 ${triggeredAlerts.length > 0 ? 'text-red-700 dark:text-red-400' : 'text-gray-700 dark:text-gray-400'} opacity-80`} />
-          </CardHeader>
-          <CardContent>
-            <div className={`text-2xl font-bold ${triggeredAlerts.length > 0 ? 'text-red-700 dark:text-red-400' : 'text-gray-700 dark:text-gray-400'}`}>{triggeredAlerts.length}</div>
-            <p className={`text-xs ${triggeredAlerts.length > 0 ? 'text-red-600 dark:text-red-500' : 'text-gray-600 dark:text-gray-500'}`} suppressHydrationWarning>
-              {triggeredAlerts.length === 0 ? "aktif uyarı bulunmuyor" : (triggeredAlerts.length === 1 ? "aktif uyarı" : `${triggeredAlerts.length} aktif uyarı`)}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Summary cards removed in previous step */}
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1">
          <Card className="lg:col-span-1">
@@ -190,8 +127,8 @@ export default async function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <Card className="lg:col-span-4">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><BarChart3 className="h-5 w-5" /> <span suppressHydrationWarning>Mühimmat Kullanım Özeti (Kalibre Bazlı)</span></CardTitle>
-            <CardDescription suppressHydrationWarning>Kaydedilen tüm günlük kullanımlara göre kalibre bazlı toplam tüketim.</CardDescription>
+            <CardTitle className="flex items-center gap-2"><BarChart3 className="h-5 w-5" /> <span suppressHydrationWarning>Mühimmat Kullanım ve Stok Özeti (Kalibre Bazlı)</span></CardTitle>
+            <CardDescription suppressHydrationWarning>Kaydedilen günlük kullanımlara göre kalibre bazlı toplam tüketim ve mevcut stok.</CardDescription>
           </CardHeader>
           <CardContent className="pl-2">
             <AmmunitionUsageSummaryChart data={ammunitionUsageChartData} />

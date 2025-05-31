@@ -6,8 +6,9 @@ import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/u
 import type { SupportedCaliber } from '@/types/inventory';
 
 interface AmmunitionUsageDataPoint {
-  name: SupportedCaliber | string; // Allow string for general name
+  name: SupportedCaliber | string;
   'Kullanılan': number;
+  'Mevcut Stok': number; // Added new field for stock
 }
 
 interface AmmunitionUsageSummaryChartProps {
@@ -19,6 +20,10 @@ const chartConfig = {
     label: 'Kullanılan Miktar',
     color: 'hsl(var(--chart-1))',
   },
+  'Mevcut Stok': { // New configuration for stock
+    label: 'Mevcut Stok',
+    color: 'hsl(var(--chart-2))',
+  },
 } satisfies ChartConfig;
 
 
@@ -26,7 +31,7 @@ export function AmmunitionUsageSummaryChart({ data }: AmmunitionUsageSummaryChar
   if (!data || data.length === 0) {
     return (
       <div className="h-[300px] flex items-center justify-center text-muted-foreground bg-muted/50 rounded-md">
-        <span suppressHydrationWarning>Fişek kullanım verisi bulunamadı.</span>
+        <span suppressHydrationWarning>Fişek kullanım ve stok verisi bulunamadı.</span>
       </div>
     );
   }
@@ -48,7 +53,7 @@ export function AmmunitionUsageSummaryChart({ data }: AmmunitionUsageSummaryChar
             fontSize={12}
             tickLine={false}
             axisLine={false}
-            tickFormatter={(value) => `${value}`}
+            tickFormatter={(value) => `${value.toLocaleString('tr-TR')}`} // Added localeString for better readability
             allowDecimals={false}
           />
           <Tooltip
@@ -69,7 +74,7 @@ export function AmmunitionUsageSummaryChart({ data }: AmmunitionUsageSummaryChar
                         className="h-2 w-2 shrink-0 rounded-[2px]"
                         style={{ backgroundColor: entry.color }}
                         />
-                        {entry.value === 'Kullanılan' ? 'Kullanılan Miktar' : entry.value}
+                        {chartConfig[entry.value as keyof typeof chartConfig]?.label || entry.value}
                     </div>
                     ))}
                 </div>
@@ -77,6 +82,7 @@ export function AmmunitionUsageSummaryChart({ data }: AmmunitionUsageSummaryChar
             }}
             />
           <Bar dataKey="Kullanılan" fill="hsl(var(--chart-1))" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="Mevcut Stok" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </ChartContainer>

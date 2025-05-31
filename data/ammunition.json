@@ -43,5 +43,26 @@
     "id": "36a70c91-8872-4c15-9f41-35e43aa3c13a",
     "itemType": "ammunition",
     "lastUpdated": "2025-05-29T18:54:26.506Z"
+  },
+  {
+    "name": "ak fişeği",
+    "caliber": "7.62x39mm",
+    "quantity": 4000000,
+    "depotId": "depotB",
+    "status": "Mevcut",
+    "purchaseDate": "2025-05-29T00:00:00.000Z",
+    "id": "97b7df15-11f6-43fc-9ef6-34d5846f644b",
+    "itemType": "ammunition",
+    "lastUpdated": "2025-05-31T18:22:45.031Z"
+  },
+  {
+    "name": "mpt fişeği",
+    "caliber": "7.62x51mm",
+    "quantity": 10000,
+    "depotId": "depotB",
+    "status": "Mevcut",
+    "id": "37a78063-1b27-4ff0-aae4-6022e59f4139",
+    "itemType": "ammunition",
+    "lastUpdated": "2025-05-31T18:24:02.559Z"
   }
 ]
