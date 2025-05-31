@@ -8,7 +8,7 @@ import type { SupportedCaliber } from '@/types/inventory';
 interface AmmunitionUsageDataPoint {
   name: SupportedCaliber | string;
   'Kullanılan': number;
-  'Mevcut Stok': number; // Added new field for stock
+  'Mevcut Stok': number; 
 }
 
 interface AmmunitionUsageSummaryChartProps {
@@ -20,7 +20,7 @@ const chartConfig = {
     label: 'Kullanılan Miktar',
     color: 'hsl(var(--chart-1))',
   },
-  'Mevcut Stok': { // New configuration for stock
+  'Mevcut Stok': { 
     label: 'Mevcut Stok',
     color: 'hsl(var(--chart-2))',
   },
@@ -39,7 +39,8 @@ export function AmmunitionUsageSummaryChart({ data }: AmmunitionUsageSummaryChar
   return (
     <ChartContainer config={chartConfig} className="min-h-[200px] w-full h-[300px]">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 5, right: 20, left: -20, bottom: 5 }}>
+        {/* Margin left değeri düzeltildi */}
+        <BarChart data={data} margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
           <XAxis 
             dataKey="name" 
@@ -53,7 +54,7 @@ export function AmmunitionUsageSummaryChart({ data }: AmmunitionUsageSummaryChar
             fontSize={12}
             tickLine={false}
             axisLine={false}
-            tickFormatter={(value) => `${value.toLocaleString('tr-TR')}`} // Added localeString for better readability
+            tickFormatter={(value) => `${value.toLocaleString('tr-TR')}`} 
             allowDecimals={false}
           />
           <Tooltip
