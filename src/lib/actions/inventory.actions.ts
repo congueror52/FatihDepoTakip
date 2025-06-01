@@ -12,7 +12,7 @@ import { ammunitionDailyUsageFormSchema } from '@/app/(app)/daily-ammo-usage/_co
 import { usageScenarioFormSchema } from '@/app/(app)/admin/usage-scenarios/_components/usage-scenario-form-schema';
 import { magazineFormSchema, type MagazineFormValues } from '@/app/(app)/inventory/magazines/_components/magazine-form-schema';
 import { ammunitionFormSchema } from '@/app/(app)/inventory/ammunition/_components/ammunition-form-schema';
-import { otherMaterialFormSchema, type OtherMaterialFormValues, otherMaterialStatuses } from '@/app/(app)/inventory/other-materials/_components/other-material-form-schema'; // New import
+import { otherMaterialFormSchema, type OtherMaterialFormValues, otherMaterialStatuses } from '@/app/(app)/inventory/other-materials/_components/other-material-form-schema'; 
 import { depotFormSchema } from '@/app/(app)/admin/depots/_components/depot-form-schema';
 import { maintenanceLogFormSchema } from '@/app/(app)/maintenance/_components/maintenance-log-form-schema';
 import { shipmentFormSchema } from '@/app/(app)/shipments/_components/shipment-form-schema';
@@ -1279,7 +1279,7 @@ export async function deleteDepotAction(id: string): Promise<void> {
 // Maintenance Logs
 export async function addMaintenanceLogToItemAction(
   itemId: string,
-  itemType: 'firearm' | 'magazine' | 'other', // Added 'other'
+  itemType: 'firearm' | 'magazine' | 'other', 
   logData: Omit<MaintenanceLog, 'id'>
 ) {
   let logEntryId: string | undefined = undefined;
@@ -1333,7 +1333,7 @@ export async function addMaintenanceLogToItemAction(
       magazines[itemIndex].lastUpdated = new Date().toISOString();
       await writeData('magazines.json', magazines);
       await logAction({ actionType: "UPDATE", entityType: "Magazine", entityId: itemId, status: "SUCCESS", details: { status: newLog.statusChangeTo, maintenanceLogAdded: newLog.id } });
-    } else if (itemType === 'other') { // Added handler for 'other'
+    } else if (itemType === 'other') { 
         const otherMaterials = await getOtherMaterials();
         const itemIndex = otherMaterials.findIndex(o => o.id === itemId);
         if (itemIndex === -1) {
@@ -1354,9 +1354,9 @@ export async function addMaintenanceLogToItemAction(
 
     await logAction({ actionType: "CREATE", entityType: "MaintenanceLog", entityId: newLog.id, status: "SUCCESS", details: newLog });
 
-    revalidatePath(`/inventory/${itemType}s/${itemId}`); // Adjusted for pluralization (e.g. /firearms/, /magazines/, /other-materials/)
-    revalidatePath(`/inventory/${itemType}s`);
-    revalidatePath(`/inventory/${itemType}s`, 'layout');
+    revalidatePath(`/inventory/${itemType === 'other' ? 'other-materials' : itemType + 's'}/${itemId}`); 
+    revalidatePath(`/inventory/${itemType === 'other' ? 'other-materials' : itemType + 's'}`);
+    revalidatePath(`/inventory/${itemType === 'other' ? 'other-materials' : itemType + 's'}`, 'layout');
     revalidatePath('/maintenance');
     revalidatePath('/maintenance', 'layout');
     revalidatePath('/dashboard');
@@ -1368,6 +1368,65 @@ export async function addMaintenanceLogToItemAction(
     await logAction({ actionType: "LOG_MAINTENANCE", entityType: "MaintenanceLog", entityId: logEntryId || itemId, status: "FAILURE", details: logData, errorMessage: error.message });
     throw error;
   }
+}
+
+export interface EnrichedMaintenanceLog extends MaintenanceLog {
+    parentItemId: string;
+    parentItemName: string;
+    parentItemType: 'firearm' | 'magazine' | 'other';
+    parentItemIdentifier: string; // e.g. Serial number for firearm, name for magazine/other
+}
+
+export async function getAllMaintenanceLogs(): Promise<EnrichedMaintenanceLog[]> {
+    noStore();
+    const allLogs: EnrichedMaintenanceLog[] = [];
+
+    const firearms = await getFirearms();
+    firearms.forEach(firearm => {
+        if (firearm.maintenanceHistory) {
+            firearm.maintenanceHistory.forEach(log => {
+                allLogs.push({
+                    ...log,
+                    parentItemId: firearm.id,
+                    parentItemName: firearm.name,
+                    parentItemType: 'firearm',
+                    parentItemIdentifier: firearm.serialNumber || firearm.name,
+                });
+            });
+        }
+    });
+
+    const magazines = await getMagazines();
+    magazines.forEach(magazine => {
+        if (magazine.maintenanceHistory) {
+            magazine.maintenanceHistory.forEach(log => {
+                allLogs.push({
+                    ...log,
+                    parentItemId: magazine.id,
+                    parentItemName: magazine.name,
+                    parentItemType: 'magazine',
+                    parentItemIdentifier: `${magazine.name} (${magazine.caliber})`,
+                });
+            });
+        }
+    });
+
+    const otherMaterials = await getOtherMaterials();
+    otherMaterials.forEach(material => {
+        if (material.maintenanceHistory) {
+            material.maintenanceHistory.forEach(log => {
+                allLogs.push({
+                    ...log,
+                    parentItemId: material.id,
+                    parentItemName: material.name,
+                    parentItemType: 'other',
+                    parentItemIdentifier: material.name,
+                });
+            });
+        }
+    });
+
+    return allLogs.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
 

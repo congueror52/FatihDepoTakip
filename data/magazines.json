@@ -98,7 +98,7 @@
     "caliber": "7.62x51mm",
     "capacity": 30,
     "depotId": "depotA",
-    "status": "Poligonda",
+    "status": "Destekte",
     "manufacturer": "",
     "purchaseDate": "2025-05-29T00:00:00.000Z",
     "notes": "",
@@ -106,7 +106,17 @@
     "serialNumber": "",
     "id": "ca36f290-8311-447d-87e2-145e83dfb14f",
     "itemType": "magazine",
-    "lastUpdated": "2025-05-30T19:27:17.037Z",
-    "maintenanceHistory": []
+    "lastUpdated": "2025-06-01T14:12:48.788Z",
+    "maintenanceHistory": [
+      {
+        "date": "2025-06-01T00:00:00.000Z",
+        "description": "desteğe teslim edildi",
+        "statusChangeFrom": "Poligonda",
+        "statusChangeTo": "Destekte",
+        "technician": "",
+        "partsUsed": "",
+        "id": "57c6c6e5-5bc1-4491-899b-2452313bbb27"
+      }
+    ]
   }
 ]
