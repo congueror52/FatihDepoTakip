@@ -12,7 +12,7 @@ import { ammunitionDailyUsageFormSchema } from '@/app/(app)/daily-ammo-usage/_co
 import { usageScenarioFormSchema } from '@/app/(app)/admin/usage-scenarios/_components/usage-scenario-form-schema';
 import { magazineFormSchema, type MagazineFormValues } from '@/app/(app)/inventory/magazines/_components/magazine-form-schema';
 import { ammunitionFormSchema } from '@/app/(app)/inventory/ammunition/_components/ammunition-form-schema';
-import { otherMaterialFormSchema, type OtherMaterialFormValues, otherMaterialStatuses } from '@/app/(app)/inventory/other-materials/_components/other-material-form-schema'; 
+import { otherMaterialFormSchema, type OtherMaterialFormValues, otherMaterialStatuses } from '@/app/(app)/inventory/other-materials/_components/other-material-form-schema';
 import { depotFormSchema } from '@/app/(app)/admin/depots/_components/depot-form-schema';
 import { maintenanceLogFormSchema } from '@/app/(app)/maintenance/_components/maintenance-log-form-schema';
 import { shipmentFormSchema } from '@/app/(app)/shipments/_components/shipment-form-schema';
@@ -571,7 +571,7 @@ export async function addOtherMaterialAction(data: Omit<OtherMaterial, 'id' | 'l
     for (let i = 0; i < quantityToAdd; i++) {
       const newMaterial: OtherMaterial = {
         ...validatedData.data,
-        quantity: 1, 
+        quantity: 1,
         id: await generateId(),
         itemType: 'other',
         lastUpdated: new Date().toISOString(),
@@ -615,7 +615,7 @@ export async function updateOtherMaterialAction(material: OtherMaterial): Promis
     allMaterials[index] = {
       ...allMaterials[index],
       ...validatedData.data,
-      quantity: allMaterials[index].quantity, 
+      quantity: allMaterials[index].quantity,
       lastUpdated: new Date().toISOString(),
     };
     await writeData('other_materials.json', allMaterials);
@@ -1279,7 +1279,7 @@ export async function deleteDepotAction(id: string): Promise<void> {
 // Maintenance Logs
 export async function addMaintenanceLogToItemAction(
   itemId: string,
-  itemType: 'firearm' | 'magazine' | 'other', 
+  itemType: 'firearm' | 'magazine' | 'other',
   logData: Omit<MaintenanceLog, 'id'>
 ) {
   let logEntryId: string | undefined = undefined;
@@ -1333,7 +1333,7 @@ export async function addMaintenanceLogToItemAction(
       magazines[itemIndex].lastUpdated = new Date().toISOString();
       await writeData('magazines.json', magazines);
       await logAction({ actionType: "UPDATE", entityType: "Magazine", entityId: itemId, status: "SUCCESS", details: { status: newLog.statusChangeTo, maintenanceLogAdded: newLog.id } });
-    } else if (itemType === 'other') { 
+    } else if (itemType === 'other') {
         const otherMaterials = await getOtherMaterials();
         const itemIndex = otherMaterials.findIndex(o => o.id === itemId);
         if (itemIndex === -1) {
@@ -1354,7 +1354,7 @@ export async function addMaintenanceLogToItemAction(
 
     await logAction({ actionType: "CREATE", entityType: "MaintenanceLog", entityId: newLog.id, status: "SUCCESS", details: newLog });
 
-    revalidatePath(`/inventory/${itemType === 'other' ? 'other-materials' : itemType + 's'}/${itemId}`); 
+    revalidatePath(`/inventory/${itemType === 'other' ? 'other-materials' : itemType + 's'}/${itemId}`);
     revalidatePath(`/inventory/${itemType === 'other' ? 'other-materials' : itemType + 's'}`);
     revalidatePath(`/inventory/${itemType === 'other' ? 'other-materials' : itemType + 's'}`, 'layout');
     revalidatePath('/maintenance');
@@ -1688,20 +1688,21 @@ export async function getTriggeredAlerts(): Promise<ActiveAlert[]> {
 
       const currentStock = relevantAmmunition.reduce((sum, ammo) => sum + ammo.quantity, 0);
 
-      if (currentStock < definition.thresholdValue) {
+      if (currentStock <= definition.thresholdValue) { // Changed from < to <=
         const depotNameString = definition.depotId ? (depotMap.get(definition.depotId) || definition.depotId) : "Tüm Depolar";
-        const caliberNameString = definition.caliberFilter || "Tüm Kalibreler";
         
         let itemNameDisplay = "";
-        if(definition.caliberFilter && definition.depotId) {
-            itemNameDisplay = `${definition.caliberFilter} Mühimmat (${depotNameString})`;
-        } else if (definition.caliberFilter) {
-            itemNameDisplay = `${definition.caliberFilter} Mühimmat (Tüm Depolar)`;
-        } else if (definition.depotId) {
-            itemNameDisplay = `Mühimmat Stokları (${depotNameString})`;
+        if (definition.caliberFilter) {
+          itemNameDisplay = `${definition.caliberFilter} Mühimmat`;
         } else {
-            itemNameDisplay = "Genel Mühimmat Stokları";
+          itemNameDisplay = `Genel Mühimmat`;
         }
+        if (definition.depotId && depotNameString !== "Tüm Depolar") {
+            itemNameDisplay += ` (${depotNameString})`;
+        } else if (!definition.depotId) {
+            itemNameDisplay += ` (Tüm Depolar)`;
+        }
+
 
         const context: TriggeredAlertContext = {
           itemName: itemNameDisplay,
@@ -1758,9 +1759,7 @@ export async function getTriggeredAlerts(): Promise<ActiveAlert[]> {
         });
       }
     }
-    // NOTE: 'maintenance_due_soon' is not implemented yet.
   }
-  // Sort by severity (Yüksek > Orta > Düşük) then by trigger time
   const severityOrder: Record<AlertSeverity, number> = { 'Yüksek': 1, 'Orta': 2, 'Düşük': 3 };
   return activeAlerts.sort((a, b) => {
     const severityDiff = severityOrder[a.definition.severity] - severityOrder[b.definition.severity];
@@ -1792,4 +1791,3 @@ export async function getRecentAuditLogs(limit: number = 5): Promise<AuditLogEnt
     return [];
   }
 }
-

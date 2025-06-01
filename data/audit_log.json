@@ -9180,5 +9180,32 @@
       "itemType": "ammunition",
       "lastUpdated": "2025-06-01T18:08:54.565Z"
     }
+  },
+  {
+    "id": "3c1f6d4b-89cb-43c8-9381-42e661d97d5c",
+    "timestamp": "2025-06-01T19:33:58.625Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "UPDATE",
+    "entityType": "AlertDefinition",
+    "entityId": "dc413e20-2416-4210-8cb4-1c933c5048b2",
+    "status": "SUCCESS",
+    "details": {
+      "name": "DÜŞÜK FİŞEK UYARISI",
+      "description": "",
+      "entityType": "ammunition",
+      "conditionType": "low_stock",
+      "depotId": "depotA",
+      "caliberFilter": "9x19mm",
+      "thresholdValue": 50000,
+      "severity": "Yüksek",
+      "messageTemplate": "{itemName}{depotName}{currentValue}{threshold}{status}{caliber}",
+      "isActive": true,
+      "id": "dc413e20-2416-4210-8cb4-1c933c5048b2",
+      "lastUpdated": "2025-06-01T19:33:58.582Z"
+    }
   }
 ]

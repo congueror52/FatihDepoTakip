@@ -6,12 +6,12 @@
     "conditionType": "low_stock",
     "depotId": "depotA",
     "caliberFilter": "9x19mm",
-    "thresholdValue": 5000,
+    "thresholdValue": 50000,
     "severity": "Yüksek",
     "messageTemplate": "{itemName}{depotName}{currentValue}{threshold}{status}{caliber}",
     "isActive": true,
     "id": "dc413e20-2416-4210-8cb4-1c933c5048b2",
-    "lastUpdated": "2025-06-01T18:05:29.124Z"
+    "lastUpdated": "2025-06-01T19:33:58.582Z"
   },
   {
     "name": "762 FİŞEK ",
