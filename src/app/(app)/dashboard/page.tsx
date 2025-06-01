@@ -59,30 +59,31 @@ export default async function DashboardPage() {
 
   const formatLogEntryDescription = (log: AuditLogEntry): string => {
     const translatedEntityType = entityTypeTranslations[log.entityType] || log.entityType;
-    let identifier = log.details?.name || log.entityId || log.details?.id;
+    
+    let identifier = log.details?.name || log.entityId || log.details?.id || ''; // Fallback to empty string
+
     if (typeof identifier === 'string' && identifier.length > 20) {
       identifier = `${identifier.substring(0, 17)}...`;
-    } else if (!identifier) {
-      identifier = '';
-    }
+    } 
     const identifierText = identifier ? `"${identifier}"` : '';
 
     switch (log.actionType) {
       case 'CREATE':
-        return `${translatedEntityType} ${identifierText} oluşturuldu.`;
+        return `${translatedEntityType} ${identifierText} oluşturuldu.`.trim();
       case 'UPDATE':
         if ((log.entityType === 'Firearm' || log.entityType === 'Magazine' || log.entityType === 'OtherMaterial') && log.details?.maintenanceLogAdded && log.details?.status) {
-             return `${translatedEntityType} ${identifierText} için bakım yapıldı, yeni durum: ${log.details.status}.`;
+             return `${translatedEntityType} ${identifierText} için bakım yapıldı, yeni durum: ${log.details.status}.`.trim();
         }
-        return `${translatedEntityType} ${identifierText} güncellendi.`;
+        return `${translatedEntityType} ${identifierText} güncellendi.`.trim();
       case 'DELETE':
-        return `${translatedEntityType} ${identifierText} silindi.`;
+        return `${translatedEntityType} ${identifierText} silindi.`.trim();
       case 'LOG_USAGE':
-        return `Mühimmat kullanımı kaydedildi: ${log.details?.ammunitionId || identifierText}`;
+        const usageIdentifier = log.details?.ammunitionId || identifierText || 'Mühimmat';
+        return `Mühimmat kullanımı kaydedildi: ${usageIdentifier}`.trim();
       case 'LOG_MAINTENANCE':
-         return `${translatedEntityType} ${identifierText} oluşturuldu.`;
+         return `${translatedEntityType} ${identifierText} oluşturuldu.`.trim();
       default:
-        return `${log.actionType} işlemi ${translatedEntityType} ${identifierText} üzerinde yapıldı.`;
+        return `${log.actionType} işlemi ${translatedEntityType} ${identifierText} üzerinde yapıldı.`.trim();
     }
   };
 
@@ -176,14 +177,14 @@ export default async function DashboardPage() {
                     <p className="text-muted-foreground"><span suppressHydrationWarning>Dikkate değer son uyarı bulunmamaktadır.</span></p>
                 ) : (
                     triggeredAlerts.slice(0, 5).map(alert => (
-                        <div key={alert.id} className="flex items-start justify-between p-3 border rounded-md shadow-sm">
+                        <div key={alert.uniqueId} className="flex items-start justify-between p-3 border rounded-md shadow-sm"> {/* Changed key to alert.uniqueId */}
                             <div>
-                                <p className="font-medium text-sm" suppressHydrationWarning>{alert.name}</p>
+                                <p className="font-medium text-sm" suppressHydrationWarning>{alert.definition.name}</p> {/* Access name from definition */}
                                 <p className="text-xs text-muted-foreground" suppressHydrationWarning>
-                                    {alert.messageTemplate.substring(0, 100) + '...'} - <span suppressHydrationWarning>Tanım Güncelleme: {new Date(alert.lastUpdated).toLocaleDateString('tr-TR')}</span>
+                                    {alert.definition.messageTemplate.substring(0, 100) + '...'} - <span suppressHydrationWarning>Tanım Güncelleme: {new Date(alert.definition.lastUpdated).toLocaleDateString('tr-TR')}</span> {/* Access lastUpdated from definition */}
                                 </p>
                             </div>
-                            <Badge className={getSeverityBadgeClasses(alert.severity)}>{alert.severity}</Badge>
+                            <Badge className={getSeverityBadgeClasses(alert.definition.severity)}>{alert.definition.severity}</Badge> {/* Access severity from definition */}
                         </div>
                     ))
                 )}
@@ -195,3 +196,4 @@ export default async function DashboardPage() {
     </div>
   );
 }
+

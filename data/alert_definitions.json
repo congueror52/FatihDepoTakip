@@ -25,5 +25,17 @@
     "isActive": true,
     "id": "c844eae1-7666-4d60-bf54-51ccabe728c5",
     "lastUpdated": "2025-06-01T18:07:49.947Z"
+  },
+  {
+    "name": "Sar 223 P Şarjörü",
+    "description": "",
+    "entityType": "magazine",
+    "conditionType": "status_is",
+    "statusFilter": "Destekte",
+    "severity": "Yüksek",
+    "messageTemplate": "{itemName}{depotName}{currentValue}{threshold}{status}{caliber}",
+    "isActive": true,
+    "id": "e19ae77b-abc6-4443-a1a2-ca7392a3eed4",
+    "lastUpdated": "2025-06-01T19:54:41.179Z"
   }
 ]

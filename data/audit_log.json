@@ -9207,5 +9207,30 @@
       "id": "dc413e20-2416-4210-8cb4-1c933c5048b2",
       "lastUpdated": "2025-06-01T19:33:58.582Z"
     }
+  },
+  {
+    "id": "dc0bcb27-b1e0-4196-b6cc-c7bdfe4cced0",
+    "timestamp": "2025-06-01T19:54:41.191Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "AlertDefinition",
+    "entityId": "e19ae77b-abc6-4443-a1a2-ca7392a3eed4",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Sar 223 P Şarjörü",
+      "description": "",
+      "entityType": "magazine",
+      "conditionType": "status_is",
+      "statusFilter": "Destekte",
+      "severity": "Yüksek",
+      "messageTemplate": "{itemName}{depotName}{currentValue}{threshold}{status}{caliber}",
+      "isActive": true,
+      "id": "e19ae77b-abc6-4443-a1a2-ca7392a3eed4",
+      "lastUpdated": "2025-06-01T19:54:41.179Z"
+    }
   }
 ]

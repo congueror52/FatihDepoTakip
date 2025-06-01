@@ -1,14 +1,48 @@
 
+'use client'; // Make this a client component for state and filtering
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ShieldAlert, BellRing } from "lucide-react";
+import { ShieldAlert, BellRing, Filter } from "lucide-react";
 import { getTriggeredAlerts } from "@/lib/actions/inventory.actions";
-import type { AlertDefinition, ActiveAlert, TriggeredAlertContext } from "@/types/inventory";
+import type { AlertDefinition, ActiveAlert, TriggeredAlertContext, AlertSeverity, AlertEntityType } from "@/types/inventory";
+import { ALERT_SEVERITIES, ALERT_ENTITY_TYPES } from "@/types/inventory";
 import { Badge } from "@/components/ui/badge";
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
+import { useState, useEffect, useMemo } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 
-export default async function AlertsPage() {
-  const triggeredAlerts: ActiveAlert[] = await getTriggeredAlerts(); 
+export default function AlertsPage() {
+  const [allTriggeredAlerts, setAllTriggeredAlerts] = useState<ActiveAlert[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [severityFilter, setSeverityFilter] = useState<AlertSeverity | 'all'>('all');
+  const [entityTypeFilter, setEntityTypeFilter] = useState<AlertEntityType | 'all'>('all');
+
+  useEffect(() => {
+    async function fetchAlerts() {
+      setIsLoading(true);
+      try {
+        const alerts = await getTriggeredAlerts();
+        setAllTriggeredAlerts(alerts);
+      } catch (error) {
+        console.error("Uyarılar getirilirken hata oluştu:", error);
+        // You could add a toast notification here for the user
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchAlerts();
+  }, []);
+
+  const filteredAlerts = useMemo(() => {
+    return allTriggeredAlerts.filter(alert => {
+      const severityMatch = severityFilter === 'all' || alert.definition.severity === severityFilter;
+      const entityTypeMatch = entityTypeFilter === 'all' || alert.definition.entityType === entityTypeFilter;
+      return severityMatch && entityTypeMatch;
+    });
+  }, [allTriggeredAlerts, severityFilter, entityTypeFilter]);
 
   const getSeverityColor = (severity: string) => {
     if (severity === 'Yüksek') return 'border-red-500 bg-red-50 dark:bg-red-900/20 dark:border-red-700';
@@ -39,14 +73,8 @@ export default async function AlertsPage() {
     message = message.replace(/{threshold}/g, String(context.thresholdValue !== undefined ? context.thresholdValue : 'N/A'));
     
     if (conditionType === 'status_is') {
-        message = message.replace(/{status}/g, String(context.currentValue ?? 'N/A')); // For status_is, currentValue *is* the status
+        message = message.replace(/{status}/g, String(context.currentValue ?? 'N/A'));
     } else {
-        // For low_stock or other types, {status} placeholder might not be directly applicable from context.currentValue.
-        // If context had a specific 'statusOfAggregatedStock' or similar, it could be used here.
-        // For now, if {status} is used in a non-status_is alert, it might not provide the intended info.
-        // We'll leave it to be replaced by 'N/A' if context.status isn't explicitly set for these cases,
-        // or rely on template crafter not to use {status} inappropriately for low_stock.
-        // Fallback to N/A if context.status is not present, which it won't be for low_stock.
         message = message.replace(/{status}/g, String(context.status ?? 'N/A'));
     }
 
@@ -58,24 +86,75 @@ export default async function AlertsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center gap-2">
-        <ShieldAlert className="h-8 w-8 text-destructive" />
-        <h1 className="text-3xl font-bold tracking-tight" suppressHydrationWarning>Sistem Uyarıları</h1>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <ShieldAlert className="h-8 w-8 text-destructive" />
+          <h1 className="text-3xl font-bold tracking-tight" suppressHydrationWarning>Sistem Uyarıları</h1>
+        </div>
       </div>
       
       <Card>
         <CardHeader>
-          <CardTitle suppressHydrationWarning>Aktif Sistem Uyarıları ({triggeredAlerts.length})</CardTitle>
+          <CardTitle suppressHydrationWarning>Aktif Sistem Uyarıları ({isLoading ? 'Yükleniyor...' : filteredAlerts.length})</CardTitle>
           <CardDescription suppressHydrationWarning>
-            Aşağıda, sistem tarafından tetiklenmiş ve dikkat edilmesi gereken aktif uyarılar listelenmektedir.
+            Aşağıda, sistem tarafından tetiklenmiş ve dikkat edilmesi gereken aktif uyarılar listelenmektedir. Filtreleri kullanarak sonuçları daraltabilirsiniz.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {triggeredAlerts.length === 0 ? (
-            <p className="text-muted-foreground text-center py-8" suppressHydrationWarning>Şu anda aktif bir uyarı bulunmamaktadır.</p>
+          <div className="mb-6 p-4 border rounded-md bg-muted/50">
+            <div className="flex flex-col sm:flex-row gap-4 items-center">
+              <div className="flex items-center gap-2">
+                <Filter className="h-5 w-5 text-muted-foreground" />
+                <h3 className="text-md font-semibold" suppressHydrationWarning>Filtreler</h3>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full sm:w-auto">
+                <Select value={severityFilter} onValueChange={(value) => setSeverityFilter(value as AlertSeverity | 'all')}>
+                  <SelectTrigger className="w-full sm:w-[180px]">
+                    <SelectValue placeholder="Ciddiyete Göre Filtrele" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all"><span suppressHydrationWarning>Tüm Ciddiyetler</span></SelectItem>
+                    {ALERT_SEVERITIES.map(sev => (
+                      <SelectItem key={sev} value={sev}><span suppressHydrationWarning>{sev}</span></SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={entityTypeFilter} onValueChange={(value) => setEntityTypeFilter(value as AlertEntityType | 'all')}>
+                  <SelectTrigger className="w-full sm:w-[180px]">
+                    <SelectValue placeholder="Varlık Türüne Göre Filtrele" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all"><span suppressHydrationWarning>Tüm Varlık Türleri</span></SelectItem>
+                    {ALERT_ENTITY_TYPES.map(et => (
+                      <SelectItem key={et.value} value={et.value}><span suppressHydrationWarning>{et.label}</span></SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+               <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => {
+                    setSeverityFilter('all');
+                    setEntityTypeFilter('all');
+                  }}
+                  disabled={severityFilter === 'all' && entityTypeFilter === 'all'}
+                  className="w-full sm:w-auto"
+                >
+                <span suppressHydrationWarning>Filtreleri Temizle</span>
+              </Button>
+            </div>
+          </div>
+
+          {isLoading ? (
+            <p className="text-muted-foreground text-center py-8" suppressHydrationWarning>Uyarılar yükleniyor...</p>
+          ) : filteredAlerts.length === 0 ? (
+            <p className="text-muted-foreground text-center py-8" suppressHydrationWarning>
+              {allTriggeredAlerts.length > 0 ? 'Seçili filtrelere uygun aktif uyarı bulunmamaktadır.' : 'Şu anda aktif bir uyarı bulunmamaktadır.'}
+            </p>
           ) : (
             <div className="space-y-4">
-              {triggeredAlerts.map(activeAlert => (
+              {filteredAlerts.map(activeAlert => (
                 <Card key={activeAlert.uniqueId} className={`${getSeverityColor(activeAlert.definition.severity)}`}>
                   <CardHeader className="pb-2 flex flex-row items-center justify-between">
                     <CardTitle className={`text-lg ${getSeverityTextColor(activeAlert.definition.severity)} flex items-center gap-2`}>
