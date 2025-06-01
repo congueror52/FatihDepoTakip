@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Moon, Sun, Laptop, Palette } from 'lucide-react';
 
 type ColorSchemeOption = {
-  value: 'default' | 'ocean' | 'forest';
+  value: 'default' | 'ocean' | 'forest' | 'desert' | 'twilight';
   label: string;
 };
 
@@ -18,6 +18,8 @@ const colorSchemes: ColorSchemeOption[] = [
   { value: 'default', label: 'Varsayılan' },
   { value: 'ocean', label: 'Okyanus' },
   { value: 'forest', label: 'Orman' },
+  { value: 'desert', label: 'Çöl' },
+  { value: 'twilight', label: 'Alacakaranlık' },
 ];
 
 export function ThemeSwitcher() {
@@ -33,7 +35,7 @@ export function ThemeSwitcher() {
         </Label>
         <Select
           value={colorScheme}
-          onValueChange={(value) => setColorScheme(value as 'default' | 'ocean' | 'forest')}
+          onValueChange={(value) => setColorScheme(value as 'default' | 'ocean' | 'forest' | 'desert' | 'twilight')}
         >
           <SelectTrigger id="color-scheme-select">
             <SelectValue placeholder="Palet Seçin" />

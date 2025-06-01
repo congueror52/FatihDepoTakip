@@ -8796,5 +8796,29 @@
       "lastUpdated": "2025-05-31T20:08:31.179Z",
       "maintenanceHistory": []
     }
+  },
+  {
+    "id": "fb538a1b-ec51-4e70-8729-6ac12de13d6e",
+    "timestamp": "2025-06-01T13:34:55.725Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "DailyAmmunitionUsage",
+    "entityId": "8b15f831-076f-43e0-a87f-cd1cdc9dc406",
+    "status": "SUCCESS",
+    "details": {
+      "date": "2025-06-01T00:00:00.000Z",
+      "personnelCount": 90,
+      "usageScenarioId": "scenario_1",
+      "used_9x19mm": 6750,
+      "used_5_56x45mm": 2250,
+      "used_7_62x39mm": 0,
+      "used_7_62x51mm": 0,
+      "notes": "",
+      "id": "8b15f831-076f-43e0-a87f-cd1cdc9dc406"
+    }
   }
 ]

@@ -123,11 +123,18 @@ body {
     --muted-foreground: 215 25% 45%;
     --accent: 170 70% 45%;
     --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 140 60% 45%;
+    --success-foreground: 0 0% 98%;
     --border: 205 30% 75%;
     --input: 205 35% 90%;
     --ring: 170 70% 45%;
     --chart-1: 210 70% 55%;
     --chart-2: 170 70% 45%;
+    --chart-3: 190 65% 50%;
+    --chart-4: 220 75% 60%;
+    --chart-5: 160 60% 40%;
   }
 
   html[data-color-scheme="ocean"].dark {
@@ -145,11 +152,18 @@ body {
     --muted-foreground: 205 25% 60%;
     --accent: 170 70% 55%;
     --accent-foreground: 215 30% 10%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 140 60% 55%;
+    --success-foreground: 0 0% 98%;
     --border: 215 20% 30%;
     --input: 215 25% 25%;
     --ring: 170 70% 55%;
     --chart-1: 210 70% 65%;
     --chart-2: 170 70% 55%;
+    --chart-3: 190 65% 60%;
+    --chart-4: 220 75% 70%;
+    --chart-5: 160 60% 50%;
   }
 
   /* Forest Theme */
@@ -168,11 +182,18 @@ body {
     --muted-foreground: 120 20% 40%;
     --accent: 90 60% 48%;
     --accent-foreground: 110 30% 95%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 140 60% 45%;
+    --success-foreground: 0 0% 98%;
     --border: 120 15% 75%;
     --input: 120 20% 90%;
     --ring: 90 60% 48%;
     --chart-1: 130 45% 45%;
     --chart-2: 90 60% 48%;
+    --chart-3: 100 50% 42%;
+    --chart-4: 140 40% 50%;
+    --chart-5: 80 55% 45%;
   }
 
   html[data-color-scheme="forest"].dark {
@@ -190,11 +211,136 @@ body {
     --muted-foreground: 120 10% 60%;
     --accent: 90 60% 58%;
     --accent-foreground: 120 25% 10%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 140 60% 55%;
+    --success-foreground: 0 0% 98%;
     --border: 120 15% 25%;
     --input: 120 20% 22%;
     --ring: 90 60% 58%;
     --chart-1: 130 45% 55%;
     --chart-2: 90 60% 58%;
+    --chart-3: 100 50% 52%;
+    --chart-4: 140 40% 60%;
+    --chart-5: 80 55% 55%;
+  }
+
+  /* Desert Theme */
+  html[data-color-scheme="desert"] {
+    --background: 40 50% 96%;
+    --foreground: 30 30% 25%;
+    --card: 40 40% 98%;
+    --card-foreground: 30 30% 25%;
+    --popover: 40 40% 98%;
+    --popover-foreground: 30 30% 25%;
+    --primary: 30 65% 50%; /* Terracotta Orange */
+    --primary-foreground: 40 100% 97%;
+    --secondary: 40 40% 88%;
+    --secondary-foreground: 30 65% 50%;
+    --muted: 40 30% 80%;
+    --muted-foreground: 30 25% 45%;
+    --accent: 180 50% 45%; /* Teal/Turquoise */
+    --accent-foreground: 40 100% 97%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 140 60% 45%;
+    --success-foreground: 0 0% 98%;
+    --border: 40 25% 75%;
+    --input: 40 30% 90%;
+    --ring: 30 65% 50%;
+    --chart-1: 30 65% 50%;
+    --chart-2: 180 50% 45%;
+    --chart-3: 50 70% 48%; /* Sandy Yellow */
+    --chart-4: 20 50% 55%; /* Light Brown */
+    --chart-5: 190 40% 40%; /* Muted Teal */
+  }
+
+  html[data-color-scheme="desert"].dark {
+    --background: 30 20% 15%;
+    --foreground: 40 30% 85%;
+    --card: 30 20% 18%;
+    --card-foreground: 40 30% 85%;
+    --popover: 30 20% 15%;
+    --popover-foreground: 40 30% 85%;
+    --primary: 30 65% 60%;
+    --primary-foreground: 30 20% 10%;
+    --secondary: 30 15% 28%;
+    --secondary-foreground: 40 30% 85%;
+    --muted: 30 10% 22%;
+    --muted-foreground: 40 25% 60%;
+    --accent: 180 50% 55%;
+    --accent-foreground: 30 20% 10%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 140 60% 55%;
+    --success-foreground: 0 0% 98%;
+    --border: 30 15% 30%;
+    --input: 30 15% 25%;
+    --ring: 30 65% 60%;
+    --chart-1: 30 65% 60%;
+    --chart-2: 180 50% 55%;
+    --chart-3: 50 70% 58%;
+    --chart-4: 20 50% 65%;
+    --chart-5: 190 40% 50%;
+  }
+
+  /* Twilight Theme */
+  html[data-color-scheme="twilight"] {
+    --background: 260 40% 96%;
+    --foreground: 250 30% 20%;
+    --card: 260 35% 98%;
+    --card-foreground: 250 30% 20%;
+    --popover: 260 35% 98%;
+    --popover-foreground: 250 30% 20%;
+    --primary: 270 60% 55%; /* Rich Purple */
+    --primary-foreground: 260 100% 97%;
+    --secondary: 260 30% 88%;
+    --secondary-foreground: 270 60% 55%;
+    --muted: 260 25% 80%;
+    --muted-foreground: 250 25% 45%;
+    --accent: 330 70% 50%; /* Deep Pink/Magenta */
+    --accent-foreground: 260 100% 97%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 140 60% 45%;
+    --success-foreground: 0 0% 98%;
+    --border: 260 20% 75%;
+    --input: 260 25% 90%;
+    --ring: 270 60% 55%;
+    --chart-1: 270 60% 55%;
+    --chart-2: 330 70% 50%;
+    --chart-3: 240 55% 60%; /* Indigo */
+    --chart-4: 300 50% 52%; /* Orchid */
+    --chart-5: 280 40% 45%; /* Darker Purple */
+  }
+
+  html[data-color-scheme="twilight"].dark {
+    --background: 250 20% 12%;
+    --foreground: 260 30% 88%;
+    --card: 250 20% 16%;
+    --card-foreground: 260 30% 88%;
+    --popover: 250 20% 12%;
+    --popover-foreground: 260 30% 88%;
+    --primary: 270 60% 65%;
+    --primary-foreground: 250 20% 8%;
+    --secondary: 250 15% 25%;
+    --secondary-foreground: 260 30% 88%;
+    --muted: 250 10% 20%;
+    --muted-foreground: 260 25% 65%;
+    --accent: 330 70% 60%;
+    --accent-foreground: 250 20% 8%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 140 60% 55%;
+    --success-foreground: 0 0% 98%;
+    --border: 250 15% 28%;
+    --input: 250 15% 22%;
+    --ring: 270 60% 65%;
+    --chart-1: 270 60% 65%;
+    --chart-2: 330 70% 60%;
+    --chart-3: 240 55% 70%;
+    --chart-4: 300 50% 62%;
+    --chart-5: 280 40% 55%;
   }
 }
 

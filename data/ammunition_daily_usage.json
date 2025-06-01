@@ -11,6 +11,17 @@
     "id": "d6afb4d4-e475-4def-867d-38407b412692"
   },
   {
+    "date": "2025-05-31T00:00:00.000Z",
+    "personnelCount": 450,
+    "usageScenarioId": "scenario_3",
+    "used_9x19mm": 72900,
+    "used_5_56x45mm": 0,
+    "used_7_62x39mm": 13500,
+    "used_7_62x51mm": 13500,
+    "notes": "",
+    "id": "436cbfb8-1482-4d79-baf7-5fe550568f6e"
+  },
+  {
     "date": "2025-05-29T00:00:00.000Z",
     "personnelCount": 200,
     "usageScenarioId": "scenario_2",
@@ -44,14 +55,14 @@
     "id": "31f16180-e176-4e13-9d29-c24b145a7e67"
   },
   {
-    "date": "2025-05-31T00:00:00.000Z",
-    "personnelCount": 450,
-    "usageScenarioId": "scenario_3",
-    "used_9x19mm": 72900,
-    "used_5_56x45mm": 0,
-    "used_7_62x39mm": 13500,
-    "used_7_62x51mm": 13500,
+    "date": "2025-06-01T00:00:00.000Z",
+    "personnelCount": 90,
+    "usageScenarioId": "scenario_1",
+    "used_9x19mm": 6750,
+    "used_5_56x45mm": 2250,
+    "used_7_62x39mm": 0,
+    "used_7_62x51mm": 0,
     "notes": "",
-    "id": "436cbfb8-1482-4d79-baf7-5fe550568f6e"
+    "id": "8b15f831-076f-43e0-a87f-cd1cdc9dc406"
   }
 ]
