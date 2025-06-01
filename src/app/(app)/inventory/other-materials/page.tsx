@@ -3,15 +3,20 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, Package, Warehouse, ShieldX, Wrench, AlertTriangle, ClipboardEdit, Loader2 } from "lucide-react";
+import { PlusCircle, Package, Warehouse, ShieldX, Wrench, AlertTriangle, Info, Loader2 } from "lucide-react"; // Removed ClipboardEdit
 import Link from "next/link";
 import { OtherMaterialsTableClient } from "./_components/other-materials-table-client";
 import { getOtherMaterials, getDepots } from "@/lib/actions/inventory.actions";
 import type { OtherMaterial, Depot, OtherMaterialStatus } from "@/types/inventory";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { otherMaterialStatuses } from "./_components/other-material-form-schema";
 
+interface CategorySummary {
+  categoryName: string;
+  totalCount: number;
+  statusCounts: Partial<Record<OtherMaterialStatus, number>>;
+}
 
 export default function OtherMaterialsPage() {
   const [materials, setMaterials] = useState<OtherMaterial[]>([]);
@@ -39,10 +44,12 @@ export default function OtherMaterialsPage() {
     fetchData();
   }, [toast]);
 
-  const statusCounts = materials.reduce((acc, material) => {
-    acc[material.status] = (acc[material.status] || 0) + material.quantity;
-    return acc;
-  }, {} as Record<OtherMaterialStatus, number>);
+  const statusCounts = useMemo(() => {
+    return materials.reduce((acc, material) => {
+      acc[material.status] = (acc[material.status] || 0) + material.quantity;
+      return acc;
+    }, {} as Record<OtherMaterialStatus, number>);
+  }, [materials]);
 
   const summaryCards: { title: string; count: number; icon: React.ElementType; statusKey: OtherMaterialStatus, bgColor?: string, textColor?: string, borderColor?: string }[] = [
     { title: "Depodaki Malzemeler", count: statusCounts['Depoda'] || 0, icon: Warehouse, statusKey: 'Depoda', bgColor: 'bg-green-50 dark:bg-green-900/30', textColor: 'text-green-700 dark:text-green-400', borderColor: 'border-green-200 dark:border-green-700' },
@@ -51,6 +58,23 @@ export default function OtherMaterialsPage() {
     { title: "Bakımdaki Malzemeler", count: statusCounts['Bakımda'] || 0, icon: Wrench, statusKey: 'Bakımda', bgColor: 'bg-yellow-50 dark:bg-yellow-900/30', textColor: 'text-yellow-700 dark:text-yellow-400', borderColor: 'border-yellow-200 dark:border-yellow-700' },
     { title: "Hizmet Dışı Malzemeler", count: statusCounts['Hizmet Dışı'] || 0, icon: AlertTriangle, statusKey: 'Hizmet Dışı', bgColor: 'bg-gray-50 dark:bg-gray-900/30', textColor: 'text-gray-700 dark:text-gray-400', borderColor: 'border-gray-200 dark:border-gray-700' },
   ];
+
+  const summaryByCategory = useMemo(() => {
+    const categories: Record<string, { totalCount: number; statusCounts: Partial<Record<OtherMaterialStatus, number>> }> = {};
+    materials.forEach(material => {
+      const categoryKey = material.category || "Kategorisiz";
+      if (!categories[categoryKey]) {
+        categories[categoryKey] = { totalCount: 0, statusCounts: {} };
+      }
+      categories[categoryKey].totalCount += material.quantity;
+      categories[categoryKey].statusCounts[material.status] = (categories[categoryKey].statusCounts[material.status] || 0) + material.quantity;
+    });
+
+    return Object.entries(categories).map(([categoryName, data]) => ({
+      categoryName,
+      ...data,
+    })).sort((a, b) => a.categoryName.localeCompare(b.categoryName));
+  }, [materials]);
 
 
   if (isLoading) {
@@ -90,6 +114,37 @@ export default function OtherMaterialsPage() {
         ))}
       </div>
 
+      {summaryByCategory.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+                <Info className="h-6 w-6 text-sky-600 dark:text-sky-400" />
+                <span suppressHydrationWarning>Kategoriye Göre Detaylı Malzeme Durumu</span>
+            </CardTitle>
+            <CardDescription suppressHydrationWarning>Her bir malzeme kategorisindeki toplam malzeme sayısı ve durumları.</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {summaryByCategory.map(summary => (
+              <Card key={summary.categoryName} className="shadow-md bg-sky-50 dark:bg-sky-900/40 border-sky-200 dark:border-sky-700/60">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg text-sky-800 dark:text-sky-300" suppressHydrationWarning>{summary.categoryName}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-1 text-sm text-sky-700 dark:text-sky-300">
+                  <p><strong><span suppressHydrationWarning>Toplam Miktar:</span></strong> {summary.totalCount}</p>
+                  {otherMaterialStatuses.map(status => {
+                    const count = summary.statusCounts[status];
+                    if (count && count > 0) {
+                      return <p key={status}><span suppressHydrationWarning>{status}:</span> {count}</p>;
+                    }
+                    return null;
+                  })}
+                </CardContent>
+              </Card>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+      
       <Card>
         <CardHeader>
           <CardTitle suppressHydrationWarning>Tüm Diğer Malzemeler</CardTitle>
@@ -102,3 +157,4 @@ export default function OtherMaterialsPage() {
     </div>
   );
 }
+
