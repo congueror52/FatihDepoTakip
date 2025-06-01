@@ -14,7 +14,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuPortal,
   DropdownMenuSubContent,
-  DropdownMenuTrigger, // Added missing import
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ThemeSwitcher } from "@/components/theme/ThemeSwitcher";
 import { User, Settings, LogOut, Palette } from 'lucide-react';
@@ -27,7 +27,7 @@ export function UserNav() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={user.avatarUrl} alt={user.name} data-ai-hint="modern avatar" />
+            <AvatarImage src={user.avatarUrl} alt={user.name} data-ai-hint="stylish avatar" />
             <AvatarFallback>{user.name?.charAt(0) || 'K'}</AvatarFallback>
           </Avatar>
         </Button>
@@ -50,7 +50,7 @@ export function UserNav() {
           </DropdownMenuItem>
           
           <DropdownMenuSub>
-            <DropdownMenuSubTrigger>
+            <DropdownMenuSubTrigger onSelect={(e) => e.preventDefault()}>
               <Palette className="mr-2 h-4 w-4" />
               <span suppressHydrationWarning>Tema Ayarları</span>
             </DropdownMenuSubTrigger>
