@@ -11,10 +11,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuPortal,
+  DropdownMenuSubContent,
 } from '@/components/ui/dropdown-menu';
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"; // Added Popover
-import { ThemeSwitcher } from "@/components/theme/ThemeSwitcher"; // Added ThemeSwitcher
-import { User, Settings, LogOut, Palette } from 'lucide-react'; // Added Palette
+import { ThemeSwitcher } from "@/components/theme/ThemeSwitcher";
+import { User, Settings, LogOut, Palette } from 'lucide-react';
 
 export function UserNav() {
   const user = { name: 'Admin Kullanıcısı', email: 'admin@ammotrack.com', avatarUrl: 'https://placehold.co/40x40.png' };
@@ -46,17 +49,17 @@ export function UserNav() {
             <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
           </DropdownMenuItem>
           
-          <Popover>
-            <PopoverTrigger asChild>
-              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                <Palette className="mr-2 h-4 w-4" />
-                <span suppressHydrationWarning>Tema Ayarları</span>
-              </DropdownMenuItem>
-            </PopoverTrigger>
-            <PopoverContent className="w-80" align="end" sideOffset={8}>
-              <ThemeSwitcher />
-            </PopoverContent>
-          </Popover>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              <Palette className="mr-2 h-4 w-4" />
+              <span suppressHydrationWarning>Tema Ayarları</span>
+            </DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent className="w-80 p-0" sideOffset={4} alignOffset={-5}>
+                <ThemeSwitcher />
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
 
           <DropdownMenuItem>
             <Settings className="mr-2 h-4 w-4" />
