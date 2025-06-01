@@ -8820,5 +8820,44 @@
       "notes": "",
       "id": "8b15f831-076f-43e0-a87f-cd1cdc9dc406"
     }
+  },
+  {
+    "id": "9f9ef456-2566-4598-adb2-22be07954bc4",
+    "timestamp": "2025-06-01T13:51:40.061Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "UPDATE",
+    "entityType": "Magazine",
+    "entityId": "58d7c32a-9def-4aad-ae58-7d888f5dc52a",
+    "status": "SUCCESS",
+    "details": {
+      "status": "Destekte",
+      "maintenanceLogAdded": "198fec0d-81bd-4026-be9b-a54d177ad7e3"
+    }
+  },
+  {
+    "id": "85e3ac72-2d8c-4c05-808e-717ecee9acd4",
+    "timestamp": "2025-06-01T13:51:40.085Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "MaintenanceLog",
+    "entityId": "198fec0d-81bd-4026-be9b-a54d177ad7e3",
+    "status": "SUCCESS",
+    "details": {
+      "date": "2025-06-01T00:00:00.000Z",
+      "description": "destek şubeye 25 martta bayram teslim etti",
+      "statusChangeFrom": "Depoda Arızalı",
+      "statusChangeTo": "Destekte",
+      "technician": "",
+      "partsUsed": "",
+      "id": "198fec0d-81bd-4026-be9b-a54d177ad7e3"
+    }
   }
 ]

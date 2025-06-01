@@ -19,12 +19,22 @@
     "caliber": "5.56x45mm",
     "capacity": 30,
     "depotId": "depotA",
-    "status": "Depoda Arızalı",
+    "status": "Destekte",
     "compatibleFirearmDefinitionId": "fd_1",
     "id": "58d7c32a-9def-4aad-ae58-7d888f5dc52a",
     "itemType": "magazine",
-    "lastUpdated": "2025-05-30T07:19:35.421Z",
-    "maintenanceHistory": [],
+    "lastUpdated": "2025-06-01T13:51:40.049Z",
+    "maintenanceHistory": [
+      {
+        "date": "2025-06-01T00:00:00.000Z",
+        "description": "destek şubeye 25 martta bayram teslim etti",
+        "statusChangeFrom": "Depoda Arızalı",
+        "statusChangeTo": "Destekte",
+        "technician": "",
+        "partsUsed": "",
+        "id": "198fec0d-81bd-4026-be9b-a54d177ad7e3"
+      }
+    ],
     "serialNumber": "",
     "manufacturer": "",
     "notes": ""

@@ -342,6 +342,242 @@ body {
     --chart-4: 300 50% 62%;
     --chart-5: 280 40% 55%;
   }
+
+  /* Ruby Theme */
+  html[data-color-scheme="ruby"] {
+    --background: 0 60% 97%;
+    --foreground: 0 70% 25%;
+    --card: 0 50% 99%;
+    --card-foreground: 0 70% 25%;
+    --popover: 0 50% 99%;
+    --popover-foreground: 0 70% 25%;
+    --primary: 0 80% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 50% 90%;
+    --secondary-foreground: 0 80% 55%;
+    --muted: 0 40% 85%;
+    --muted-foreground: 0 60% 40%;
+    --accent: 30 90% 60%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 120 60% 45%;
+    --success-foreground: 0 0% 98%;
+    --border: 0 40% 80%;
+    --input: 0 50% 92%;
+    --ring: 0 80% 55%;
+    --chart-1: 0 80% 55%;
+    --chart-2: 30 90% 60%;
+    --chart-3: 350 75% 60%;
+    --chart-4: 15 85% 58%;
+    --chart-5: 340 70% 50%;
+  }
+
+  html[data-color-scheme="ruby"].dark {
+    --background: 0 50% 15%;
+    --foreground: 0 30% 85%;
+    --card: 0 50% 18%;
+    --card-foreground: 0 30% 85%;
+    --popover: 0 50% 15%;
+    --popover-foreground: 0 30% 85%;
+    --primary: 0 80% 65%;
+    --primary-foreground: 0 50% 8%;
+    --secondary: 0 40% 28%;
+    --secondary-foreground: 0 30% 85%;
+    --muted: 0 30% 22%;
+    --muted-foreground: 0 20% 60%;
+    --accent: 30 90% 70%;
+    --accent-foreground: 0 50% 8%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 120 60% 55%;
+    --success-foreground: 0 0% 98%;
+    --border: 0 30% 30%;
+    --input: 0 40% 25%;
+    --ring: 0 80% 65%;
+    --chart-1: 0 80% 65%;
+    --chart-2: 30 90% 70%;
+    --chart-3: 350 75% 70%;
+    --chart-4: 15 85% 68%;
+    --chart-5: 340 70% 60%;
+  }
+
+  /* Emerald Theme */
+  html[data-color-scheme="emerald"] {
+    --background: 140 50% 96%;
+    --foreground: 145 60% 20%;
+    --card: 135 45% 98%;
+    --card-foreground: 145 60% 20%;
+    --popover: 135 45% 98%;
+    --popover-foreground: 145 60% 20%;
+    --primary: 150 70% 40%;
+    --primary-foreground: 140 0% 100%;
+    --secondary: 140 40% 88%;
+    --secondary-foreground: 150 70% 40%;
+    --muted: 140 30% 82%;
+    --muted-foreground: 145 50% 40%;
+    --accent: 160 65% 35%;
+    --accent-foreground: 140 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 120 60% 45%; 
+    --success-foreground: 0 0% 98%;
+    --border: 140 30% 78%;
+    --input: 140 35% 90%;
+    --ring: 150 70% 40%;
+    --chart-1: 150 70% 40%;
+    --chart-2: 160 65% 35%;
+    --chart-3: 130 60% 42%;
+    --chart-4: 170 55% 38%;
+    --chart-5: 145 50% 30%;
+  }
+
+  html[data-color-scheme="emerald"].dark {
+    --background: 145 50% 12%;
+    --foreground: 140 40% 88%;
+    --card: 145 50% 15%;
+    --card-foreground: 140 40% 88%;
+    --popover: 145 50% 12%;
+    --popover-foreground: 140 40% 88%;
+    --primary: 150 70% 50%;
+    --primary-foreground: 145 50% 8%;
+    --secondary: 145 40% 25%;
+    --secondary-foreground: 140 40% 88%;
+    --muted: 145 30% 20%;
+    --muted-foreground: 140 30% 65%;
+    --accent: 160 65% 45%;
+    --accent-foreground: 145 50% 8%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 120 60% 55%;
+    --success-foreground: 0 0% 98%;
+    --border: 145 30% 28%;
+    --input: 145 35% 22%;
+    --ring: 150 70% 50%;
+    --chart-1: 150 70% 50%;
+    --chart-2: 160 65% 45%;
+    --chart-3: 130 60% 52%;
+    --chart-4: 170 55% 48%;
+    --chart-5: 145 50% 40%;
+  }
+
+  /* Sapphire Theme */
+  html[data-color-scheme="sapphire"] {
+    --background: 210 60% 97%;
+    --foreground: 220 70% 22%;
+    --card: 205 55% 98%;
+    --card-foreground: 220 70% 22%;
+    --popover: 205 55% 98%;
+    --popover-foreground: 220 70% 22%;
+    --primary: 225 80% 50%;
+    --primary-foreground: 210 0% 100%;
+    --secondary: 210 50% 90%;
+    --secondary-foreground: 225 80% 50%;
+    --muted: 210 40% 85%;
+    --muted-foreground: 220 60% 40%;
+    --accent: 200 85% 45%;
+    --accent-foreground: 210 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 140 60% 45%;
+    --success-foreground: 0 0% 98%;
+    --border: 210 40% 80%;
+    --input: 210 45% 92%;
+    --ring: 225 80% 50%;
+    --chart-1: 225 80% 50%;
+    --chart-2: 200 85% 45%;
+    --chart-3: 240 75% 55%;
+    --chart-4: 190 70% 48%;
+    --chart-5: 215 60% 40%;
+  }
+
+  html[data-color-scheme="sapphire"].dark {
+    --background: 220 60% 14%;
+    --foreground: 210 50% 86%;
+    --card: 220 60% 17%;
+    --card-foreground: 210 50% 86%;
+    --popover: 220 60% 14%;
+    --popover-foreground: 210 50% 86%;
+    --primary: 225 80% 60%;
+    --primary-foreground: 220 60% 8%;
+    --secondary: 220 50% 26%;
+    --secondary-foreground: 210 50% 86%;
+    --muted: 220 40% 21%;
+    --muted-foreground: 210 40% 62%;
+    --accent: 200 85% 55%;
+    --accent-foreground: 220 60% 8%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 140 60% 55%;
+    --success-foreground: 0 0% 98%;
+    --border: 220 40% 29%;
+    --input: 220 45% 24%;
+    --ring: 225 80% 60%;
+    --chart-1: 225 80% 60%;
+    --chart-2: 200 85% 55%;
+    --chart-3: 240 75% 65%;
+    --chart-4: 190 70% 58%;
+    --chart-5: 215 60% 50%;
+  }
+
+  /* Amethyst Theme */
+  html[data-color-scheme="amethyst"] {
+    --background: 275 50% 96%;
+    --foreground: 280 40% 25%;
+    --card: 270 45% 98%;
+    --card-foreground: 280 40% 25%;
+    --popover: 270 45% 98%;
+    --popover-foreground: 280 40% 25%;
+    --primary: 285 65% 55%;
+    --primary-foreground: 275 0% 100%;
+    --secondary: 275 40% 90%;
+    --secondary-foreground: 285 65% 55%;
+    --muted: 275 30% 84%;
+    --muted-foreground: 280 35% 42%;
+    --accent: 300 55% 50%;
+    --accent-foreground: 275 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 140 60% 45%;
+    --success-foreground: 0 0% 98%;
+    --border: 275 30% 79%;
+    --input: 275 35% 91%;
+    --ring: 285 65% 55%;
+    --chart-1: 285 65% 55%;
+    --chart-2: 300 55% 50%;
+    --chart-3: 260 60% 52%;
+    --chart-4: 320 50% 58%;
+    --chart-5: 270 40% 45%;
+  }
+
+  html[data-color-scheme="amethyst"].dark {
+    --background: 280 35% 13%;
+    --foreground: 275 40% 87%;
+    --card: 280 35% 16%;
+    --card-foreground: 275 40% 87%;
+    --popover: 280 35% 13%;
+    --popover-foreground: 275 40% 87%;
+    --primary: 285 65% 65%;
+    --primary-foreground: 280 35% 8%;
+    --secondary: 280 30% 26%;
+    --secondary-foreground: 275 40% 87%;
+    --muted: 280 25% 20%;
+    --muted-foreground: 275 30% 63%;
+    --accent: 300 55% 60%;
+    --accent-foreground: 280 35% 8%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 140 60% 55%;
+    --success-foreground: 0 0% 98%;
+    --border: 280 25% 29%;
+    --input: 280 30% 23%;
+    --ring: 285 65% 65%;
+    --chart-1: 285 65% 65%;
+    --chart-2: 300 55% 60%;
+    --chart-3: 260 60% 62%;
+    --chart-4: 320 50% 68%;
+    --chart-5: 270 40% 55%;
+  }
 }
 
 @layer base {
