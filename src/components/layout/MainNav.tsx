@@ -11,7 +11,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu"; // Assuming this is the path to shadcn/ui navigation-menu
+} from "@/components/ui/navigation-menu"; // Corrected path
 import {
   Gauge,
   Box,
@@ -27,10 +27,10 @@ import {
   ListOrdered,
   BellDot,
   FileText,
-  Package as PackageIcon
+  Package as PackageIcon // Aliased to avoid conflict if type Package exists
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { ReactNode } from 'react';
+import React, { useState, useEffect } from 'react'; // Added React for ListItem
 
 
 interface NavItem {
@@ -58,7 +58,7 @@ const menuItems: NavItem[] = [
   { href: '/maintenance', label: 'Bakım', icon: Wrench },
   { href: '/alerts', label: 'Uyarılar', icon: ShieldAlert },
   {
-    label: 'Yönetim',
+    label: 'Yönetim Paneli', // Changed label for clarity
     icon: Settings,
     isParent: true,
     children: [
@@ -75,24 +75,27 @@ const menuItems: NavItem[] = [
 
 interface MainNavProps {
   isMobile: boolean;
-  onLinkClick?: () => void; // For mobile sheet to close on link click
+  onLinkClick?: () => void;
 }
 
 export function MainNav({ isMobile, onLinkClick }: MainNavProps) {
   const pathname = usePathname();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
 
   if (isMobile) {
-    // Vertical list for mobile (inside Sheet)
     return (
       <ul className="flex flex-col gap-1 p-4">
         {menuItems.map((item) => (
           <li key={item.label}>
             {item.isParent && item.children ? (
-              // Basic accordion-like structure for mobile submenus - can be improved
-              // For simplicity, we'll just list them now. A proper mobile submenu would need more state.
               <>
                 <div className="px-3 py-2 text-sm font-semibold text-muted-foreground flex items-center gap-2">
-                  <item.icon className="h-5 w-5" /> {item.label}
+                  <item.icon className="h-5 w-5" suppressHydrationWarning /> {item.label}
                 </div>
                 <ul className="pl-6">
                   {item.children.map((child) => (
@@ -106,7 +109,7 @@ export function MainNav({ isMobile, onLinkClick }: MainNavProps) {
                         onClick={onLinkClick}
                         suppressHydrationWarning
                       >
-                        <child.icon className="h-4 w-4" />
+                        <child.icon className="h-4 w-4" suppressHydrationWarning />
                         <span suppressHydrationWarning>{child.label}</span>
                       </Link>
                     </li>
@@ -123,7 +126,7 @@ export function MainNav({ isMobile, onLinkClick }: MainNavProps) {
                 onClick={onLinkClick}
                 suppressHydrationWarning
               >
-                <item.icon className="h-5 w-5" />
+                <item.icon className="h-5 w-5" suppressHydrationWarning />
                 <span suppressHydrationWarning>{item.label}</span>
               </Link>
             )}
@@ -133,7 +136,10 @@ export function MainNav({ isMobile, onLinkClick }: MainNavProps) {
     );
   }
 
-  // Horizontal NavigationMenu for desktop
+  if (!isMounted) {
+    return null; // Or a skeleton loader for desktop nav
+  }
+
   return (
     <NavigationMenu>
       <NavigationMenuList>
@@ -141,8 +147,11 @@ export function MainNav({ isMobile, onLinkClick }: MainNavProps) {
           <NavigationMenuItem key={item.label}>
             {item.isParent && item.children ? (
               <>
-                <NavigationMenuTrigger className={cn(item.children.some(child => pathname.startsWith(child.href!)) && "bg-accent text-accent-foreground")}>
-                  <item.icon className="h-5 w-5 mr-2" /> <span suppressHydrationWarning>{item.label}</span>
+                <NavigationMenuTrigger 
+                  className={cn(item.children.some(child => pathname.startsWith(child.href!)) && "bg-accent text-accent-foreground")}
+                  suppressHydrationWarning
+                >
+                  <item.icon className="h-5 w-5 mr-2" suppressHydrationWarning /> <span suppressHydrationWarning>{item.label}</span>
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
@@ -153,6 +162,8 @@ export function MainNav({ isMobile, onLinkClick }: MainNavProps) {
                         href={child.href!}
                         icon={child.icon}
                         active={pathname.startsWith(child.href!)}
+                        onClick={onLinkClick}
+                        suppressHydrationWarning
                       />
                     ))}
                   </ul>
@@ -160,15 +171,16 @@ export function MainNav({ isMobile, onLinkClick }: MainNavProps) {
               </>
             ) : (
               <Link href={item.href!} legacyBehavior passHref>
-                <NavigationMenuLink 
+                <NavigationMenuLink
                   className={cn(
-                    navigationMenuTriggerStyle(), 
-                    "flex items-center gap-2",
+                    navigationMenuTriggerStyle(),
+                    "flex items-center gap-2", // Ensure gap for icon and label
                     pathname.startsWith(item.href!) && "bg-accent text-accent-foreground"
                   )}
                   active={pathname.startsWith(item.href!)}
+                  suppressHydrationWarning
                 >
-                  <item.icon className="h-5 w-5" />
+                  <item.icon className="h-5 w-5" suppressHydrationWarning />
                   <span suppressHydrationWarning>{item.label}</span>
                 </NavigationMenuLink>
               </Link>
@@ -182,8 +194,8 @@ export function MainNav({ isMobile, onLinkClick }: MainNavProps) {
 
 const ListItem = React.forwardRef<
   React.ElementRef<"a">,
-  React.ComponentPropsWithoutRef<"a"> & { title: string; icon: React.ElementType, active?: boolean }
->(({ className, title, children, icon: Icon, active, ...props }, ref) => {
+  React.ComponentPropsWithoutRef<"a"> & { title: string; icon: React.ElementType, active?: boolean, suppressHydrationWarning?: boolean }
+>(({ className, title, children, icon: Icon, active, suppressHydrationWarning, ...props }, ref) => {
   return (
     <li>
       <NavigationMenuLink asChild>
@@ -195,12 +207,13 @@ const ListItem = React.forwardRef<
             className
           )}
           {...props}
+          suppressHydrationWarning={suppressHydrationWarning}
         >
-          <div className="flex items-center gap-2 text-sm font-medium leading-none">
-            <Icon className="h-4 w-4" />
-            <span suppressHydrationWarning>{title}</span>
+          <div className="flex items-center gap-2 text-sm font-medium leading-none" suppressHydrationWarning={suppressHydrationWarning}>
+            <Icon className="h-4 w-4" suppressHydrationWarning={suppressHydrationWarning} />
+            <span suppressHydrationWarning={suppressHydrationWarning}>{title}</span>
           </div>
-          {children && <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">{children}</p>}
+          {children && <p className="line-clamp-2 text-sm leading-snug text-muted-foreground" suppressHydrationWarning={suppressHydrationWarning}>{children}</p>}
         </a>
       </NavigationMenuLink>
     </li>
