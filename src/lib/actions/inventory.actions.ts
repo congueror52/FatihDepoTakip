@@ -3,7 +3,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { unstable_noStore as noStore } from 'next/cache';
-import type { Firearm, Magazine, Ammunition, Shipment, ShipmentItem, AmmunitionUsageLog, FirearmDefinition, AmmunitionDailyUsageLog, UsageScenario, ScenarioCaliberConsumption, SupportedCaliber, MagazineStatus, AmmunitionStatus, Depot, MaintenanceLog, MaintenanceItemStatus, FirearmStatus, InventoryItemType, ShipmentTypeDefinition, AlertDefinition, OtherMaterial, OtherMaterialStatus } from '@/types/inventory'; // Added OtherMaterial, OtherMaterialStatus
+import type { Firearm, Magazine, Ammunition, Shipment, ShipmentItem, AmmunitionUsageLog, FirearmDefinition, AmmunitionDailyUsageLog, UsageScenario, ScenarioCaliberConsumption, SupportedCaliber, MagazineStatus, AmmunitionStatus, Depot, MaintenanceLog, MaintenanceItemStatus, FirearmStatus, InventoryItemType, ShipmentTypeDefinition, AlertDefinition, OtherMaterial, OtherMaterialStatus, ActiveAlert, TriggeredAlertContext } from '@/types/inventory'; // Added OtherMaterial, OtherMaterialStatus, ActiveAlert, TriggeredAlertContext
 import { readData, writeData, generateId } from '@/lib/data-utils';
 import { logAction } from '@/lib/log-service';
 import { firearmFormSchema, firearmStatuses as firearmStatusesArray } from '@/app/(app)/inventory/firearms/_components/firearm-form-schema';
@@ -1660,12 +1660,99 @@ export async function deleteAlertDefinitionAction(id: string): Promise<void> {
 }
 
 
-export async function getTriggeredAlerts(): Promise<AlertDefinition[]> {
+export async function getTriggeredAlerts(): Promise<ActiveAlert[]> {
   noStore();
-  // This is a placeholder. In a real system, this function would check
-  // alert definitions against current inventory data to determine which alerts are active.
-  // For now, it returns an empty array.
-  return [];
+  const activeAlerts: ActiveAlert[] = [];
+  const now = new Date().toISOString();
+
+  const alertDefinitions = await getAlertDefinitions();
+  const allAmmunition = await getAmmunition();
+  const allFirearms = await getFirearms();
+  const allMagazines = await getMagazines();
+  const allDepots = await getDepots();
+  const depotMap = new Map(allDepots.map(d => [d.id, d.name]));
+
+  for (const definition of alertDefinitions) {
+    if (!definition.isActive) continue;
+
+    if (definition.entityType === 'ammunition' && definition.conditionType === 'low_stock') {
+      if (definition.thresholdValue === undefined || definition.thresholdValue < 0) continue;
+
+      let relevantAmmunition = allAmmunition;
+      if (definition.depotId) {
+        relevantAmmunition = relevantAmmunition.filter(a => a.depotId === definition.depotId);
+      }
+      if (definition.caliberFilter) {
+        relevantAmmunition = relevantAmmunition.filter(a => a.caliber === definition.caliberFilter);
+      }
+
+      const currentStock = relevantAmmunition.reduce((sum, ammo) => sum + ammo.quantity, 0);
+
+      if (currentStock < definition.thresholdValue) {
+        const context: TriggeredAlertContext = {
+          itemName: definition.caliberFilter ? `${definition.caliberFilter} Mühimmat` : 'Tüm Mühimmat',
+          itemDepotName: definition.depotId ? depotMap.get(definition.depotId) || definition.depotId : 'Tüm Depolar',
+          currentValue: currentStock,
+          thresholdValue: definition.thresholdValue,
+          caliber: definition.caliberFilter,
+        };
+        activeAlerts.push({
+          definition,
+          context,
+          triggeredAt: now,
+          uniqueId: `${definition.id}-${definition.depotId || 'all'}-${definition.caliberFilter || 'all'}`,
+        });
+      }
+    } else if (definition.entityType === 'firearm' && definition.conditionType === 'status_is') {
+      if (!definition.statusFilter) continue;
+      const relevantFirearms = allFirearms.filter(f => f.status === definition.statusFilter);
+      
+      for (const firearm of relevantFirearms) {
+        const context: TriggeredAlertContext = {
+          itemName: firearm.name,
+          serialNumber: firearm.serialNumber,
+          itemDepotName: depotMap.get(firearm.depotId) || firearm.depotId,
+          currentValue: firearm.status,
+          caliber: firearm.caliber,
+          itemId: firearm.id,
+        };
+        activeAlerts.push({
+          definition,
+          context,
+          triggeredAt: now,
+          uniqueId: `${definition.id}-${firearm.id}`,
+        });
+      }
+    } else if (definition.entityType === 'magazine' && definition.conditionType === 'status_is') {
+      if (!definition.statusFilter) continue;
+      const relevantMagazines = allMagazines.filter(m => m.status === definition.statusFilter);
+
+      for (const magazine of relevantMagazines) {
+         const context: TriggeredAlertContext = {
+          itemName: magazine.name,
+          serialNumber: magazine.serialNumber,
+          itemDepotName: depotMap.get(magazine.depotId) || magazine.depotId,
+          currentValue: magazine.status,
+          caliber: magazine.caliber,
+          itemId: magazine.id,
+        };
+        activeAlerts.push({
+          definition,
+          context,
+          triggeredAt: now,
+          uniqueId: `${definition.id}-${magazine.id}`,
+        });
+      }
+    }
+    // NOTE: 'maintenance_due_soon' is not implemented yet.
+  }
+  // Sort by severity (Yüksek > Orta > Düşük) then by trigger time
+  const severityOrder: Record<AlertSeverity, number> = { 'Yüksek': 1, 'Orta': 2, 'Düşük': 3 };
+  return activeAlerts.sort((a, b) => {
+    const severityDiff = severityOrder[a.definition.severity] - severityOrder[b.definition.severity];
+    if (severityDiff !== 0) return severityDiff;
+    return new Date(b.triggeredAt).getTime() - new Date(a.triggeredAt).getTime();
+  });
 }
 
 
@@ -1691,3 +1778,4 @@ export async function getRecentAuditLogs(limit: number = 5): Promise<AuditLogEnt
     return [];
   }
 }
+

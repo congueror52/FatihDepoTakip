@@ -8937,5 +8937,121 @@
       "partsUsed": "",
       "id": "57c6c6e5-5bc1-4491-899b-2452313bbb27"
     }
+  },
+  {
+    "id": "aee585ad-4af0-4c3f-8c0f-39f3f76e8569",
+    "timestamp": "2025-06-01T16:33:55.355Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "OtherMaterial",
+    "entityId": "b317fe36-73cd-44a5-9860-b929d186f6b0",
+    "status": "SUCCESS",
+    "details": {
+      "name": "baslistik gözlük",
+      "category": "koruyucu ekipman",
+      "quantity": 1,
+      "depotId": "depotA",
+      "status": "Depoda",
+      "purchaseDate": "2025-05-30T00:00:00.000Z",
+      "notes": "",
+      "manufacturer": "mardin silah sanayi",
+      "id": "b317fe36-73cd-44a5-9860-b929d186f6b0",
+      "itemType": "other",
+      "lastUpdated": "2025-06-01T16:33:55.341Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "272aae90-2e0f-4deb-bb04-58803249a03c",
+    "timestamp": "2025-06-01T16:36:13.368Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "UPDATE",
+    "entityType": "AlertDefinition",
+    "entityId": "273cc3be-c02b-4858-b74b-e789afaa33cf",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Düşük fişek uyarısı",
+      "description": "",
+      "entityType": "ammunition",
+      "conditionType": "low_stock",
+      "caliberFilter": "9x19mm",
+      "thresholdValue": 55100,
+      "severity": "Yüksek",
+      "messageTemplate": "{itemName}{depotName}{currentValue}{threshold}{status}{caliber}",
+      "isActive": true,
+      "id": "273cc3be-c02b-4858-b74b-e789afaa33cf",
+      "lastUpdated": "2025-06-01T16:36:13.349Z"
+    }
+  },
+  {
+    "id": "5893c99c-8cbf-4aca-8d44-9b907016e17f",
+    "timestamp": "2025-06-01T16:37:04.283Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "DailyAmmunitionUsage",
+    "entityId": "140e6cff-d90d-4eea-bcfc-48ef0196ab02",
+    "status": "SUCCESS",
+    "details": {
+      "date": "2025-06-01T00:00:00.000Z",
+      "personnelCount": 7777777,
+      "usageScenarioId": "scenario_1",
+      "used_9x19mm": 583333275,
+      "used_5_56x45mm": 194444425,
+      "used_7_62x39mm": 0,
+      "used_7_62x51mm": 0,
+      "notes": "",
+      "id": "140e6cff-d90d-4eea-bcfc-48ef0196ab02"
+    }
+  },
+  {
+    "id": "c89f3823-d2f2-454f-8463-f171d9d6bbad",
+    "timestamp": "2025-06-01T16:38:20.946Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Ammunition",
+    "entityId": "767d910d-abd1-49f8-a0c9-09982e841434",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0a4418e6-4827-49bb-8fd8-606c89c78da3",
+    "timestamp": "2025-06-01T16:38:55.329Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "UPDATE",
+    "entityType": "AlertDefinition",
+    "entityId": "273cc3be-c02b-4858-b74b-e789afaa33cf",
+    "status": "SUCCESS",
+    "details": {
+      "name": "Düşük fişek uyarısı",
+      "description": "",
+      "entityType": "ammunition",
+      "conditionType": "low_stock",
+      "caliberFilter": "9x19mm",
+      "thresholdValue": 2000,
+      "severity": "Yüksek",
+      "messageTemplate": "{itemName}{depotName}{currentValue}{threshold}{status}{caliber}",
+      "isActive": true,
+      "id": "273cc3be-c02b-4858-b74b-e789afaa33cf",
+      "lastUpdated": "2025-06-01T16:38:55.297Z"
+    }
   }
 ]

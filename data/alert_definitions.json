@@ -5,11 +5,11 @@
     "entityType": "ammunition",
     "conditionType": "low_stock",
     "caliberFilter": "9x19mm",
-    "thresholdValue": 5555555555,
+    "thresholdValue": 2000,
     "severity": "Yüksek",
     "messageTemplate": "{itemName}{depotName}{currentValue}{threshold}{status}{caliber}",
     "isActive": true,
     "id": "273cc3be-c02b-4858-b74b-e789afaa33cf",
-    "lastUpdated": "2025-05-29T16:07:48.943Z"
+    "lastUpdated": "2025-06-01T16:38:55.297Z"
   }
 ]

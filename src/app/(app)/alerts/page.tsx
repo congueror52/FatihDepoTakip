@@ -1,13 +1,14 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShieldAlert, BellRing } from "lucide-react";
-import { getTriggeredAlerts } from "@/lib/actions/inventory.actions"; // Changed to getTriggeredAlerts
-import type { AlertDefinition } from "@/types/inventory";
+import { getTriggeredAlerts } from "@/lib/actions/inventory.actions";
+import type { AlertDefinition, ActiveAlert } from "@/types/inventory";
 import { Badge } from "@/components/ui/badge";
+import { format } from 'date-fns';
+import { tr } from 'date-fns/locale';
 
 export default async function AlertsPage() {
-  // Fetch actual triggered alerts (currently placeholder, will return empty)
-  const triggeredAlerts = await getTriggeredAlerts(); 
+  const triggeredAlerts: ActiveAlert[] = await getTriggeredAlerts(); 
 
   const getSeverityColor = (severity: string) => {
     if (severity === 'Yüksek') return 'border-red-500 bg-red-50 dark:bg-red-900/20 dark:border-red-700';
@@ -30,6 +31,18 @@ export default async function AlertsPage() {
     }
   };
 
+  const formatAlertMessage = (template: string, context: ActiveAlert['context']) => {
+    let message = template;
+    message = message.replace(/{itemName}/g, String(context.itemName || 'N/A'));
+    message = message.replace(/{depotName}/g, String(context.itemDepotName || 'N/A'));
+    message = message.replace(/{currentValue}/g, String(context.currentValue));
+    message = message.replace(/{threshold}/g, String(context.thresholdValue ?? 'N/A'));
+    message = message.replace(/{status}/g, String(context.currentValue)); // For status_is, currentValue is the status
+    message = message.replace(/{caliber}/g, String(context.caliber || 'N/A'));
+    message = message.replace(/{serialNumber}/g, String(context.serialNumber || 'N/A'));
+    return message;
+  };
+
 
   return (
     <div className="flex flex-col gap-6">
@@ -40,7 +53,7 @@ export default async function AlertsPage() {
       
       <Card>
         <CardHeader>
-          <CardTitle suppressHydrationWarning>Aktif Sistem Uyarıları</CardTitle>
+          <CardTitle suppressHydrationWarning>Aktif Sistem Uyarıları ({triggeredAlerts.length})</CardTitle>
           <CardDescription suppressHydrationWarning>
             Aşağıda, sistem tarafından tetiklenmiş ve dikkat edilmesi gereken aktif uyarılar listelenmektedir.
           </CardDescription>
@@ -50,35 +63,28 @@ export default async function AlertsPage() {
             <p className="text-muted-foreground text-center py-8" suppressHydrationWarning>Şu anda aktif bir uyarı bulunmamaktadır.</p>
           ) : (
             <div className="space-y-4">
-              {triggeredAlerts.map(alert => (
-                <Card key={alert.id} className={`${getSeverityColor(alert.severity)}`}>
+              {triggeredAlerts.map(activeAlert => (
+                <Card key={activeAlert.uniqueId} className={`${getSeverityColor(activeAlert.definition.severity)}`}>
                   <CardHeader className="pb-2 flex flex-row items-center justify-between">
-                    <CardTitle className={`text-lg ${getSeverityTextColor(alert.severity)} flex items-center gap-2`}>
+                    <CardTitle className={`text-lg ${getSeverityTextColor(activeAlert.definition.severity)} flex items-center gap-2`}>
                       <BellRing className="h-5 w-5"/>
-                      <span suppressHydrationWarning>{alert.name}</span>
+                      <span suppressHydrationWarning>{activeAlert.definition.name}</span>
                     </CardTitle>
-                    <Badge className={getSeverityBadgeClasses(alert.severity)}>{alert.severity}</Badge>
+                    <Badge className={getSeverityBadgeClasses(activeAlert.definition.severity)}>{activeAlert.definition.severity}</Badge>
                   </CardHeader>
                   <CardContent>
-                    {/* In a real triggered alert system, this message would be pre-rendered */}
-                    <p className={`${getSeverityTextColor(alert.severity)} mb-1`} suppressHydrationWarning>
-                       {alert.messageTemplate
-                        .replace('{itemName}', alert.name) // Basic replacement
-                        .replace('{depotName}', 'N/A') // Placeholder - would come from actual data
-                        .replace('{currentValue}', String(alert.thresholdValue || 'N/A')) // Placeholder
-                        .replace('{threshold}', String(alert.thresholdValue || 'N/A'))
-                        .replace('{status}', String(alert.statusFilter || 'N/A'))
-                        .replace('{caliber}', String(alert.caliberFilter || 'N/A'))
-                        .replace('{serialNumber}', 'N/A')}
+                    <p className={`${getSeverityTextColor(activeAlert.definition.severity)} mb-1`} suppressHydrationWarning>
+                       {formatAlertMessage(activeAlert.definition.messageTemplate, activeAlert.context)}
                     </p>
                     <p className="text-xs text-muted-foreground" suppressHydrationWarning>
-                        Koşul: {alert.conditionType} | Varlık: {alert.entityType}
-                        {alert.caliberFilter && ` | Kalibre: ${alert.caliberFilter}`}
-                        {alert.thresholdValue !== undefined && ` | Eşik: ${alert.thresholdValue}`}
-                        {alert.statusFilter && ` | Durum: ${alert.statusFilter}`}
+                        Koşul: {activeAlert.definition.conditionType} | Varlık: {activeAlert.definition.entityType}
+                        {activeAlert.context.caliber && ` | Kalibre: ${activeAlert.context.caliber}`}
+                        {activeAlert.context.thresholdValue !== undefined && ` | Eşik: ${activeAlert.context.thresholdValue}`}
+                        {activeAlert.definition.statusFilter && ` | Hedef Durum: ${activeAlert.definition.statusFilter}`}
+                        {activeAlert.context.itemDepotName && activeAlert.context.itemDepotName !== 'Tüm Depolar' && ` | Depo: ${activeAlert.context.itemDepotName}`}
                     </p>
-                     <p className={`text-xs mt-1 ${getSeverityTextColor(alert.severity)} opacity-75`} suppressHydrationWarning>
-                      Uyarı Tarihi: {new Date(alert.lastUpdated).toLocaleString('tr-TR')} {/* This would be trigger date */}
+                     <p className={`text-xs mt-1 ${getSeverityTextColor(activeAlert.definition.severity)} opacity-75`} suppressHydrationWarning>
+                      Uyarı Zamanı: {format(new Date(activeAlert.triggeredAt), "PPP HH:mm:ss", { locale: tr })}
                     </p>
                   </CardContent>
                 </Card>
@@ -90,4 +96,3 @@ export default async function AlertsPage() {
     </div>
   );
 }
-

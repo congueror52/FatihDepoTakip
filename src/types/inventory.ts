@@ -210,6 +210,23 @@ export interface AlertDefinition {
   lastUpdated: string;
 }
 
+export interface TriggeredAlertContext {
+  itemName?: string;
+  itemDepotName?: string;
+  currentValue: string | number;
+  thresholdValue?: number;
+  caliber?: SupportedCaliber;
+  serialNumber?: string;
+  itemId?: string; // ID of the item that triggered the alert
+}
+
+export interface ActiveAlert {
+  definition: AlertDefinition;
+  context: TriggeredAlertContext;
+  triggeredAt: string; // ISO string for when the alert was evaluated
+  uniqueId: string; // Unique ID for this specific trigger instance (e.g., definition.id + context.itemId)
+}
+
 
 // Schema for individual JSON files
 export type FirearmsDb = Firearm[];
