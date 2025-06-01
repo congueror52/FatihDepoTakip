@@ -19,6 +19,7 @@ export default function FirearmsPage() {
   const [depots, setDepots] = useState<Depot[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  const [accordionValue, setAccordionValue] = useState<string | undefined>(undefined);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -142,13 +143,13 @@ export default function FirearmsPage() {
         </Card>
       )}
       
-      <Accordion type="single" collapsible className="w-full">
+      <Accordion type="single" collapsible className="w-full" value={accordionValue} onValueChange={setAccordionValue}>
         <AccordionItem value="all-firearms" className="rounded-lg border bg-card text-card-foreground shadow-sm">
           <AccordionTrigger className="p-6 text-left hover:no-underline">
             <div className="flex flex-1 flex-col items-start">
               <CardTitle suppressHydrationWarning>Tüm Silahlar</CardTitle>
               <CardDescription suppressHydrationWarning>
-                Envanterdeki tüm silahları yönetin ve takip edin. (Göstermek için tıklayın)
+                Envanterdeki tüm silahları yönetin ve takip edin. ({accordionValue === 'all-firearms' ? 'Gizlemek' : 'Göstermek'} için tıklayın)
               </CardDescription>
             </div>
           </AccordionTrigger>

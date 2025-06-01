@@ -21,6 +21,7 @@ export default function MagazinesPage() {
   const [firearmDefinitions, setFirearmDefinitions] = useState<FirearmDefinition[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  const [accordionValue, setAccordionValue] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     async function fetchData() {
@@ -147,13 +148,13 @@ export default function MagazinesPage() {
         </Card>
       )}
       
-      <Accordion type="single" collapsible className="w-full">
+      <Accordion type="single" collapsible className="w-full" value={accordionValue} onValueChange={setAccordionValue}>
         <AccordionItem value="all-magazines" className="rounded-lg border bg-card text-card-foreground shadow-sm">
            <AccordionTrigger className="p-6 text-left hover:no-underline">
             <div className="flex flex-1 flex-col items-start">
               <CardTitle suppressHydrationWarning>Tüm Şarjörler</CardTitle>
               <CardDescription suppressHydrationWarning>
-                Envanterdeki tüm şarjörleri yönetin ve takip edin. (Göstermek için tıklayın)
+                Envanterdeki tüm şarjörleri yönetin ve takip edin. ({accordionValue === 'all-magazines' ? 'Gizlemek' : 'Göstermek'} için tıklayın)
               </CardDescription>
             </div>
           </AccordionTrigger>
