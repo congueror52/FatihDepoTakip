@@ -10,11 +10,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
-  DropdownMenuTrigger,
   DropdownMenuSub,
   DropdownMenuSubTrigger,
   DropdownMenuPortal,
   DropdownMenuSubContent,
+  DropdownMenuTrigger, // Added missing import
 } from '@/components/ui/dropdown-menu';
 import { ThemeSwitcher } from "@/components/theme/ThemeSwitcher";
 import { User, Settings, LogOut, Palette } from 'lucide-react';
@@ -27,7 +27,7 @@ export function UserNav() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={user.avatarUrl} alt={user.name} data-ai-hint="kullanıcı avatarı" />
+            <AvatarImage src={user.avatarUrl} alt={user.name} data-ai-hint="modern avatar" />
             <AvatarFallback>{user.name?.charAt(0) || 'K'}</AvatarFallback>
           </Avatar>
         </Button>
@@ -55,7 +55,7 @@ export function UserNav() {
               <span suppressHydrationWarning>Tema Ayarları</span>
             </DropdownMenuSubTrigger>
             <DropdownMenuPortal>
-              <DropdownMenuSubContent className="w-80 p-0" sideOffset={4} alignOffset={-5}>
+              <DropdownMenuSubContent className="w-80 p-0" sideOffset={8} alignOffset={-5} onOpenAutoFocus={(e) => e.preventDefault()}>
                 <ThemeSwitcher />
               </DropdownMenuSubContent>
             </DropdownMenuPortal>
