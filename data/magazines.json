@@ -19,11 +19,11 @@
     "caliber": "5.56x45mm",
     "capacity": 30,
     "depotId": "depotA",
-    "status": "Destekte",
+    "status": "Poligonda",
     "compatibleFirearmDefinitionId": "fd_1",
     "id": "58d7c32a-9def-4aad-ae58-7d888f5dc52a",
     "itemType": "magazine",
-    "lastUpdated": "2025-06-01T13:51:40.049Z",
+    "lastUpdated": "2025-06-01T14:00:24.082Z",
     "maintenanceHistory": [
       {
         "date": "2025-06-01T00:00:00.000Z",
@@ -33,6 +33,15 @@
         "technician": "",
         "partsUsed": "",
         "id": "198fec0d-81bd-4026-be9b-a54d177ad7e3"
+      },
+      {
+        "date": "2025-06-01T00:00:00.000Z",
+        "description": "deneemee",
+        "statusChangeFrom": "Destekte",
+        "statusChangeTo": "Poligonda",
+        "technician": "",
+        "partsUsed": "",
+        "id": "c13edf5e-128b-4c67-8e2a-8d147eda0ffa"
       }
     ],
     "serialNumber": "",

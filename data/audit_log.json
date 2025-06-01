@@ -8859,5 +8859,44 @@
       "partsUsed": "",
       "id": "198fec0d-81bd-4026-be9b-a54d177ad7e3"
     }
+  },
+  {
+    "id": "df81f9ce-24b9-41eb-852b-b6a45ee5bc11",
+    "timestamp": "2025-06-01T14:00:24.092Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "UPDATE",
+    "entityType": "Magazine",
+    "entityId": "58d7c32a-9def-4aad-ae58-7d888f5dc52a",
+    "status": "SUCCESS",
+    "details": {
+      "status": "Poligonda",
+      "maintenanceLogAdded": "c13edf5e-128b-4c67-8e2a-8d147eda0ffa"
+    }
+  },
+  {
+    "id": "67e0f27c-846b-4ae6-8b54-bb30a7e52002",
+    "timestamp": "2025-06-01T14:00:24.114Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "MaintenanceLog",
+    "entityId": "c13edf5e-128b-4c67-8e2a-8d147eda0ffa",
+    "status": "SUCCESS",
+    "details": {
+      "date": "2025-06-01T00:00:00.000Z",
+      "description": "deneemee",
+      "statusChangeFrom": "Destekte",
+      "statusChangeTo": "Poligonda",
+      "technician": "",
+      "partsUsed": "",
+      "id": "c13edf5e-128b-4c67-8e2a-8d147eda0ffa"
+    }
   }
 ]

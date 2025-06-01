@@ -31,6 +31,7 @@ import { firearmStatuses as firearmStatusesArray } from "@/app/(app)/inventory/f
 import { magazineStatuses as magazineStatusesArray } from "@/app/(app)/inventory/magazines/_components/magazine-form-schema";
 import { otherMaterialStatuses as otherMaterialStatusesArray } from "@/app/(app)/inventory/other-materials/_components/other-material-form-schema"; // New import
 import { useEffect, useState } from "react";
+import { logAction } from '@/lib/log-service'; // logAction importu
 
 interface MaintenanceLogFormProps {
   firearms: Firearm[];
@@ -147,7 +148,13 @@ export function MaintenanceLogForm({ firearms, magazines, otherMaterials, firear
       });
       logEntryId = result.id;
       toast({ variant: "success", title: "Başarılı", description: "Bakım kaydı başarıyla eklendi." });
-      router.push(`/inventory/${data.itemType === 'other' ? 'other-materials' : data.itemType + 's'}/${data.itemId}`);
+
+      if (data.itemType === 'magazine') {
+        router.push('/inventory/magazines');
+      } else {
+        const basePath = data.itemType === 'other' ? 'other-materials' : data.itemType + 's';
+        router.push(`/inventory/${basePath}/${data.itemId}`);
+      }
       router.refresh();
     } catch (error: any) {
       await logAction({
