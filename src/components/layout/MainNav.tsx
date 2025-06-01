@@ -11,7 +11,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu"; // Corrected path
+} from "@/components/ui/navigation-menu";
 import {
   Gauge,
   Box,
@@ -27,10 +27,11 @@ import {
   ListOrdered,
   BellDot,
   FileText,
-  Package as PackageIcon // Aliased to avoid conflict if type Package exists
+  Palette, // Palette ikonu eklendi
+  Package as PackageIcon
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import React, { useState, useEffect } from 'react'; // Added React for ListItem
+import React, { useState, useEffect } from 'react';
 
 
 interface NavItem {
@@ -58,7 +59,7 @@ const menuItems: NavItem[] = [
   { href: '/maintenance', label: 'Bakım', icon: Wrench },
   { href: '/alerts', label: 'Uyarılar', icon: ShieldAlert },
   {
-    label: 'Yönetim Paneli', // Changed label for clarity
+    label: 'Yönetim Paneli',
     icon: Settings,
     isParent: true,
     children: [
@@ -69,6 +70,7 @@ const menuItems: NavItem[] = [
       { href: '/shipments', label: 'Malzeme Kayıt Takibi', icon: Truck },
       { href: '/admin/alert-definitions', label: 'Uyarı Tanımları', icon: BellDot },
       { href: '/admin/audit-logs', label: 'Denetim Kayıtları', icon: FileText },
+      { href: '/admin/theme-settings', label: 'Tema Ayarları', icon: Palette }, // Yeni tema ayarları linki
     ],
   },
 ];
@@ -147,7 +149,7 @@ export function MainNav({ isMobile, onLinkClick }: MainNavProps) {
           <NavigationMenuItem key={item.label}>
             {item.isParent && item.children ? (
               <>
-                <NavigationMenuTrigger 
+                <NavigationMenuTrigger
                   className={cn(item.children.some(child => pathname.startsWith(child.href!)) && "bg-accent text-accent-foreground")}
                   suppressHydrationWarning
                 >
@@ -174,7 +176,7 @@ export function MainNav({ isMobile, onLinkClick }: MainNavProps) {
                 <NavigationMenuLink
                   className={cn(
                     navigationMenuTriggerStyle(),
-                    "flex items-center gap-2", // Ensure gap for icon and label
+                    "flex items-center gap-2",
                     pathname.startsWith(item.href!) && "bg-accent text-accent-foreground"
                   )}
                   active={pathname.startsWith(item.href!)}

@@ -3,10 +3,10 @@
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 import { MainNav } from '@/components/layout/MainNav';
-import { UserNav } from '@/components/layout/UserNav';
+// import { UserNav } from '@/components/layout/UserNav'; // UserNav kaldırıldı
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Package2, Warehouse } from 'lucide-react'; // Added Menu, Warehouse
+import { Menu, Warehouse } from 'lucide-react';
 import Link from 'next/link';
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -50,9 +50,10 @@ export function AppShell({ children }: { children: ReactNode }) {
           <MainNav isMobile={false} />
         </div>
 
-        <div className="ml-auto flex items-center gap-4">
+        {/* UserNav bölümü kaldırıldı */}
+        {/* <div className="ml-auto flex items-center gap-4">
           <UserNav />
-        </div>
+        </div> */}
       </header>
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
         {children}
