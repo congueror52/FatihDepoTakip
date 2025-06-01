@@ -40,25 +40,25 @@ body {
     --ring: 187 100% 42%; /* Cyan for rings */
 
     --chart-1: 231 48% 48%;
-    --chart-2: 187 100% 42%;
+    --chart-2: 140 60% 45%; /* Green for stock */
     --chart-3: 210 50% 60%;
     --chart-4: 200 60% 55%;
     --chart-5: 220 40% 70%;
 
     --radius: 0.5rem;
 
-    /* Sidebar specific theme */
-    --sidebar-background: 231 25% 25%; /* Darker, muted blue */
-    --sidebar-foreground: 0 0% 90%; /* Light gray for text */
-    --sidebar-primary: 187 100% 42%; /* Cyan for active/primary items in sidebar */
-    --sidebar-primary-foreground: 0 0% 100%; /* White text on sidebar primary */
-    --sidebar-accent: 231 20% 35%; /* Slightly lighter muted blue for hover/accent */
+    /* Sidebar specific theme (might be deprecated if full top nav) */
+    --sidebar-background: 231 25% 25%; 
+    --sidebar-foreground: 0 0% 90%; 
+    --sidebar-primary: 187 100% 42%; 
+    --sidebar-primary-foreground: 0 0% 100%; 
+    --sidebar-accent: 231 20% 35%; 
     --sidebar-accent-foreground: 0 0% 95%;
     --sidebar-border: 231 20% 40%;
     --sidebar-ring: 187 100% 50%;
   }
 
-  .dark {
+  html.dark {
     --background: 231 15% 18%; /* Dark blue-gray */
     --foreground: 0 0% 90%; /* Light gray text */
 
@@ -91,7 +91,7 @@ body {
     --ring: 187 100% 52%;
 
     --chart-1: 231 48% 58%;
-    --chart-2: 187 100% 52%;
+    --chart-2: 140 60% 55%; /* Lighter Green for stock in dark mode */
     --chart-3: 210 50% 70%;
     --chart-4: 200 60% 65%;
     --chart-5: 220 40% 80%;
@@ -105,6 +105,96 @@ body {
     --sidebar-accent-foreground: 0 0% 90%;
     --sidebar-border: 231 15% 20%;
     --sidebar-ring: 187 100% 60%;
+  }
+
+  /* Ocean Theme */
+  html[data-color-scheme="ocean"] {
+    --background: 205 50% 95%;
+    --foreground: 215 30% 25%;
+    --card: 200 40% 98%;
+    --card-foreground: 215 30% 25%;
+    --popover: 200 40% 98%;
+    --popover-foreground: 215 30% 25%;
+    --primary: 210 70% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 205 45% 88%;
+    --secondary-foreground: 210 70% 55%;
+    --muted: 205 35% 80%;
+    --muted-foreground: 215 25% 45%;
+    --accent: 170 70% 45%;
+    --accent-foreground: 0 0% 100%;
+    --border: 205 30% 75%;
+    --input: 205 35% 90%;
+    --ring: 170 70% 45%;
+    --chart-1: 210 70% 55%;
+    --chart-2: 170 70% 45%;
+  }
+
+  html[data-color-scheme="ocean"].dark {
+    --background: 215 30% 15%;
+    --foreground: 205 30% 85%;
+    --card: 215 30% 18%;
+    --card-foreground: 205 30% 85%;
+    --popover: 215 30% 15%;
+    --popover-foreground: 205 30% 85%;
+    --primary: 210 70% 65%;
+    --primary-foreground: 215 30% 10%;
+    --secondary: 215 25% 28%;
+    --secondary-foreground: 205 30% 85%;
+    --muted: 215 20% 22%;
+    --muted-foreground: 205 25% 60%;
+    --accent: 170 70% 55%;
+    --accent-foreground: 215 30% 10%;
+    --border: 215 20% 30%;
+    --input: 215 25% 25%;
+    --ring: 170 70% 55%;
+    --chart-1: 210 70% 65%;
+    --chart-2: 170 70% 55%;
+  }
+
+  /* Forest Theme */
+  html[data-color-scheme="forest"] {
+    --background: 120 20% 96%;
+    --foreground: 120 25% 20%;
+    --card: 110 20% 99%;
+    --card-foreground: 120 25% 20%;
+    --popover: 110 20% 99%;
+    --popover-foreground: 120 25% 20%;
+    --primary: 130 45% 45%;
+    --primary-foreground: 110 30% 95%;
+    --secondary: 120 25% 88%;
+    --secondary-foreground: 130 45% 45%;
+    --muted: 120 20% 82%;
+    --muted-foreground: 120 20% 40%;
+    --accent: 90 60% 48%;
+    --accent-foreground: 110 30% 95%;
+    --border: 120 15% 75%;
+    --input: 120 20% 90%;
+    --ring: 90 60% 48%;
+    --chart-1: 130 45% 45%;
+    --chart-2: 90 60% 48%;
+  }
+
+  html[data-color-scheme="forest"].dark {
+    --background: 120 25% 12%;
+    --foreground: 120 15% 88%;
+    --card: 120 25% 15%;
+    --card-foreground: 120 15% 88%;
+    --popover: 120 25% 12%;
+    --popover-foreground: 120 15% 88%;
+    --primary: 130 45% 55%;
+    --primary-foreground: 120 25% 10%;
+    --secondary: 120 20% 25%;
+    --secondary-foreground: 120 15% 88%;
+    --muted: 120 15% 20%;
+    --muted-foreground: 120 10% 60%;
+    --accent: 90 60% 58%;
+    --accent-foreground: 120 25% 10%;
+    --border: 120 15% 25%;
+    --input: 120 20% 22%;
+    --ring: 90 60% 58%;
+    --chart-1: 130 45% 55%;
+    --chart-2: 90 60% 58%;
   }
 }
 

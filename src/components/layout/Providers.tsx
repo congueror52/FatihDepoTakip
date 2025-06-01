@@ -1,21 +1,23 @@
+
 'use client';
 
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import type { ThemeProviderProps } from 'next-themes/dist/types';
 import type { ReactNode } from 'react';
-
-// You can add QueryClientProvider or other global providers here if needed.
+import { ColorSchemeProvider } from '@/components/theme/color-scheme-provider';
 
 export function Providers({ children, ...props }: {children: ReactNode} & Partial<ThemeProviderProps>) {
   return (
-    <NextThemesProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-      {...props}
-    >
-      {children}
-    </NextThemesProvider>
+    <ColorSchemeProvider storageKey="app-color-scheme" defaultScheme="default">
+      <NextThemesProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+        {...props}
+      >
+        {children}
+      </NextThemesProvider>
+    </ColorSchemeProvider>
   );
 }

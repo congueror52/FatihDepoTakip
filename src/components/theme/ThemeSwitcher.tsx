@@ -1,0 +1,90 @@
+
+'use client';
+
+import React from 'react';
+import { useTheme } from 'next-themes';
+import { useColorScheme } from '@/components/theme/color-scheme-provider';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { Moon, Sun, Laptop, Palette } from 'lucide-react';
+
+type ColorSchemeOption = {
+  value: 'default' | 'ocean' | 'forest';
+  label: string;
+};
+
+const colorSchemes: ColorSchemeOption[] = [
+  { value: 'default', label: 'Varsayılan' },
+  { value: 'ocean', label: 'Okyanus' },
+  { value: 'forest', label: 'Orman' },
+];
+
+export function ThemeSwitcher() {
+  const { setTheme, theme: currentMode } = useTheme();
+  const { colorScheme, setColorScheme } = useColorScheme();
+
+  return (
+    <div className="p-4 space-y-6">
+      <div className="space-y-2">
+        <Label htmlFor="color-scheme-select" className="flex items-center gap-2 text-sm font-medium">
+          <Palette className="h-4 w-4" />
+          <span suppressHydrationWarning>Renk Paleti</span>
+        </Label>
+        <Select
+          value={colorScheme}
+          onValueChange={(value) => setColorScheme(value as 'default' | 'ocean' | 'forest')}
+        >
+          <SelectTrigger id="color-scheme-select">
+            <SelectValue placeholder="Palet Seçin" />
+          </SelectTrigger>
+          <SelectContent>
+            {colorSchemes.map((scheme) => (
+              <SelectItem key={scheme.value} value={scheme.value}>
+                <span suppressHydrationWarning>{scheme.label}</span>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label className="flex items-center gap-2 text-sm font-medium">
+          {currentMode === 'light' && <Sun className="h-4 w-4" />}
+          {currentMode === 'dark' && <Moon className="h-4 w-4" />}
+          {currentMode === 'system' && <Laptop className="h-4 w-4" />}
+          <span suppressHydrationWarning>Görünüm Modu</span>
+        </Label>
+        <div className="grid grid-cols-3 gap-2">
+          <Button
+            variant={currentMode === 'light' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setTheme('light')}
+            className="flex flex-col h-auto py-2 items-center gap-1"
+          >
+            <Sun className="h-5 w-5" />
+            <span className="text-xs" suppressHydrationWarning>Açık</span>
+          </Button>
+          <Button
+            variant={currentMode === 'dark' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setTheme('dark')}
+            className="flex flex-col h-auto py-2 items-center gap-1"
+          >
+            <Moon className="h-5 w-5" />
+            <span className="text-xs" suppressHydrationWarning>Koyu</span>
+          </Button>
+          <Button
+            variant={currentMode === 'system' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setTheme('system')}
+            className="flex flex-col h-auto py-2 items-center gap-1"
+          >
+            <Laptop className="h-5 w-5" />
+            <span className="text-xs" suppressHydrationWarning>Sistem</span>
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}

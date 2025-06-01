@@ -1,3 +1,4 @@
+
 'use client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -11,10 +12,11 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { User, Settings, LogOut } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"; // Added Popover
+import { ThemeSwitcher } from "@/components/theme/ThemeSwitcher"; // Added ThemeSwitcher
+import { User, Settings, LogOut, Palette } from 'lucide-react'; // Added Palette
 
 export function UserNav() {
-  // Gerçek bir uygulamada, kullanıcı verilerini context veya auth durumundan alırsınız
   const user = { name: 'Admin Kullanıcısı', email: 'admin@ammotrack.com', avatarUrl: 'https://placehold.co/40x40.png' };
 
   return (
@@ -43,6 +45,19 @@ export function UserNav() {
             <span suppressHydrationWarning>Profil</span>
             <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
           </DropdownMenuItem>
+          
+          <Popover>
+            <PopoverTrigger asChild>
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                <Palette className="mr-2 h-4 w-4" />
+                <span suppressHydrationWarning>Tema Ayarları</span>
+              </DropdownMenuItem>
+            </PopoverTrigger>
+            <PopoverContent className="w-80" align="end" sideOffset={8}>
+              <ThemeSwitcher />
+            </PopoverContent>
+          </Popover>
+
           <DropdownMenuItem>
             <Settings className="mr-2 h-4 w-4" />
             <span suppressHydrationWarning>Ayarlar</span>
