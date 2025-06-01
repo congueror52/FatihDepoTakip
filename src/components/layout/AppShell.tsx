@@ -1,49 +1,62 @@
+
 'use client';
 import type { ReactNode } from 'react';
-import {
-  SidebarProvider,
-  Sidebar,
-  SidebarHeader,
-  SidebarContent,
-  SidebarFooter,
-  SidebarInset,
-  SidebarTrigger,
-} from '@/components/ui/sidebar';
+import { useState } from 'react';
 import { MainNav } from '@/components/layout/MainNav';
 import { UserNav } from '@/components/layout/UserNav';
 import { Button } from '@/components/ui/button';
-import { Package2 } from 'lucide-react';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Menu, Package2, Warehouse } from 'lucide-react'; // Added Menu, Warehouse
 import Link from 'next/link';
 
 export function AppShell({ children }: { children: ReactNode }) {
+  const [openMobileNav, setOpenMobileNav] = useState(false);
+
   return (
-    <SidebarProvider defaultOpen>
-      <Sidebar className="border-r border-sidebar-border">
-        <SidebarHeader className="p-4">
-          <Link href="/dashboard" className="flex items-center gap-2 text-lg font-semibold text-sidebar-foreground">
-            <Package2 className="h-6 w-6 text-sidebar-primary" />
-            <span suppressHydrationWarning>Depo Takip</span>
+    <div className="flex min-h-screen w-full flex-col">
+      <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 z-50">
+        <div className="flex items-center gap-2">
+          <Sheet open={openMobileNav} onOpenChange={setOpenMobileNav}>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="icon" className="shrink-0 md:hidden">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only" suppressHydrationWarning>Navigasyon menüsünü aç/kapat</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="flex flex-col p-0">
+              <div className="p-4 border-b">
+                <Link
+                  href="/dashboard"
+                  className="flex items-center gap-2 text-lg font-semibold"
+                  onClick={() => setOpenMobileNav(false)}
+                >
+                  <Warehouse className="h-6 w-6 text-primary" />
+                  <span suppressHydrationWarning>Depo Takip</span>
+                </Link>
+              </div>
+              <nav className="flex-grow overflow-y-auto">
+                <MainNav isMobile={true} onLinkClick={() => setOpenMobileNav(false)} />
+              </nav>
+            </SheetContent>
+          </Sheet>
+
+          <Link href="/dashboard" className="flex items-center gap-2 text-lg font-semibold md:text-base">
+            <Warehouse className="h-6 w-6 text-primary" />
+            <span className="sr-only sm:not-sr-only" suppressHydrationWarning>Depo Takip</span>
           </Link>
-        </SidebarHeader>
-        <SidebarContent>
-          <MainNav />
-        </SidebarContent>
-        <SidebarFooter className="p-4">
-          {/* Altbilgi içeriği (varsa), ör. ayarlar düğmesi */}
-        </SidebarFooter>
-      </Sidebar>
-      <SidebarInset>
-        <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 sm:py-4">
-          <SidebarTrigger className="sm:hidden" />
-          <div className="ml-auto flex items-center space-x-4">
-            {/* Gerekirse arama veya diğer başlık öğelerini buraya ekleyin */}
-            <UserNav />
-          </div>
-        </header>
-        <main className="flex-1 p-4 sm:px-6 sm:py-0 md:gap-8">
-          {children}
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
+        </div>
+
+        <div className="hidden md:flex md:flex-1 md:items-center md:justify-center">
+          <MainNav isMobile={false} />
+        </div>
+
+        <div className="ml-auto flex items-center gap-4">
+          <UserNav />
+        </div>
+      </header>
+      <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
+        {children}
+      </main>
+    </div>
   );
 }

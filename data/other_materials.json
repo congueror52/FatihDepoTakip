@@ -1,1 +1,16 @@
-[]
+[
+  {
+    "name": "ÇELİK YELEK",
+    "category": "koruyucu ekipman",
+    "quantity": 1,
+    "depotId": "depotA",
+    "status": "Kullanımda",
+    "purchaseDate": "2025-05-31T00:00:00.000Z",
+    "notes": "",
+    "manufacturer": "Sarsılmaz",
+    "id": "72b7becf-a30e-4490-8e43-e3838b28bff2",
+    "itemType": "other",
+    "lastUpdated": "2025-05-31T20:08:31.179Z",
+    "maintenanceHistory": []
+  }
+]

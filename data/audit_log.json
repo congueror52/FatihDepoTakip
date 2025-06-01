@@ -8721,5 +8721,80 @@
       "itemType": "ammunition",
       "lastUpdated": "2025-05-31T18:24:02.559Z"
     }
+  },
+  {
+    "id": "47ab4fb1-8f57-45cd-a575-c4f9caaf77c4",
+    "timestamp": "2025-05-31T19:30:08.023Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "DailyAmmunitionUsage",
+    "entityId": "d6afb4d4-e475-4def-867d-38407b412692",
+    "status": "SUCCESS",
+    "details": {
+      "date": "2025-05-31T00:00:00.000Z",
+      "personnelCount": 2500,
+      "usageScenarioId": "scenario_1",
+      "used_9x19mm": 187500,
+      "used_5_56x45mm": 62500,
+      "used_7_62x39mm": 0,
+      "used_7_62x51mm": 0,
+      "notes": "",
+      "id": "d6afb4d4-e475-4def-867d-38407b412692"
+    }
+  },
+  {
+    "id": "c6cdda60-d585-4fb8-911b-cb908b70e373",
+    "timestamp": "2025-05-31T19:30:41.398Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "DailyAmmunitionUsage",
+    "entityId": "436cbfb8-1482-4d79-baf7-5fe550568f6e",
+    "status": "SUCCESS",
+    "details": {
+      "date": "2025-05-31T00:00:00.000Z",
+      "personnelCount": 450,
+      "usageScenarioId": "scenario_3",
+      "used_9x19mm": 72900,
+      "used_5_56x45mm": 0,
+      "used_7_62x39mm": 13500,
+      "used_7_62x51mm": 13500,
+      "notes": "",
+      "id": "436cbfb8-1482-4d79-baf7-5fe550568f6e"
+    }
+  },
+  {
+    "id": "e82876af-3e67-4150-b476-40ef19e1d6c8",
+    "timestamp": "2025-05-31T20:08:31.189Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "OtherMaterial",
+    "entityId": "72b7becf-a30e-4490-8e43-e3838b28bff2",
+    "status": "SUCCESS",
+    "details": {
+      "name": "ÇELİK YELEK",
+      "category": "koruyucu ekipman",
+      "quantity": 1,
+      "depotId": "depotA",
+      "status": "Kullanımda",
+      "purchaseDate": "2025-05-31T00:00:00.000Z",
+      "notes": "",
+      "manufacturer": "Sarsılmaz",
+      "id": "72b7becf-a30e-4490-8e43-e3838b28bff2",
+      "itemType": "other",
+      "lastUpdated": "2025-05-31T20:08:31.179Z",
+      "maintenanceHistory": []
+    }
   }
 ]
