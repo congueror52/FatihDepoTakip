@@ -571,7 +571,7 @@ export async function addOtherMaterialAction(data: Omit<OtherMaterial, 'id' | 'l
     for (let i = 0; i < quantityToAdd; i++) {
       const newMaterial: OtherMaterial = {
         ...validatedData.data,
-        quantity: 1, // Each record represents one individually tracked item if quantity > 1 was for batch add
+        quantity: 1, 
         id: await generateId(),
         itemType: 'other',
         lastUpdated: new Date().toISOString(),
@@ -597,7 +597,7 @@ export async function addOtherMaterialAction(data: Omit<OtherMaterial, 'id' | 'l
 
 export async function updateOtherMaterialAction(material: OtherMaterial): Promise<OtherMaterial> {
   try {
-    const validatedData = otherMaterialFormSchema.omit({ quantity: true }).safeParse(material); // Quantity not updatable this way
+    const validatedData = otherMaterialFormSchema.omit({ quantity: true }).safeParse(material);
     if (!validatedData.success) {
       const errorMsg = 'Güncelleme için geçersiz diğer malzeme verisi: ' + JSON.stringify(validatedData.error.format());
       await logAction({ actionType: "UPDATE", entityType: "OtherMaterial", entityId: material.id, status: "FAILURE", details: material, errorMessage: errorMsg });
@@ -615,7 +615,7 @@ export async function updateOtherMaterialAction(material: OtherMaterial): Promis
     allMaterials[index] = {
       ...allMaterials[index],
       ...validatedData.data,
-      quantity: allMaterials[index].quantity, // Preserve original quantity on update
+      quantity: allMaterials[index].quantity, 
       lastUpdated: new Date().toISOString(),
     };
     await writeData('other_materials.json', allMaterials);
@@ -1370,6 +1370,47 @@ export async function addMaintenanceLogToItemAction(
   }
 }
 
+export async function deleteMaintenanceLogAction(parentItemId: string, parentItemType: InventoryItemType, logId: string): Promise<void> {
+  try {
+    if (parentItemType === 'firearm') {
+      const firearms = await getFirearms();
+      const itemIndex = firearms.findIndex(f => f.id === parentItemId);
+      if (itemIndex === -1) throw new Error('Silah bulunamadı.');
+      firearms[itemIndex].maintenanceHistory = (firearms[itemIndex].maintenanceHistory || []).filter(log => log.id !== logId);
+      // Not automatically reverting status for simplicity
+      firearms[itemIndex].lastUpdated = new Date().toISOString();
+      await writeData('firearms.json', firearms);
+    } else if (parentItemType === 'magazine') {
+      const magazines = await getMagazines();
+      const itemIndex = magazines.findIndex(m => m.id === parentItemId);
+      if (itemIndex === -1) throw new Error('Şarjör bulunamadı.');
+      magazines[itemIndex].maintenanceHistory = (magazines[itemIndex].maintenanceHistory || []).filter(log => log.id !== logId);
+      magazines[itemIndex].lastUpdated = new Date().toISOString();
+      await writeData('magazines.json', magazines);
+    } else if (parentItemType === 'other') {
+      const otherMaterials = await getOtherMaterials();
+      const itemIndex = otherMaterials.findIndex(o => o.id === parentItemId);
+      if (itemIndex === -1) throw new Error('Diğer malzeme bulunamadı.');
+      otherMaterials[itemIndex].maintenanceHistory = (otherMaterials[itemIndex].maintenanceHistory || []).filter(log => log.id !== logId);
+      otherMaterials[itemIndex].lastUpdated = new Date().toISOString();
+      await writeData('other_materials.json', otherMaterials);
+    } else {
+      throw new Error('Geçersiz öğe türü.');
+    }
+
+    await logAction({ actionType: "DELETE", entityType: "MaintenanceLog", entityId: logId, status: "SUCCESS", details: { parentItemId, parentItemType } });
+
+    revalidatePath(`/inventory/${parentItemType === 'other' ? 'other-materials' : parentItemType + 's'}/${parentItemId}`);
+    revalidatePath(`/inventory/${parentItemType === 'other' ? 'other-materials' : parentItemType + 's'}`);
+    revalidatePath('/maintenance');
+    revalidatePath('/dashboard');
+  } catch (error: any) {
+    await logAction({ actionType: "DELETE", entityType: "MaintenanceLog", entityId: logId, status: "FAILURE", details: { parentItemId, parentItemType }, errorMessage: error.message });
+    throw error;
+  }
+}
+
+
 export interface EnrichedMaintenanceLog extends MaintenanceLog {
     parentItemId: string;
     parentItemName: string;
@@ -1650,4 +1691,3 @@ export async function getRecentAuditLogs(limit: number = 5): Promise<AuditLogEnt
     return [];
   }
 }
-
