@@ -31,7 +31,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   onClick={() => setOpenMobileNav(false)}
                 >
                   <Warehouse className="h-6 w-6 text-primary" />
-                  <span suppressHydrationWarning>Depo Takip</span>
+                  <span suppressHydrationWarning>FATİH Depo Takip</span>
                 </Link>
               </div>
               <nav className="flex-grow overflow-y-auto">
@@ -42,7 +42,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
           <Link href="/dashboard" className="flex items-center gap-2 text-lg font-semibold md:text-base">
             <Warehouse className="h-6 w-6 text-primary" />
-            <span className="sr-only sm:not-sr-only" suppressHydrationWarning>Depo Takip</span>
+            <span className="sr-only sm:not-sr-only" suppressHydrationWarning>FATİH Depo Takip</span>
           </Link>
         </div>
 

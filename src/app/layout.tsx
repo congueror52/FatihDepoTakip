@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Fatih - Depo Yönetim Sistemi',
+  title: 'FATİH - Depo Takip Sistemi',
   description: 'Depolar arası  silahları, şarjörleri ve mühimmatı takip edin ve yönetin.',
 };
 
