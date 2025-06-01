@@ -33,17 +33,6 @@
     "lastUpdated": "2025-05-29T18:54:26.506Z"
   },
   {
-    "name": "ak fişeği",
-    "caliber": "7.62x39mm",
-    "quantity": 4000000,
-    "depotId": "depotB",
-    "status": "Mevcut",
-    "purchaseDate": "2025-05-29T00:00:00.000Z",
-    "id": "97b7df15-11f6-43fc-9ef6-34d5846f644b",
-    "itemType": "ammunition",
-    "lastUpdated": "2025-05-31T18:22:45.031Z"
-  },
-  {
     "name": "mpt fişeği",
     "caliber": "7.62x51mm",
     "quantity": 10000,
@@ -52,5 +41,27 @@
     "id": "37a78063-1b27-4ff0-aae4-6022e59f4139",
     "itemType": "ammunition",
     "lastUpdated": "2025-05-31T18:24:02.559Z"
+  },
+  {
+    "name": "TURAN FİŞEK",
+    "caliber": "9x19mm",
+    "quantity": 50000,
+    "depotId": "depotA",
+    "status": "Mevcut",
+    "purchaseDate": "2025-05-31T00:00:00.000Z",
+    "id": "5f5d437c-62b8-44cc-9692-c00f4fde7794",
+    "itemType": "ammunition",
+    "lastUpdated": "2025-06-01T18:06:44.988Z"
+  },
+  {
+    "name": "7,62 39",
+    "caliber": "9x19mm",
+    "quantity": 10000,
+    "depotId": "depotA",
+    "status": "Mevcut",
+    "purchaseDate": "2025-05-31T00:00:00.000Z",
+    "id": "82e24591-d886-449f-b292-9c39f734ba7e",
+    "itemType": "ammunition",
+    "lastUpdated": "2025-06-01T18:08:54.565Z"
   }
 ]

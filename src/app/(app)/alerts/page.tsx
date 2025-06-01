@@ -2,7 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShieldAlert, BellRing } from "lucide-react";
 import { getTriggeredAlerts } from "@/lib/actions/inventory.actions";
-import type { AlertDefinition, ActiveAlert } from "@/types/inventory";
+import type { AlertDefinition, ActiveAlert, TriggeredAlertContext } from "@/types/inventory";
 import { Badge } from "@/components/ui/badge";
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
@@ -31,15 +31,27 @@ export default async function AlertsPage() {
     }
   };
 
-  const formatAlertMessage = (template: string, context: ActiveAlert['context']) => {
+  const formatAlertMessage = (template: string, context: TriggeredAlertContext, conditionType: AlertDefinition['conditionType']) => {
     let message = template;
-    message = message.replace(/{itemName}/g, String(context.itemName || 'N/A'));
-    message = message.replace(/{depotName}/g, String(context.itemDepotName || 'N/A'));
-    message = message.replace(/{currentValue}/g, String(context.currentValue));
-    message = message.replace(/{threshold}/g, String(context.thresholdValue ?? 'N/A'));
-    message = message.replace(/{status}/g, String(context.currentValue)); // For status_is, currentValue is the status
-    message = message.replace(/{caliber}/g, String(context.caliber || 'N/A'));
-    message = message.replace(/{serialNumber}/g, String(context.serialNumber || 'N/A'));
+    message = message.replace(/{itemName}/g, String(context.itemName ?? 'N/A'));
+    message = message.replace(/{depotName}/g, String(context.itemDepotName ?? 'N/A'));
+    message = message.replace(/{currentValue}/g, String(context.currentValue ?? 'N/A'));
+    message = message.replace(/{threshold}/g, String(context.thresholdValue !== undefined ? context.thresholdValue : 'N/A'));
+    
+    if (conditionType === 'status_is') {
+        message = message.replace(/{status}/g, String(context.currentValue ?? 'N/A')); // For status_is, currentValue *is* the status
+    } else {
+        // For low_stock or other types, {status} placeholder might not be directly applicable from context.currentValue.
+        // If context had a specific 'statusOfAggregatedStock' or similar, it could be used here.
+        // For now, if {status} is used in a non-status_is alert, it might not provide the intended info.
+        // We'll leave it to be replaced by 'N/A' if context.status isn't explicitly set for these cases,
+        // or rely on template crafter not to use {status} inappropriately for low_stock.
+        // Fallback to N/A if context.status is not present, which it won't be for low_stock.
+        message = message.replace(/{status}/g, String(context.status ?? 'N/A'));
+    }
+
+    message = message.replace(/{caliber}/g, String(context.caliber ?? 'N/A'));
+    message = message.replace(/{serialNumber}/g, String(context.serialNumber ?? 'N/A'));
     return message;
   };
 
@@ -74,7 +86,7 @@ export default async function AlertsPage() {
                   </CardHeader>
                   <CardContent>
                     <p className={`${getSeverityTextColor(activeAlert.definition.severity)} mb-1`} suppressHydrationWarning>
-                       {formatAlertMessage(activeAlert.definition.messageTemplate, activeAlert.context)}
+                       {formatAlertMessage(activeAlert.definition.messageTemplate, activeAlert.context, activeAlert.definition.conditionType)}
                     </p>
                     <p className="text-xs text-muted-foreground" suppressHydrationWarning>
                         Koşul: {activeAlert.definition.conditionType} | Varlık: {activeAlert.definition.entityType}

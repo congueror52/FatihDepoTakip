@@ -3,7 +3,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { unstable_noStore as noStore } from 'next/cache';
-import type { Firearm, Magazine, Ammunition, Shipment, ShipmentItem, AmmunitionUsageLog, FirearmDefinition, AmmunitionDailyUsageLog, UsageScenario, ScenarioCaliberConsumption, SupportedCaliber, MagazineStatus, AmmunitionStatus, Depot, MaintenanceLog, MaintenanceItemStatus, FirearmStatus, InventoryItemType, ShipmentTypeDefinition, AlertDefinition, OtherMaterial, OtherMaterialStatus, ActiveAlert, TriggeredAlertContext } from '@/types/inventory'; // Added OtherMaterial, OtherMaterialStatus, ActiveAlert, TriggeredAlertContext
+import type { Firearm, Magazine, Ammunition, Shipment, ShipmentItem, AmmunitionUsageLog, FirearmDefinition, AmmunitionDailyUsageLog, UsageScenario, ScenarioCaliberConsumption, SupportedCaliber, MagazineStatus, AmmunitionStatus, Depot, MaintenanceLog, MaintenanceItemStatus, FirearmStatus, InventoryItemType, ShipmentTypeDefinition, AlertDefinition, OtherMaterial, OtherMaterialStatus, ActiveAlert, TriggeredAlertContext, AlertSeverity } from '@/types/inventory'; // Added OtherMaterial, OtherMaterialStatus, ActiveAlert, TriggeredAlertContext
 import { readData, writeData, generateId } from '@/lib/data-utils';
 import { logAction } from '@/lib/log-service';
 import { firearmFormSchema, firearmStatuses as firearmStatusesArray } from '@/app/(app)/inventory/firearms/_components/firearm-form-schema';
@@ -1689,9 +1689,23 @@ export async function getTriggeredAlerts(): Promise<ActiveAlert[]> {
       const currentStock = relevantAmmunition.reduce((sum, ammo) => sum + ammo.quantity, 0);
 
       if (currentStock < definition.thresholdValue) {
+        const depotNameString = definition.depotId ? (depotMap.get(definition.depotId) || definition.depotId) : "Tüm Depolar";
+        const caliberNameString = definition.caliberFilter || "Tüm Kalibreler";
+        
+        let itemNameDisplay = "";
+        if(definition.caliberFilter && definition.depotId) {
+            itemNameDisplay = `${definition.caliberFilter} Mühimmat (${depotNameString})`;
+        } else if (definition.caliberFilter) {
+            itemNameDisplay = `${definition.caliberFilter} Mühimmat (Tüm Depolar)`;
+        } else if (definition.depotId) {
+            itemNameDisplay = `Mühimmat Stokları (${depotNameString})`;
+        } else {
+            itemNameDisplay = "Genel Mühimmat Stokları";
+        }
+
         const context: TriggeredAlertContext = {
-          itemName: definition.caliberFilter ? `${definition.caliberFilter} Mühimmat` : 'Tüm Mühimmat',
-          itemDepotName: definition.depotId ? depotMap.get(definition.depotId) || definition.depotId : 'Tüm Depolar',
+          itemName: itemNameDisplay,
+          itemDepotName: depotNameString,
           currentValue: currentStock,
           thresholdValue: definition.thresholdValue,
           caliber: definition.caliberFilter,
@@ -1700,7 +1714,7 @@ export async function getTriggeredAlerts(): Promise<ActiveAlert[]> {
           definition,
           context,
           triggeredAt: now,
-          uniqueId: `${definition.id}-${definition.depotId || 'all'}-${definition.caliberFilter || 'all'}`,
+          uniqueId: `${definition.id}-${definition.depotId || 'all_depots'}-${definition.caliberFilter || 'all_calibers'}`,
         });
       }
     } else if (definition.entityType === 'firearm' && definition.conditionType === 'status_is') {

@@ -9053,5 +9053,132 @@
       "id": "273cc3be-c02b-4858-b74b-e789afaa33cf",
       "lastUpdated": "2025-06-01T16:38:55.297Z"
     }
+  },
+  {
+    "id": "3f51d768-171c-4c70-99da-f801bb944919",
+    "timestamp": "2025-06-01T18:04:23.765Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "AlertDefinition",
+    "entityId": "273cc3be-c02b-4858-b74b-e789afaa33cf",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "40acf802-19e0-47b2-a0a3-a6b73755c570",
+    "timestamp": "2025-06-01T18:05:29.142Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "AlertDefinition",
+    "entityId": "dc413e20-2416-4210-8cb4-1c933c5048b2",
+    "status": "SUCCESS",
+    "details": {
+      "name": "DÜŞÜK FİŞEK UYARISI",
+      "description": "",
+      "entityType": "ammunition",
+      "conditionType": "low_stock",
+      "depotId": "depotA",
+      "caliberFilter": "9x19mm",
+      "thresholdValue": 5000,
+      "severity": "Yüksek",
+      "messageTemplate": "{itemName}{depotName}{currentValue}{threshold}{status}{caliber}",
+      "isActive": true,
+      "id": "dc413e20-2416-4210-8cb4-1c933c5048b2",
+      "lastUpdated": "2025-06-01T18:05:29.124Z"
+    }
+  },
+  {
+    "id": "d88834d9-1b8b-484f-999d-bfee3d8d9a7e",
+    "timestamp": "2025-06-01T18:06:44.998Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Ammunition",
+    "entityId": "5f5d437c-62b8-44cc-9692-c00f4fde7794",
+    "status": "SUCCESS",
+    "details": {
+      "name": "TURAN FİŞEK",
+      "caliber": "9x19mm",
+      "quantity": 50000,
+      "depotId": "depotA",
+      "status": "Mevcut",
+      "purchaseDate": "2025-05-31T00:00:00.000Z",
+      "id": "5f5d437c-62b8-44cc-9692-c00f4fde7794",
+      "itemType": "ammunition",
+      "lastUpdated": "2025-06-01T18:06:44.988Z"
+    }
+  },
+  {
+    "id": "a22a6059-6af5-4119-99d4-7d95446c63a3",
+    "timestamp": "2025-06-01T18:07:49.958Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "AlertDefinition",
+    "entityId": "c844eae1-7666-4d60-bf54-51ccabe728c5",
+    "status": "SUCCESS",
+    "details": {
+      "name": "762 FİŞEK ",
+      "description": "",
+      "entityType": "ammunition",
+      "conditionType": "low_stock",
+      "depotId": "depotA",
+      "thresholdValue": 10000,
+      "severity": "Yüksek",
+      "messageTemplate": "{depotName}{itemName}{depotName}{currentValue}{status}{caliber}",
+      "isActive": true,
+      "id": "c844eae1-7666-4d60-bf54-51ccabe728c5",
+      "lastUpdated": "2025-06-01T18:07:49.947Z"
+    }
+  },
+  {
+    "id": "028ee445-4aaf-46e9-9b9a-f80a4a3836d7",
+    "timestamp": "2025-06-01T18:08:19.345Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Ammunition",
+    "entityId": "97b7df15-11f6-43fc-9ef6-34d5846f644b",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "d3cc9244-c66f-449b-a49d-ddf747dc55b1",
+    "timestamp": "2025-06-01T18:08:54.577Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Ammunition",
+    "entityId": "82e24591-d886-449f-b292-9c39f734ba7e",
+    "status": "SUCCESS",
+    "details": {
+      "name": "7,62 39",
+      "caliber": "9x19mm",
+      "quantity": 10000,
+      "depotId": "depotA",
+      "status": "Mevcut",
+      "purchaseDate": "2025-05-31T00:00:00.000Z",
+      "id": "82e24591-d886-449f-b292-9c39f734ba7e",
+      "itemType": "ammunition",
+      "lastUpdated": "2025-06-01T18:08:54.565Z"
+    }
   }
 ]

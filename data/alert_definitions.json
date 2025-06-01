@@ -1,15 +1,29 @@
 [
   {
-    "name": "Düşük fişek uyarısı",
+    "name": "DÜŞÜK FİŞEK UYARISI",
     "description": "",
     "entityType": "ammunition",
     "conditionType": "low_stock",
+    "depotId": "depotA",
     "caliberFilter": "9x19mm",
-    "thresholdValue": 2000,
+    "thresholdValue": 5000,
     "severity": "Yüksek",
     "messageTemplate": "{itemName}{depotName}{currentValue}{threshold}{status}{caliber}",
     "isActive": true,
-    "id": "273cc3be-c02b-4858-b74b-e789afaa33cf",
-    "lastUpdated": "2025-06-01T16:38:55.297Z"
+    "id": "dc413e20-2416-4210-8cb4-1c933c5048b2",
+    "lastUpdated": "2025-06-01T18:05:29.124Z"
+  },
+  {
+    "name": "762 FİŞEK ",
+    "description": "",
+    "entityType": "ammunition",
+    "conditionType": "low_stock",
+    "depotId": "depotA",
+    "thresholdValue": 10000,
+    "severity": "Yüksek",
+    "messageTemplate": "{depotName}{itemName}{depotName}{currentValue}{status}{caliber}",
+    "isActive": true,
+    "id": "c844eae1-7666-4d60-bf54-51ccabe728c5",
+    "lastUpdated": "2025-06-01T18:07:49.947Z"
   }
 ]
