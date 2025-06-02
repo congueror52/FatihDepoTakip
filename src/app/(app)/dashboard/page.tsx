@@ -1,5 +1,6 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from "@/components/ui/button"; // Added missing import
 import { Briefcase, Users, ShieldAlert, BarChart3, Activity, Target, ListChecks, BellRing, ListTree, LineChart as LineChartIcon, Box as BoxIcon, Package as PackageIcon, Calculator, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import {
@@ -11,9 +12,9 @@ import {
   getRecentAuditLogs,
   getAmmunitionDailyUsageLogs,
   getMonthlyScenarioUsageForChart,
-  getAmmunitionStandardConsumptionRates // New import
+  getAmmunitionStandardConsumptionRates
 } from '@/lib/actions/inventory.actions';
-import type { AlertDefinition, SupportedCaliber, AmmunitionStandardConsumptionRate } from '@/types/inventory'; // Added AmmunitionStandardConsumptionRate
+import type { AlertDefinition, SupportedCaliber, AmmunitionStandardConsumptionRate } from '@/types/inventory';
 import { SUPPORTED_CALIBERS } from '@/types/inventory';
 import { Badge } from '@/components/ui/badge';
 import type { AuditLogEntry } from '@/types/audit';
@@ -30,7 +31,7 @@ export default async function DashboardPage() {
   const recentAuditLogs = await getRecentAuditLogs(5);
   const dailyUsageLogs = await getAmmunitionDailyUsageLogs();
   const monthlyScenarioUsageData = await getMonthlyScenarioUsageForChart();
-  const standardConsumptionRates = await getAmmunitionStandardConsumptionRates(); // Fetch new rates
+  const standardConsumptionRates = await getAmmunitionStandardConsumptionRates();
 
   const getSeverityBadgeClasses = (severity: AlertDefinition['severity']) => {
     switch (severity) {
@@ -61,7 +62,7 @@ export default async function DashboardPage() {
   const formatLogEntryDescription = (log: AuditLogEntry): string => {
     const translatedEntityType = entityTypeTranslations[log.entityType] || log.entityType;
     
-    let identifier = log.details?.name || log.entityId || log.details?.id || '';
+    let identifier = log.details?.name || log.entityId || log.details?.id || ''; 
     if (typeof identifier === 'string' && identifier.length > 20) {
       identifier = `${identifier.substring(0, 17)}...`;
     } 
@@ -148,11 +149,11 @@ export default async function DashboardPage() {
                 <CardContent className="space-y-1 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground" suppressHydrationWarning>Mevcut Stok:</span>
-                    <span className="font-medium">{stock.toLocaleString()} <span className="text-xs text-muted-foreground">adet</span></span>
+                    <span className="font-medium">{stock.toLocaleString()} <span className="text-xs text-muted-foreground" suppressHydrationWarning>adet</span></span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground" suppressHydrationWarning>Kişi Başı Sarfiyat:</span>
-                    <span className="font-medium">{roundsPerPerson.toLocaleString()} <span className="text-xs text-muted-foreground">adet</span></span>
+                    <span className="font-medium">{roundsPerPerson.toLocaleString()} <span className="text-xs text-muted-foreground" suppressHydrationWarning>adet</span></span>
                   </div>
                   <div className="flex justify-between pt-1 border-t border-dashed mt-1">
                     <span className="text-muted-foreground font-medium" suppressHydrationWarning>Tahmini Kişi Sayısı:</span>
