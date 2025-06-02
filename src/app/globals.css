@@ -578,6 +578,46 @@ body {
     --chart-4: 320 50% 68%;
     --chart-5: 270 40% 55%;
   }
+
+  /* Matrix Theme */
+  html[data-color-scheme="matrix"],
+  html[data-color-scheme="matrix"].dark {
+    --background: 120 5% 8%;
+    --foreground: 120 100% 65%;
+    --card: 120 5% 10%;
+    --card-foreground: 120 100% 65%;
+    --popover: 120 5% 7%;
+    --popover-foreground: 120 100% 65%;
+    --primary: 120 80% 55%;
+    --primary-foreground: 120 10% 5%;
+    --secondary: 120 15% 18%;
+    --secondary-foreground: 120 90% 60%;
+    --muted: 120 10% 15%;
+    --muted-foreground: 120 70% 45%;
+    --accent: 120 100% 50%;
+    --accent-foreground: 120 10% 5%;
+    --destructive: 0 70% 40%;
+    --destructive-foreground: 0 0% 90%;
+    --success: 130 70% 45%;
+    --success-foreground: 130 10% 5%;
+    --border: 120 50% 25%;
+    --input: 120 10% 12%;
+    --ring: 120 100% 50%;
+    --chart-1: 120 80% 55%;
+    --chart-2: 120 100% 65%;
+    --chart-3: 120 70% 45%;
+    --chart-4: 110 80% 60%;
+    --chart-5: 130 70% 50%;
+    /* Sidebar for Matrix */
+    --sidebar-background: 120 5% 7%; 
+    --sidebar-foreground: 120 100% 60%; 
+    --sidebar-primary: 120 100% 50%; 
+    --sidebar-primary-foreground: 120 10% 5%; 
+    --sidebar-accent: 120 15% 15%; 
+    --sidebar-accent-foreground: 120 90% 55%;
+    --sidebar-border: 120 50% 20%;
+    --sidebar-ring: 120 100% 50%;
+  }
 }
 
 @layer base {

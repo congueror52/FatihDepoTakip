@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Moon, Sun, Laptop, Palette } from 'lucide-react';
 
 type ColorSchemeOption = {
-  value: 'default' | 'ocean' | 'forest' | 'desert' | 'twilight' | 'ruby' | 'emerald' | 'sapphire' | 'amethyst';
+  value: 'default' | 'ocean' | 'forest' | 'desert' | 'twilight' | 'ruby' | 'emerald' | 'sapphire' | 'amethyst' | 'matrix';
   label: string;
 };
 
@@ -24,6 +24,7 @@ const colorSchemes: ColorSchemeOption[] = [
   { value: 'emerald', label: 'Zümrüt' },
   { value: 'sapphire', label: 'Safir' },
   { value: 'amethyst', label: 'Ametist' },
+  { value: 'matrix', label: 'Matrix' },
 ];
 
 export function ThemeSwitcher() {

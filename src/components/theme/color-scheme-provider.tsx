@@ -3,7 +3,7 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
-type ColorScheme = 'default' | 'ocean' | 'forest' | 'desert' | 'twilight' | 'ruby' | 'emerald' | 'sapphire' | 'amethyst';
+type ColorScheme = 'default' | 'ocean' | 'forest' | 'desert' | 'twilight' | 'ruby' | 'emerald' | 'sapphire' | 'amethyst' | 'matrix';
 
 interface ColorSchemeContextType {
   colorScheme: ColorScheme;
