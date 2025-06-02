@@ -26,7 +26,7 @@ export default async function UsageScenariosPage() {
       <Card>
         <CardHeader>
           <CardTitle suppressHydrationWarning>Tanımlı Kullanım Senaryoları</CardTitle>
-          <CardDescription suppressHydrationWarning>Günlük fişek kullanım formunda otomatik kalibre seçimi için kullanılacak senaryoları yönetin.</CardDescription>
+          <CardDescription suppressHydrationWarning>Günlük fişek kullanım formunda otomatik kalibre seçimi için kullanılacak senaryoları ve sarfiyat oranlarını yönetin.</CardDescription>
         </CardHeader>
         <CardContent>
           <UsageScenariosTableClient scenarios={scenarios} />
