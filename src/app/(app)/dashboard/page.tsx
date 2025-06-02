@@ -1,6 +1,6 @@
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from "@/components/ui/button"; // Ensured Button is imported
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Button } from "@/components/ui/button";
 import { Briefcase, Users, ShieldAlert, BarChart3, Activity, Target, ListChecks, BellRing, ListTree, LineChart as LineChartIcon, Box as BoxIcon, Package as PackageIcon, Info, AlertTriangle, Layers, UsersRound, ThermometerSnowflake, HelpCircle, AlertCircle, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import {
@@ -12,7 +12,7 @@ import {
   getRecentAuditLogs,
   getAmmunitionDailyUsageLogs,
   getMonthlyScenarioUsageForChart,
-  getUsageScenarios 
+  getUsageScenarios
 } from '@/lib/actions/inventory.actions';
 import type { AlertDefinition, SupportedCaliber, UsageScenario, Ammunition, Magazine, Firearm, OtherMaterial } from '@/types/inventory';
 import { SUPPORTED_CALIBERS } from '@/types/inventory';
@@ -45,7 +45,7 @@ export default async function DashboardPage() {
   const recentAuditLogs = await getRecentAuditLogs(5);
   const dailyUsageLogs = await getAmmunitionDailyUsageLogs();
   const monthlyScenarioUsageData = await getMonthlyScenarioUsageForChart();
-  const usageScenarios = await getUsageScenarios(); 
+  const usageScenarios = await getUsageScenarios();
 
   const getSeverityBadgeClasses = (severity: AlertDefinition['severity']) => {
     switch (severity) {
@@ -78,7 +78,7 @@ export default async function DashboardPage() {
     let identifier = log.details?.name || log.entityId || log.details?.id || '';
     if (typeof identifier === 'string' && identifier.length > 20) {
       identifier = `${identifier.substring(0, 17)}...`;
-    } 
+    }
     const identifierText = identifier ? `"${identifier}"` : '';
 
     switch (log.actionType) {
@@ -148,17 +148,15 @@ export default async function DashboardPage() {
 
     if (!hasActiveConsumption) {
       minEngagementsForScenario = 'Sınırsız';
-    } else if (minEngagementsForScenario === Infinity) { 
-      // This case implies all roundsPerPerson were 0 for calibers with consumption > 0, 
-      // or no consumption rates at all, which is covered by !hasActiveConsumption
-      minEngagementsForScenario = 'Sınırsız'; 
+    } else if (minEngagementsForScenario === Infinity) {
+      minEngagementsForScenario = 'Sınırsız';
     }
     
     const finalRequiredCalibers = requiredCalibersDetailsIntermediate.map(rc => ({
       ...rc,
-      isLimiting: hasActiveConsumption && 
-                  typeof minEngagementsForScenario === 'number' && 
-                  rc.roundsPerPerson > 0 && 
+      isLimiting: hasActiveConsumption &&
+                  typeof minEngagementsForScenario === 'number' &&
+                  rc.roundsPerPerson > 0 &&
                   typeof rc.engagementsThisCaliberSupports === 'number' &&
                   rc.engagementsThisCaliberSupports === minEngagementsForScenario
     }));
@@ -219,8 +217,8 @@ export default async function DashboardPage() {
                             <span className="font-medium text-primary dark:text-primary-foreground/90" suppressHydrationWarning>Kapasite:</span>
                         </div>
                         <span className="text-lg font-bold text-primary dark:text-primary-foreground" suppressHydrationWarning>
-                            {scenarioInfo.maxEngagements === 'Sınırsız' ? <ThermometerSnowflake className="inline h-5 w-5" title="Sınırsız (Sarfiyat Tanımlanmamış/Sıfır)" /> : 
-                             scenarioInfo.maxEngagements === 'N/A' ? <HelpCircle className="inline h-5 w-5" title="Hesaplanamadı" /> : 
+                            {scenarioInfo.maxEngagements === 'Sınırsız' ? <ThermometerSnowflake className="inline h-5 w-5" title="Sınırsız (Sarfiyat Tanımlanmamış/Sıfır)" /> :
+                             scenarioInfo.maxEngagements === 'N/A' ? <HelpCircle className="inline h-5 w-5" title="Hesaplanamadı" /> :
                              `${scenarioInfo.maxEngagements.toLocaleString()} Kişi`}
                         </span>
                     </div>
@@ -332,3 +330,5 @@ export default async function DashboardPage() {
   );
 }
         
+
+    
