@@ -213,7 +213,7 @@ export default async function DashboardPage() {
                               </div>
                               <div className="flex justify-between items-center pt-1 mt-1 border-t">
                                   <span className="text-muted-foreground flex items-center gap-1"><UsersRound className="h-3.5 w-3.5"/> <span suppressHydrationWarning>Tahmini Kapasite:</span></span>
-                                  <span className="text-lg font-bold text-primary">
+                                  <span className="text-lg font-bold text-destructive">
                                   {caliberInfo.engagementsSupported === 'Sınırsız' ? <ThermometerSnowflake className="inline h-5 w-5" title="Sınırsız (Sarfiyat Tanımlanmamış/Sıfır)" /> :
                                    caliberInfo.engagementsSupported === 'N/A' ? <HelpCircle className="inline h-5 w-5" title="Hesaplanamadı (Sarfiyat 0)" /> :
                                    <span suppressHydrationWarning>{`${(caliberInfo.engagementsSupported as number).toLocaleString()} Kişi`}</span>}
