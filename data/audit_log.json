@@ -9347,5 +9347,18 @@
       "itemType": "ammunition",
       "lastUpdated": "2025-06-02T19:00:51.229Z"
     }
+  },
+  {
+    "id": "8cdc78c7-b559-4481-9127-30093f5025d8",
+    "timestamp": "2025-06-02T19:25:40.422Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Depot",
+    "entityId": "depoB",
+    "status": "SUCCESS"
   }
 ]
