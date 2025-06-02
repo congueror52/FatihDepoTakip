@@ -63,5 +63,15 @@
     "id": "82e24591-d886-449f-b292-9c39f734ba7e",
     "itemType": "ammunition",
     "lastUpdated": "2025-06-01T18:08:54.565Z"
+  },
+  {
+    "name": "ACM EĞİTİMİ",
+    "caliber": "7.62x39mm",
+    "quantity": 399999,
+    "depotId": "depotB",
+    "status": "Mevcut",
+    "id": "91aeef7e-32d6-4953-94c2-810a58a686f0",
+    "itemType": "ammunition",
+    "lastUpdated": "2025-06-02T19:00:51.229Z"
   }
 ]

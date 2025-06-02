@@ -9324,5 +9324,28 @@
     "entityType": "DailyAmmunitionUsage",
     "entityId": "140e6cff-d90d-4eea-bcfc-48ef0196ab02",
     "status": "SUCCESS"
+  },
+  {
+    "id": "c8f180e4-f324-4261-821c-b8e160c2fa95",
+    "timestamp": "2025-06-02T19:00:51.239Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Ammunition",
+    "entityId": "91aeef7e-32d6-4953-94c2-810a58a686f0",
+    "status": "SUCCESS",
+    "details": {
+      "name": "ACM EĞİTİMİ",
+      "caliber": "7.62x39mm",
+      "quantity": 399999,
+      "depotId": "depotB",
+      "status": "Mevcut",
+      "id": "91aeef7e-32d6-4953-94c2-810a58a686f0",
+      "itemType": "ammunition",
+      "lastUpdated": "2025-06-02T19:00:51.229Z"
+    }
   }
 ]

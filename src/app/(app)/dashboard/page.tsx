@@ -56,6 +56,15 @@ export default async function DashboardPage() {
     }
   };
 
+  const getSeverityCardClasses = (severity: AlertDefinition['severity']) => {
+    switch (severity) {
+      case 'Yüksek': return 'border-red-500 bg-red-50 dark:bg-red-900/20 dark:border-red-700/80';
+      case 'Orta': return 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 dark:border-yellow-700/80';
+      case 'Düşük': return 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-700/80';
+      default: return 'border-gray-300 bg-gray-50 dark:bg-gray-700/20 dark:border-gray-600/80';
+    }
+  };
+
   const entityTypeTranslations: Record<AuditLogEntry['entityType'], string> = {
     FirearmDefinition: "Silah Tanımı",
     Firearm: "Silah",
@@ -278,7 +287,7 @@ export default async function DashboardPage() {
                     <p className="text-muted-foreground"><span suppressHydrationWarning>Dikkate değer son uyarı bulunmamaktadır.</span></p>
                 ) : (
                     triggeredAlerts.slice(0, 5).map(alert => (
-                        <div key={alert.uniqueId} className="flex items-start justify-between p-3 border rounded-md shadow-sm">
+                        <div key={alert.uniqueId} className={`flex items-start justify-between p-3 border rounded-md shadow-sm ${getSeverityCardClasses(alert.definition.severity)}`}>
                             <div>
                                 <p className="font-medium text-sm" suppressHydrationWarning>{alert.definition.name}</p>
                                 <p className="text-xs text-muted-foreground" suppressHydrationWarning>
@@ -312,5 +321,6 @@ export default async function DashboardPage() {
         
 
     
+
 
 
