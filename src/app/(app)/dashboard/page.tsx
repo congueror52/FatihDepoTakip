@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from "@/components/ui/button";
-import { Briefcase, Users, ShieldAlert, BarChart3, Activity, Target, ListChecks, BellRing, ListTree, LineChart as LineChartIcon, Box as BoxIcon, Package as PackageIcon, Info, AlertTriangle, Layers, UsersRound, ThermometerSnowflake, HelpCircle, AlertCircle, CheckCircle } from 'lucide-react';
+import { Briefcase, Users, ShieldAlert, BarChart3, Activity, Target, ListChecks, BellRing, ListTree, LineChart as LineChartIcon, Box as BoxIcon, Package as PackageIcon, Info, AlertTriangle, Layers, UsersRound, ThermometerSnowflake, HelpCircle, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import {
   getFirearms,
@@ -153,18 +153,6 @@ export default async function DashboardPage() {
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-3xl font-bold tracking-tight" suppressHydrationWarning>ÖZET BİLGİLER</h1>
-
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1">
-         <Card className="lg:col-span-1">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2"><LineChartIcon className="h-5 w-5" /> <span suppressHydrationWarning>Aylık Senaryo Bazlı Mühimmat Kullanımı</span></CardTitle>
-            <CardDescription suppressHydrationWarning>Seçilen senaryolara göre aylık toplam mühimmat tüketim trendleri.</CardDescription>
-          </CardHeader>
-          <CardContent className="pl-2">
-            <MonthlyScenarioUsageChart data={monthlyScenarioUsageData} />
-          </CardContent>
-        </Card>
-      </div>
       
       <Card>
         <CardHeader>
@@ -306,10 +294,23 @@ export default async function DashboardPage() {
                 </Link>
             </CardContent>
         </Card>
+
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1">
+         <Card className="lg:col-span-1">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2"><LineChartIcon className="h-5 w-5" /> <span suppressHydrationWarning>Aylık Senaryo Bazlı Mühimmat Kullanımı</span></CardTitle>
+            <CardDescription suppressHydrationWarning>Seçilen senaryolara göre aylık toplam mühimmat tüketim trendleri.</CardDescription>
+          </CardHeader>
+          <CardContent className="pl-2">
+            <MonthlyScenarioUsageChart data={monthlyScenarioUsageData} />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
         
 
     
+
 

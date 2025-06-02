@@ -32,14 +32,14 @@ export function MonthlyScenarioUsageChart({ data }: MonthlyScenarioUsageChartPro
 
   if (!data || data.length === 0) {
     return (
-      <div className="h-[350px] flex items-center justify-center text-muted-foreground bg-muted/50 rounded-md">
+      <div className="h-[280px] flex items-center justify-center text-muted-foreground bg-muted/50 rounded-md">
         <span suppressHydrationWarning>Aylık senaryo bazlı kullanım verisi bulunamadı.</span>
       </div>
     );
   }
 
   return (
-    <ChartContainer config={chartConfig} className="min-h-[300px] w-full h-[350px]">
+    <ChartContainer config={chartConfig} className="w-full h-[280px]">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -79,3 +79,4 @@ export function MonthlyScenarioUsageChart({ data }: MonthlyScenarioUsageChartPro
     </ChartContainer>
   );
 }
+
