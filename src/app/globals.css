@@ -8,27 +8,27 @@ body {
 
 @layer base {
   :root {
-    /* Fenerbahçe Light Theme (Default) */
-    --background: 50 100% 97%; /* Very Pale Yellow */
-    --foreground: 225 73% 12%; /* Very Dark Navy */
+    /* Fenerbahçe Light Theme (Default) - Based on #ffef03 (Sarı) and #004684 (Lacivert) */
+    --background: 56 100% 97%; /* Very Pale Yellow from Sarı */
+    --foreground: 208 100% 10%; /* Very Dark Navy from Lacivert */
 
-    --card: 0 0% 100%; /* White cards */
-    --card-foreground: 225 73% 12%;
+    --card: 0 0% 100%; /* White */
+    --card-foreground: 208 100% 10%; /* Very Dark Navy */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 225 73% 12%;
+    --popover: 0 0% 100%; /* White */
+    --popover-foreground: 208 100% 10%; /* Very Dark Navy */
 
-    --primary: 225 60% 30%; /* Fenerbahçe Navy for buttons */
-    --primary-foreground: 51 100% 95%; /* Very Light Yellow for text on navy buttons */
+    --primary: 208 100% 26%; /* Lacivert (#004684) */
+    --primary-foreground: 56 100% 97%; /* Very Pale Yellow (good contrast on Lacivert) */
 
-    --secondary: 51 100% 90%; /* Light Yellow for secondary elements */
-    --secondary-foreground: 225 60% 30%; /* Navy text on light yellow */
+    --secondary: 208 100% 90%; /* Very Light Lacivert/Blue */
+    --secondary-foreground: 208 100% 26%; /* Lacivert text on light Lacivert */
 
-    --muted: 220 40% 90%; /* Muted light blue-gray */
-    --muted-foreground: 220 30% 45%; /* Muted navy text */
+    --muted: 208 60% 92%; /* Lighter, desaturated Lacivert */
+    --muted-foreground: 208 40% 45%; /* Darker, desaturated Lacivert */
 
-    --accent: 51 100% 50%; /* Fenerbahçe Yellow as main accent */
-    --accent-foreground: 225 73% 10%; /* Very dark navy for text on yellow accent */
+    --accent: 56 100% 51%; /* Sarı (#ffef03) */
+    --accent-foreground: 208 100% 10%; /* Very Dark Navy text on Sarı accent */
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
@@ -36,51 +36,51 @@ body {
     --success: 140 60% 45%; 
     --success-foreground: 0 0% 98%;
 
-    --border: 220 30% 80%; /* Light blue-gray border */
-    --input: 220 30% 92%; /* Very light blue-gray input background */
-    --ring: 51 100% 50%; /* Yellow for rings */
+    --border: 208 50% 80%; /* Light Lacivert/Blue border */
+    --input: 208 50% 94%; /* Very Light Lacivert/Blue input background */
+    --ring: 56 100% 51%; /* Sarı for rings */
 
-    --chart-1: 225 60% 30%; /* Fenerbahçe Navy */
-    --chart-2: 51 100% 50%; /* Fenerbahçe Yellow */
-    --chart-3: 220 50% 50%; /* Mid Blue */
-    --chart-4: 45 90% 60%;  /* Lighter Yellow/Orange */
-    --chart-5: 225 40% 65%; /* Lighter Navy/Blue */
+    --chart-1: 208 100% 26%; /* Lacivert */
+    --chart-2: 56 100% 51%; /* Sarı */
+    --chart-3: 208 70% 40%; /* Mid Lacivert/Blue */
+    --chart-4: 56 90% 65%;  /* Lighter Sarı */
+    --chart-5: 208 50% 55%; /* Lighter Lacivert/Blue */
 
     --radius: 0.5rem;
 
     /* Fenerbahçe Light Sidebar */
-    --sidebar-background: 225 73% 10%; 
-    --sidebar-foreground: 51 100% 80%; 
-    --sidebar-primary: 51 100% 50%; 
-    --sidebar-primary-foreground: 225 73% 8%; 
-    --sidebar-accent: 225 60% 20%; 
-    --sidebar-accent-foreground: 51 100% 85%;
-    --sidebar-border: 225 50% 15%;
-    --sidebar-ring: 51 100% 55%;
+    --sidebar-background: 208 100% 12%; /* Dark Lacivert */
+    --sidebar-foreground: 56 100% 80%; /* Bright Sarı */
+    --sidebar-primary: 56 100% 51%; /* Sarı for active/hover */
+    --sidebar-primary-foreground: 208 100% 8%; /* Very Dark Lacivert on Sarı */
+    --sidebar-accent: 208 80% 20%; /* Darker Lacivert for accents */
+    --sidebar-accent-foreground: 56 100% 85%; /* Lighter Sarı on accent */
+    --sidebar-border: 208 70% 15%; /* Dark Lacivert border */
+    --sidebar-ring: 56 100% 55%; /* Sarı for rings */
   }
 
   html.dark {
-    /* Fenerbahçe Dark Theme (Default Dark) */
-    --background: 225 73% 8%; /* Very Dark Navy, almost black */
-    --foreground: 51 100% 75%; /* Bright Yellow for text */
+    /* Fenerbahçe Dark Theme (Default Dark) - Based on #ffef03 (Sarı) and #004684 (Lacivert) */
+    --background: 208 100% 8%; /* Very Dark Lacivert */
+    --foreground: 56 100% 65%; /* Bright Sarı (lightened for dark mode) */
 
-    --card: 225 60% 12%; /* Dark Navy for cards */
-    --card-foreground: 51 100% 75%;
+    --card: 208 100% 12%; /* Dark Lacivert for cards */
+    --card-foreground: 56 100% 65%; /* Bright Sarı */
 
-    --popover: 225 70% 10%; /* Slightly different dark navy for popovers */
-    --popover-foreground: 51 100% 75%;
+    --popover: 208 100% 10%; /* Slightly darker Lacivert for popovers */
+    --popover-foreground: 56 100% 65%; /* Bright Sarı */
 
-    --primary: 51 100% 50%; /* Fenerbahçe Yellow for primary buttons */
-    --primary-foreground: 225 73% 8%; /* Very dark navy for text on yellow buttons */
+    --primary: 56 100% 51%; /* Sarı (#ffef03) for primary buttons */
+    --primary-foreground: 208 100% 10%; /* Very Dark Lacivert for text on Sarı buttons */
 
-    --secondary: 225 50% 20%; /* Mid-dark navy for secondary elements */
-    --secondary-foreground: 51 100% 70%; /* Slightly dimmer yellow text */
+    --secondary: 208 80% 18%; /* Mid-dark Lacivert for secondary elements */
+    --secondary-foreground: 56 100% 70%; /* Slightly dimmer Sarı text */
 
-    --muted: 220 30% 15%; /* Muted dark blue-gray */
-    --muted-foreground: 220 20% 60%; /* Muted lighter blue-gray text */
+    --muted: 208 50% 15%; /* Muted dark Lacivert/Blue */
+    --muted-foreground: 208 30% 55%; /* Muted lighter Lacivert/Blue text */
 
-    --accent: 220 70% 55%; /* A brighter, but still distinctly Fenerbahçe, blue as accent */
-    --accent-foreground: 51 100% 90%; /* Very light yellow text on blue accent */
+    --accent: 208 100% 35%; /* A brighter shade of Lacivert as accent */
+    --accent-foreground: 56 100% 90%; /* Very light Sarı text on Lacivert accent */
 
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 98%;
@@ -88,25 +88,25 @@ body {
     --success: 140 60% 55%;
     --success-foreground: 0 0% 98%;
 
-    --border: 220 40% 25%;
-    --input: 220 40% 18%;
-    --ring: 51 100% 50%;
+    --border: 208 50% 20%; /* Dark Lacivert/Blue border */
+    --input: 208 50% 15%; /* Dark Lacivert input background */
+    --ring: 56 100% 51%; /* Sarı for rings */
 
-    --chart-1: 51 100% 50%;    /* Fenerbahçe Yellow */
-    --chart-2: 220 70% 55%; /* Bright Blue */
-    --chart-3: 45 90% 70%;
-    --chart-4: 210 60% 70%;
-    --chart-5: 50 100% 60%;
+    --chart-1: 56 100% 51%;    /* Sarı */
+    --chart-2: 208 100% 35%;   /* Bright Lacivert/Blue */
+    --chart-3: 56 90% 70%;     /* Lighter Sarı */
+    --chart-4: 208 70% 50%;    /* Mid Lacivert/Blue */
+    --chart-5: 56 100% 60%;    /* Even Lighter Sarı */
     
     /* Fenerbahçe Dark Sidebar */
-    --sidebar-background: 225 73% 6%; 
-    --sidebar-foreground: 51 100% 70%; 
-    --sidebar-primary: 51 100% 50%; 
-    --sidebar-primary-foreground: 225 73% 6%; 
-    --sidebar-accent: 225 60% 15%; 
-    --sidebar-accent-foreground: 51 100% 75%;
-    --sidebar-border: 225 50% 10%;
-    --sidebar-ring: 51 100% 55%;
+    --sidebar-background: 208 100% 6%; /* Almost Black Lacivert */
+    --sidebar-foreground: 56 100% 70%; /* Bright Sarı */
+    --sidebar-primary: 56 100% 51%; /* Sarı for active/hover */
+    --sidebar-primary-foreground: 208 100% 4%; /* Very Dark Lacivert on Sarı */
+    --sidebar-accent: 208 80% 12%; /* Darker Lacivert for accents */
+    --sidebar-accent-foreground: 56 100% 75%; /* Lighter Sarı on accent */
+    --sidebar-border: 208 70% 10%; /* Dark Lacivert border */
+    --sidebar-ring: 56 100% 55%; /* Sarı for rings */
   }
 
   /* Ocean Theme */
