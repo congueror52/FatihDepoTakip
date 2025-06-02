@@ -22,17 +22,17 @@ import { AmmunitionUsageSummaryChart } from './_components/ammunition-usage-summ
 import { MonthlyScenarioUsageChart } from './_components/monthly-scenario-usage-chart';
 
 // Helper structure for dashboard display
-interface ScenarioSufficiencyInfo {
+interface CaliberSufficiencyInfo {
+  caliber: SupportedCaliber;
+  currentStock: number;
+  roundsPerPerson: number;
+  engagementsSupported: number | 'N/A' | 'Sınırsız';
+}
+interface ScenarioDetailedSufficiencyInfo {
   scenarioId: string;
   scenarioName: string;
   scenarioDescription?: string;
-  maxEngagements: number | 'N/A' | 'Sınırsız';
-  requiredCalibers: Array<{
-    caliber: SupportedCaliber;
-    currentStock: number;
-    roundsPerPerson: number;
-    isLimiting: boolean;
-  }>;
+  calibers: CaliberSufficiencyInfo[];
 }
 
 
@@ -120,54 +120,32 @@ export default async function DashboardPage() {
     'Mevcut Stok': stockByCaliber[caliber] || 0,
   }));
 
-  const scenarioSufficiencyData: ScenarioSufficiencyInfo[] = usageScenarios.map(scenario => {
-    let minEngagementsForScenario: number | 'N/A' | 'Sınırsız' = Infinity;
-    let hasActiveConsumption = false;
-    
-    const requiredCalibersDetailsIntermediate = scenario.consumptionRatesPerCaliber.map(rate => {
-      const currentStockForCaliber = stockByCaliber[rate.caliber] || 0;
-      let engagementsThisCaliberSupports: number | 'Sınırsız' = 'Sınırsız';
+  const scenarioDetailedSufficiencyData: ScenarioDetailedSufficiencyInfo[] = usageScenarios.map(scenario => {
+    const caliberDetails: CaliberSufficiencyInfo[] = scenario.consumptionRatesPerCaliber
+      .filter(rate => rate.roundsPerPerson > 0) // Sadece sarfiyatı olanları dikkate al
+      .map(rate => {
+        const currentStockForCaliber = stockByCaliber[rate.caliber] || 0;
+        let engagements: number | 'Sınırsız' | 'N/A' = 'N/A';
 
-      if (rate.roundsPerPerson > 0) {
-        hasActiveConsumption = true;
-        engagementsThisCaliberSupports = Math.floor(currentStockForCaliber / rate.roundsPerPerson);
-        
-        if (minEngagementsForScenario === Infinity || (typeof minEngagementsForScenario === 'number' && engagementsThisCaliberSupports < minEngagementsForScenario)) {
-          minEngagementsForScenario = engagementsThisCaliberSupports;
-        } else if (minEngagementsForScenario === 'Sınırsız' && typeof engagementsThisCaliberSupports === 'number') {
-            minEngagementsForScenario = engagementsThisCaliberSupports;
+        if (rate.roundsPerPerson > 0) {
+          engagements = Math.floor(currentStockForCaliber / rate.roundsPerPerson);
+        } else {
+          engagements = 'Sınırsız'; 
         }
-      }
-      return {
-        caliber: rate.caliber,
-        currentStock: currentStockForCaliber,
-        roundsPerPerson: rate.roundsPerPerson,
-        engagementsThisCaliberSupports
-      };
-    });
 
-    if (!hasActiveConsumption) {
-      minEngagementsForScenario = 'Sınırsız';
-    } else if (minEngagementsForScenario === Infinity) {
-      minEngagementsForScenario = 'Sınırsız';
-    }
-    
-    const finalRequiredCalibers = requiredCalibersDetailsIntermediate.map(rc => ({
-      ...rc,
-      isLimiting: hasActiveConsumption &&
-                  typeof minEngagementsForScenario === 'number' &&
-                  rc.roundsPerPerson > 0 &&
-                  typeof rc.engagementsThisCaliberSupports === 'number' &&
-                  rc.engagementsThisCaliberSupports === minEngagementsForScenario
-    }));
-
-
+        return {
+          caliber: rate.caliber,
+          currentStock: currentStockForCaliber,
+          roundsPerPerson: rate.roundsPerPerson,
+          engagementsSupported: engagements,
+        };
+      });
+  
     return {
       scenarioId: scenario.id,
       scenarioName: scenario.name,
       scenarioDescription: scenario.description,
-      maxEngagements: minEngagementsForScenario,
-      requiredCalibers: finalRequiredCalibers,
+      calibers: caliberDetails.sort((a,b) => a.caliber.localeCompare(b.caliber)),
     };
   }).sort((a,b) => a.scenarioName.localeCompare(b.scenarioName));
 
@@ -192,67 +170,67 @@ export default async function DashboardPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Layers className="h-5 w-5 text-primary" />
-            <span suppressHydrationWarning>Mühimmat Yeterlilik (Senaryo Bazlı)</span>
+            <span suppressHydrationWarning>Mühimmat Yeterlilik (Senaryo ve Kalibre Bazlı)</span>
           </CardTitle>
           <CardDescription suppressHydrationWarning>
-            Her bir kullanım senaryosu için mevcut mühimmat stoğu ile tahmini kaç kişilik angajmana yeteceğini gösterir.
-            Detaylı sarfiyat oranları için <Link href="/admin/usage-scenarios" className="text-primary hover:underline">Kullanım Senaryoları</Link> sayfasını ziyaret edin.
+            Her bir kullanım senaryosu için, o senaryoda tanımlı her bir kalibrenin mevcut mühimmat stoğu ile tahmini kaç kişilik angajmana yeteceğini gösterir.
+            Sarfiyat oranlarını <Link href="/admin/usage-scenarios" className="text-primary hover:underline">Kullanım Senaryoları</Link> sayfasından yönetebilirsiniz.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-6">
           {usageScenarios.length === 0 ? (
              <p className="text-muted-foreground text-center py-4" suppressHydrationWarning>Henüz tanımlanmış kullanım senaryosu bulunmamaktadır. Lütfen <Link href="/admin/usage-scenarios" className="text-primary hover:underline">Kullanım Senaryoları</Link> sayfasından senaryo ekleyin.</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              {scenarioSufficiencyData.map(scenarioInfo => (
-                <Card key={scenarioInfo.scenarioId} className="flex flex-col border shadow-lg hover:shadow-xl transition-shadow duration-200">
-                  <CardHeader className="pb-2 bg-muted/30 dark:bg-muted/20">
-                    <CardTitle className="text-base font-semibold" suppressHydrationWarning>{scenarioInfo.scenarioName}</CardTitle>
-                    {scenarioInfo.scenarioDescription && <CardDescription className="text-xs leading-tight" suppressHydrationWarning>{scenarioInfo.scenarioDescription.substring(0,70)}{scenarioInfo.scenarioDescription.length > 70 ? '...' : ''}</CardDescription>}
-                  </CardHeader>
-                  <CardContent className="flex-grow space-y-3 pt-4">
-                    <div className="flex items-center justify-between p-3 bg-primary/10 dark:bg-primary/20 rounded-md text-primary-foreground">
-                        <div className="flex items-center gap-2 text-sm">
-                            <UsersRound className="h-5 w-5 text-primary dark:text-primary-foreground/80"/>
-                            <span className="font-medium text-primary dark:text-primary-foreground/90" suppressHydrationWarning>Kapasite:</span>
-                        </div>
-                        <span className="text-lg font-bold text-primary dark:text-primary-foreground" suppressHydrationWarning>
-                            {scenarioInfo.maxEngagements === 'Sınırsız' ? <ThermometerSnowflake className="inline h-5 w-5" title="Sınırsız (Sarfiyat Tanımlanmamış/Sıfır)" /> :
-                             scenarioInfo.maxEngagements === 'N/A' ? <HelpCircle className="inline h-5 w-5" title="Hesaplanamadı" /> :
-                             `${scenarioInfo.maxEngagements.toLocaleString()} Kişi`}
-                        </span>
-                    </div>
+            scenarioDetailedSufficiencyData.map(scenarioInfo => (
+              <div key={scenarioInfo.scenarioId} className="space-y-4 p-4 border rounded-lg shadow">
+                <div className="flex justify-between items-center">
                     <div>
-                        <h4 className="text-xs font-medium mb-1 text-muted-foreground" suppressHydrationWarning>Gerekli Kalibreler ve Stok Durumu:</h4>
-                        {scenarioInfo.requiredCalibers.length === 0 || scenarioInfo.requiredCalibers.every(rc => rc.roundsPerPerson === 0) ? (
-                            <p className="text-xs text-muted-foreground italic" suppressHydrationWarning>Bu senaryo için aktif fişek sarfiyatı tanımlanmamış.</p>
-                        ) : (
-                            <ul className="space-y-1 text-xs">
-                            {scenarioInfo.requiredCalibers.filter(rc => rc.roundsPerPerson > 0).map(rc => (
-                                <li key={rc.caliber} className={`flex justify-between items-center p-1.5 rounded-sm ${rc.isLimiting && typeof scenarioInfo.maxEngagements === 'number' ? 'bg-destructive/10 dark:bg-destructive/20' : 'bg-muted/30 dark:bg-muted/15'}`}>
-                                <span className="flex items-center gap-1">
-                                    {rc.isLimiting && typeof scenarioInfo.maxEngagements === 'number' && <AlertCircle className="h-3.5 w-3.5 text-destructive flex-shrink-0" />}
-                                    <span className={`${rc.isLimiting && typeof scenarioInfo.maxEngagements === 'number' ? 'font-semibold text-destructive dark:text-red-400' : 'text-foreground/80'}`} suppressHydrationWarning>{rc.caliber}:</span>
-                                </span>
-                                <span className="text-foreground/90" suppressHydrationWarning>
-                                    {rc.currentStock.toLocaleString()} / {rc.roundsPerPerson} (Kişi Başı)
-                                </span>
-                                </li>
-                            ))}
-                            </ul>
-                        )}
+                        <h3 className="text-lg font-semibold text-primary" suppressHydrationWarning>{scenarioInfo.scenarioName}</h3>
+                        {scenarioInfo.scenarioDescription && <p className="text-xs text-muted-foreground" suppressHydrationWarning>{scenarioInfo.scenarioDescription}</p>}
                     </div>
-                  </CardContent>
-                   <CardFooter className="pt-3 mt-auto border-t">
-                      <Button variant="ghost" size="sm" className="w-full text-primary hover:bg-primary/5 h-8" asChild>
-                          <Link href={`/admin/usage-scenarios/${scenarioInfo.scenarioId}/edit`}>
-                             <span suppressHydrationWarning>Senaryoyu Yapılandır</span>
-                          </Link>
-                      </Button>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
+                    <Button variant="outline" size="sm" asChild>
+                        <Link href={`/admin/usage-scenarios/${scenarioInfo.scenarioId}/edit`}>
+                            <span suppressHydrationWarning>Senaryoyu Yapılandır</span>
+                        </Link>
+                    </Button>
+                </div>
+
+                {scenarioInfo.calibers.length === 0 ? (
+                     <p className="text-sm text-muted-foreground italic py-2" suppressHydrationWarning>Bu senaryo için aktif (sıfırdan büyük) fişek sarfiyatı tanımlanmamış.</p>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {scenarioInfo.calibers.map(caliberInfo => (
+                        <Card key={caliberInfo.caliber} className="flex flex-col">
+                        <CardHeader className="pb-2 pt-3 bg-muted/20 dark:bg-muted/10">
+                            <CardTitle className="text-sm font-medium flex items-center gap-1.5">
+                                <BoxIcon className="h-4 w-4 text-muted-foreground" />
+                                <span suppressHydrationWarning>{caliberInfo.caliber}</span>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex-grow space-y-1.5 text-xs pt-3">
+                            <div className="flex justify-between">
+                                <span className="text-muted-foreground" suppressHydrationWarning>Mevcut Stok:</span>
+                                <span className="font-semibold" suppressHydrationWarning>{caliberInfo.currentStock.toLocaleString()} adet</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-muted-foreground" suppressHydrationWarning>Kişi Başı Sarfiyat:</span>
+                                <span className="font-semibold" suppressHydrationWarning>{caliberInfo.roundsPerPerson} adet</span>
+                            </div>
+                            <div className="flex justify-between items-center pt-1 mt-1 border-t">
+                                <span className="text-muted-foreground flex items-center gap-1"><UsersRound className="h-3.5 w-3.5"/> <span suppressHydrationWarning>Tahmini Kapasite:</span></span>
+                                <span className="font-bold text-sm">
+                                {caliberInfo.engagementsSupported === 'Sınırsız' ? <ThermometerSnowflake className="inline h-4 w-4" title="Sınırsız (Sarfiyat Tanımlanmamış/Sıfır)" /> :
+                                 caliberInfo.engagementsSupported === 'N/A' ? <HelpCircle className="inline h-4 w-4" title="Hesaplanamadı (Sarfiyat 0)" /> :
+                                 <span suppressHydrationWarning>{`${(caliberInfo.engagementsSupported as number).toLocaleString()} Kişi`}</span>}
+                                </span>
+                            </div>
+                        </CardContent>
+                        </Card>
+                    ))}
+                    </div>
+                )}
+              </div>
+            ))
           )}
         </CardContent>
       </Card>
