@@ -5,7 +5,7 @@ import type { UsageScenario } from "@/types/inventory";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Trash2, ListTree, Box } from "lucide-react";
+import { Edit, Trash2, ListTree, Box as BoxIcon } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import {
@@ -87,8 +87,11 @@ export function UsageScenariosTableClient({ scenarios: initialScenarios }: Usage
                 {scenario.consumptionRatesPerCaliber.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
                     {scenario.consumptionRatesPerCaliber.map(rate => (
-                      <Badge key={rate.caliber} variant="outline" className="flex items-center gap-1.5 py-1 px-2 border-primary/30 bg-primary/5 text-primary dark:bg-primary/10 dark:text-primary-foreground/80">
-                        <Box className="h-3.5 w-3.5 opacity-70" />
+                      <Badge 
+                        key={rate.caliber} 
+                        className="flex items-center gap-1.5 py-1 px-2.5 border border-primary/50 bg-primary/10 text-primary-foreground dark:border-primary/50 dark:bg-primary/20 dark:text-primary-foreground"
+                      >
+                        <BoxIcon className="h-3.5 w-3.5" /> {/* Opacity removed, color will be inherited */}
                         <span suppressHydrationWarning>{rate.caliber}: {rate.roundsPerPerson} adet/kişi</span>
                       </Badge>
                     ))}
