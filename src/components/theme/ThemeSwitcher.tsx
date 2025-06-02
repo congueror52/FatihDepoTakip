@@ -1,7 +1,7 @@
 
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { useColorScheme } from '@/components/theme/color-scheme-provider';
 import { Button } from '@/components/ui/button';
@@ -29,6 +29,11 @@ const colorSchemes: ColorSchemeOption[] = [
 export function ThemeSwitcher() {
   const { setTheme, theme: currentMode } = useTheme();
   const { colorScheme, setColorScheme } = useColorScheme();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
     <div className="p-4 space-y-6">
@@ -38,8 +43,9 @@ export function ThemeSwitcher() {
           <span suppressHydrationWarning>Renk Paleti</span>
         </Label>
         <Select
-          value={colorScheme}
+          value={isMounted ? colorScheme : 'default'} // Use default or resolved value
           onValueChange={(value) => setColorScheme(value as ColorSchemeOption['value'])}
+          disabled={!isMounted}
         >
           <SelectTrigger id="color-scheme-select">
             <SelectValue placeholder="Palet Seçin" />
@@ -56,34 +62,45 @@ export function ThemeSwitcher() {
 
       <div className="space-y-2">
         <Label className="flex items-center gap-2 text-sm font-medium">
-          {currentMode === 'light' && <Sun className="h-4 w-4" />}
-          {currentMode === 'dark' && <Moon className="h-4 w-4" />}
-          {currentMode === 'system' && <Laptop className="h-4 w-4" />}
+          {!isMounted ? (
+            <div className="h-4 w-4" /> // Render a placeholder div matching icon size
+          ) : currentMode === 'light' ? (
+            <Sun className="h-4 w-4" />
+          ) : currentMode === 'dark' ? (
+            <Moon className="h-4 w-4" />
+          ) : currentMode === 'system' ? (
+            <Laptop className="h-4 w-4" />
+          ) : (
+            <div className="h-4 w-4" /> // Fallback placeholder
+          )}
           <span suppressHydrationWarning>Görünüm Modu</span>
         </Label>
         <div className="grid grid-cols-3 gap-2">
           <Button
-            variant={currentMode === 'light' ? 'default' : 'outline'}
+            variant={!isMounted ? 'outline' : currentMode === 'light' ? 'default' : 'outline'}
             size="sm"
-            onClick={() => setTheme('light')}
+            onClick={() => { if (isMounted) setTheme('light'); }}
+            disabled={!isMounted}
             className="flex flex-col h-auto py-2 items-center gap-1"
           >
             <Sun className="h-5 w-5" />
             <span className="text-xs" suppressHydrationWarning>Açık</span>
           </Button>
           <Button
-            variant={currentMode === 'dark' ? 'default' : 'outline'}
+            variant={!isMounted ? 'outline' : currentMode === 'dark' ? 'default' : 'outline'}
             size="sm"
-            onClick={() => setTheme('dark')}
+            onClick={() => { if (isMounted) setTheme('dark'); }}
+            disabled={!isMounted}
             className="flex flex-col h-auto py-2 items-center gap-1"
           >
             <Moon className="h-5 w-5" />
             <span className="text-xs" suppressHydrationWarning>Koyu</span>
           </Button>
           <Button
-            variant={currentMode === 'system' ? 'default' : 'outline'}
+            variant={!isMounted ? 'outline' : currentMode === 'system' ? 'default' : 'outline'}
             size="sm"
-            onClick={() => setTheme('system')}
+            onClick={() => { if (isMounted) setTheme('system'); }}
+            disabled={!isMounted}
             className="flex flex-col h-auto py-2 items-center gap-1"
           >
             <Laptop className="h-5 w-5" />
