@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { PlusCircle, ClipboardList, BarChart3, Users, Info, ListTree, Box as BoxIcon, Layers, UsersRound, ThermometerSnowflake, HelpCircle, AlertCircle } from "lucide-react";
+import { PlusCircle, ClipboardList, BarChart3, Users, Info, ListTree, Box as BoxIcon, Layers, UsersRound, ThermometerSnowflake, HelpCircle, AlertCircle, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { getAmmunitionDailyUsageLogs, getGroupedAmmunitionDailyUsageLogs, getUsageScenarios, getAmmunition, type GroupedDailyUsageLog, type SupportedCaliber, type UsageScenario, type Ammunition } from "@/lib/actions/inventory.actions";
 import { AmmunitionDailyUsageTableClient } from "./_components/usage-log-table-client";
@@ -133,7 +133,7 @@ export default async function AmmunitionDailyUsagePage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Layers className="h-5 w-5 text-primary" />
-            <span suppressHydrationWarning>Mühimmat Yeterlilik (Senaryo ve Kalibre Bazlı)</span>
+            <span suppressHydrationWarning>Mühimmat Yeterlilik (Senaryo Bazlı)</span>
           </CardTitle>
           <CardDescription suppressHydrationWarning>
             Her bir kullanım senaryosu için, o senaryoda tanımlı her bir kalibrenin mevcut mühimmat stoğu ile tahmini kaç kişilik angajmana yeteceğini gösterir.
@@ -151,11 +151,6 @@ export default async function AmmunitionDailyUsagePage() {
                         <h3 className="text-lg font-semibold text-primary" suppressHydrationWarning>{scenarioInfo.scenarioName}</h3>
                         {scenarioInfo.scenarioDescription && <p className="text-xs text-muted-foreground" suppressHydrationWarning>{scenarioInfo.scenarioDescription}</p>}
                     </div>
-                    <Button variant="outline" size="sm" asChild>
-                        <Link href={`/admin/usage-scenarios/${scenarioInfo.scenarioId}/edit`}>
-                            <span suppressHydrationWarning>Senaryoyu Yapılandır</span>
-                        </Link>
-                    </Button>
                 </div>
 
                 {scenarioInfo.calibers.length === 0 ? (
@@ -164,30 +159,37 @@ export default async function AmmunitionDailyUsagePage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {scenarioInfo.calibers.map(caliberInfo => (
                         <Card key={caliberInfo.caliber} className="flex flex-col">
-                        <CardHeader className="pb-2 pt-3 bg-muted/20 dark:bg-muted/10">
-                            <CardTitle className="text-sm font-medium flex items-center gap-1.5">
-                                <BoxIcon className="h-4 w-4 text-muted-foreground" />
-                                <span suppressHydrationWarning>{caliberInfo.caliber}</span>
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="flex-grow space-y-1.5 text-xs pt-3">
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground" suppressHydrationWarning>Mevcut Stok:</span>
-                                <span className="font-semibold" suppressHydrationWarning>{caliberInfo.currentStock.toLocaleString()} adet</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground" suppressHydrationWarning>Kişi Başı Sarfiyat:</span>
-                                <span className="font-semibold" suppressHydrationWarning>{caliberInfo.roundsPerPerson} adet</span>
-                            </div>
-                            <div className="flex justify-between items-center pt-1 mt-1 border-t">
-                                <span className="text-muted-foreground flex items-center gap-1"><UsersRound className="h-3.5 w-3.5"/> <span suppressHydrationWarning>Tahmini Kapasite:</span></span>
-                                <span className="font-bold text-sm">
-                                {caliberInfo.engagementsSupported === 'Sınırsız' ? <ThermometerSnowflake className="inline h-4 w-4" title="Sınırsız (Sarfiyat Tanımlanmamış/Sıfır)" /> :
-                                 caliberInfo.engagementsSupported === 'N/A' ? <HelpCircle className="inline h-4 w-4" title="Hesaplanamadı (Sarfiyat 0)" /> :
-                                 <span suppressHydrationWarning>{`${(caliberInfo.engagementsSupported as number).toLocaleString()} Kişi`}</span>}
-                                </span>
-                            </div>
-                        </CardContent>
+                          <CardHeader className="pb-2 pt-3 bg-muted/20 dark:bg-muted/10">
+                              <CardTitle className="text-sm font-medium flex items-center gap-1.5">
+                                  <BoxIcon className="h-4 w-4 text-muted-foreground" />
+                                  <span suppressHydrationWarning>{caliberInfo.caliber}</span>
+                              </CardTitle>
+                          </CardHeader>
+                          <CardContent className="flex-grow space-y-1.5 text-xs pt-3">
+                              <div className="flex justify-between">
+                                  <span className="text-muted-foreground" suppressHydrationWarning>Mevcut Stok:</span>
+                                  <span className="font-semibold" suppressHydrationWarning>{caliberInfo.currentStock.toLocaleString()} adet</span>
+                              </div>
+                              <div className="flex justify-between">
+                                  <span className="text-muted-foreground" suppressHydrationWarning>Kişi Başı Sarfiyat:</span>
+                                  <span className="font-semibold" suppressHydrationWarning>{caliberInfo.roundsPerPerson} adet</span>
+                              </div>
+                              <div className="flex justify-between items-center pt-1 mt-1 border-t">
+                                  <span className="text-muted-foreground flex items-center gap-1"><UsersRound className="h-3.5 w-3.5"/> <span suppressHydrationWarning>Tahmini Kapasite:</span></span>
+                                  <span className="text-lg font-bold text-primary">
+                                  {caliberInfo.engagementsSupported === 'Sınırsız' ? <ThermometerSnowflake className="inline h-5 w-5" title="Sınırsız (Sarfiyat Tanımlanmamış/Sıfır)" /> :
+                                   caliberInfo.engagementsSupported === 'N/A' ? <HelpCircle className="inline h-5 w-5" title="Hesaplanamadı (Sarfiyat 0)" /> :
+                                   <span suppressHydrationWarning>{`${(caliberInfo.engagementsSupported as number).toLocaleString()} Kişi`}</span>}
+                                  </span>
+                              </div>
+                          </CardContent>
+                           <CardFooter className="pt-3 mt-auto border-t">
+                             <Button variant="ghost" size="sm" className="w-full text-primary hover:bg-primary/5 h-8" asChild>
+                                 <Link href={`/admin/usage-scenarios/${scenarioInfo.scenarioId}/edit`}>
+                                    <span suppressHydrationWarning>Senaryoyu Yapılandır</span>
+                                 </Link>
+                             </Button>
+                           </CardFooter>
                         </Card>
                     ))}
                     </div>
