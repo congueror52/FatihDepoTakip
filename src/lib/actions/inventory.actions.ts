@@ -3,7 +3,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { unstable_noStore as noStore } from 'next/cache';
-import type { Firearm, Magazine, Ammunition, Shipment, ShipmentItem, AmmunitionUsageLog, FirearmDefinition, AmmunitionDailyUsageLog, UsageScenario, ScenarioCaliberConsumption, SupportedCaliber, MagazineStatus, AmmunitionStatus, Depot, MaintenanceLog, MaintenanceItemStatus, FirearmStatus, InventoryItemType, ShipmentTypeDefinition, AlertDefinition, OtherMaterial, OtherMaterialStatus, ActiveAlert, TriggeredAlertContext, AlertSeverity, AmmunitionStandardConsumptionRate } from '@/types/inventory';
+import type { Firearm, Magazine, Ammunition, Shipment, ShipmentItem, AmmunitionUsageLog, FirearmDefinition, AmmunitionDailyUsageLog, UsageScenario, ScenarioCaliberConsumption, SupportedCaliber, MagazineStatus, AmmunitionStatus, Depot, MaintenanceLog, MaintenanceItemStatus, FirearmStatus, InventoryItemType, ShipmentTypeDefinition, AlertDefinition, OtherMaterial, OtherMaterialStatus, ActiveAlert, TriggeredAlertContext, AlertSeverity } from '@/types/inventory';
 import { readData, writeData, generateId } from '@/lib/data-utils';
 import { logAction } from '@/lib/log-service';
 import { firearmFormSchema, firearmStatuses as firearmStatusesArray } from '@/app/(app)/inventory/firearms/_components/firearm-form-schema';
@@ -17,7 +17,7 @@ import { depotFormSchema } from '@/app/(app)/admin/depots/_components/depot-form
 import { maintenanceLogFormSchema } from '@/app/(app)/maintenance/_components/maintenance-log-form-schema';
 import { shipmentFormSchema } from '@/app/(app)/shipments/_components/shipment-form-schema';
 import { alertDefinitionFormSchema } from '@/app/(app)/admin/alert-definitions/_components/alert-definition-form-schema';
-import { consumptionRatesFormSchema } from '@/app/(app)/admin/ammo-consumption-rates/_components/consumption-rates-form-schema'; // New import
+
 import type { AuditLogEntry } from '@/types/audit';
 import { format, parseISO, getMonth, getYear } from 'date-fns';
 import { tr } from 'date-fns/locale';
@@ -1697,20 +1697,14 @@ export async function getTriggeredAlerts(): Promise<ActiveAlert[]> {
         if (definition.caliberFilter) {
           itemNameDisplay = `${definition.caliberFilter} Mühimmat`;
         } else {
-          // If no specific caliber, check if there are any items in relevantAmmunition to determine if it's a general alert
-          // or if we should use the name of the first item (if a specific item name was intended for the alert).
-          // For now, defaulting to a generic name if no caliber filter.
           itemNameDisplay = `Genel Mühimmat Stokları`;
         }
 
         if (definition.depotId && depotNameString !== "Tüm Depolar") {
             itemNameDisplay += ` (${depotNameString})`;
         } else if (!definition.depotId) {
-            // This case should not happen if depotId is truly optional and not set for "All Depots"
-            // but if it does, or if we want to be explicit for "All Depots" when depotId is undefined:
              itemNameDisplay += ` (Tüm Depolar)`;
         }
-
 
         const context: TriggeredAlertContext = {
           itemName: itemNameDisplay,
@@ -1800,35 +1794,3 @@ export async function getRecentAuditLogs(limit: number = 5): Promise<AuditLogEnt
   }
 }
 
-// Ammunition Standard Consumption Rates
-export async function getAmmunitionStandardConsumptionRates(): Promise<AmmunitionStandardConsumptionRate[]> {
-  noStore();
-  return readData<AmmunitionStandardConsumptionRate>('ammunition_standard_consumption_rates.json');
-}
-
-export async function updateAmmunitionStandardConsumptionRatesAction(rates: AmmunitionStandardConsumptionRate[]): Promise<void> {
-  try {
-    const validatedData = consumptionRatesFormSchema.safeParse({ rates });
-    if (!validatedData.success) {
-      const errorMsg = 'Geçersiz standart sarfiyat oranı verisi: ' + JSON.stringify(validatedData.error.format());
-      await logAction({ actionType: "UPDATE", entityType: "AmmunitionStandardConsumptionRate", status: "FAILURE", details: rates, errorMessage: errorMsg });
-      throw new Error(errorMsg);
-    }
-
-    // Ensure all SUPPORTED_CALIBERS are present, even if with 0 roundsPerPerson, if not provided
-    const completeRates: AmmunitionStandardConsumptionRate[] = SUPPORTED_CALIBERS.map(caliber => {
-      const existingRate = validatedData.data.rates.find(r => r.caliber === caliber);
-      return existingRate || { caliber, roundsPerPerson: 0 };
-    });
-
-    await writeData('ammunition_standard_consumption_rates.json', completeRates);
-    await logAction({ actionType: "UPDATE", entityType: "AmmunitionStandardConsumptionRate", status: "SUCCESS", details: completeRates });
-
-    revalidatePath('/admin/ammo-consumption-rates');
-    revalidatePath('/dashboard');
-  } catch (error: any) {
-    if (error.message.startsWith('Geçersiz standart sarfiyat oranı verisi')) throw error;
-    await logAction({ actionType: "UPDATE", entityType: "AmmunitionStandardConsumptionRate", status: "FAILURE", details: rates, errorMessage: error.message });
-    throw error;
-  }
-}

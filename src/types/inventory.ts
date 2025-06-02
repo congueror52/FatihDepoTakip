@@ -227,12 +227,6 @@ export interface ActiveAlert {
   uniqueId: string; // Unique ID for this specific trigger instance (e.g., definition.id + context.itemId)
 }
 
-export interface AmmunitionStandardConsumptionRate {
-  caliber: SupportedCaliber;
-  roundsPerPerson: number;
-}
-
-
 // Schema for individual JSON files
 export type FirearmsDb = Firearm[];
 export type MagazinesDb = Magazine[];
@@ -246,4 +240,4 @@ export type UsageScenariosDb = UsageScenario[];
 export type DepotsDb = Depot[];
 export type ShipmentTypeDefinitionsDb = ShipmentTypeDefinition[];
 export type AlertDefinitionsDb = AlertDefinition[];
-export type AmmunitionStandardConsumptionRatesDb = AmmunitionStandardConsumptionRate[]; // New DB type
+

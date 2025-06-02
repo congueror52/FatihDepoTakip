@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from "@/components/ui/button"; // Added missing import
+import { Button } from "@/components/ui/button";
 import { Briefcase, Users, ShieldAlert, BarChart3, Activity, Target, ListChecks, BellRing, ListTree, LineChart as LineChartIcon, Box as BoxIcon, Package as PackageIcon, Calculator, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import {
@@ -12,9 +12,9 @@ import {
   getRecentAuditLogs,
   getAmmunitionDailyUsageLogs,
   getMonthlyScenarioUsageForChart,
-  getAmmunitionStandardConsumptionRates
+  getUsageScenarios // Changed from getAmmunitionStandardConsumptionRates
 } from '@/lib/actions/inventory.actions';
-import type { AlertDefinition, SupportedCaliber, AmmunitionStandardConsumptionRate } from '@/types/inventory';
+import type { AlertDefinition, SupportedCaliber, UsageScenario, Ammunition, Magazine, Firearm, OtherMaterial } from '@/types/inventory'; // Changed import
 import { SUPPORTED_CALIBERS } from '@/types/inventory';
 import { Badge } from '@/components/ui/badge';
 import type { AuditLogEntry } from '@/types/audit';
@@ -31,7 +31,7 @@ export default async function DashboardPage() {
   const recentAuditLogs = await getRecentAuditLogs(5);
   const dailyUsageLogs = await getAmmunitionDailyUsageLogs();
   const monthlyScenarioUsageData = await getMonthlyScenarioUsageForChart();
-  const standardConsumptionRates = await getAmmunitionStandardConsumptionRates();
+  const usageScenarios = await getUsageScenarios(); // Changed to fetch usage scenarios
 
   const getSeverityBadgeClasses = (severity: AlertDefinition['severity']) => {
     switch (severity) {
@@ -56,13 +56,13 @@ export default async function DashboardPage() {
     MaintenanceLog: "Bakım Kaydı",
     AmmunitionUsage: "Mühimmat Kullanımı",
     AlertDefinition: "Uyarı Tanımı",
-    AmmunitionStandardConsumptionRate: "Fişek Sarfiyat Standardı",
+    // AmmunitionStandardConsumptionRate: "Fişek Sarfiyat Standardı", // Removed
   };
 
   const formatLogEntryDescription = (log: AuditLogEntry): string => {
     const translatedEntityType = entityTypeTranslations[log.entityType] || log.entityType;
     
-    let identifier = log.details?.name || log.entityId || log.details?.id || ''; 
+    let identifier = log.details?.name || log.entityId || log.details?.id || '';
     if (typeof identifier === 'string' && identifier.length > 20) {
       identifier = `${identifier.substring(0, 17)}...`;
     } 
@@ -124,59 +124,7 @@ export default async function DashboardPage() {
         </Card>
       </div>
       
-      <Card className="bg-sky-50 dark:bg-sky-900/30 border-sky-200 dark:border-sky-700/60">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-sky-800 dark:text-sky-300">
-            <Calculator className="h-6 w-6" />
-            <span suppressHydrationWarning>Mühimmat Yeterlilik Tahmini</span>
-          </CardTitle>
-          <CardDescription className="text-sky-700 dark:text-sky-400" suppressHydrationWarning>
-            Her bir kalibre için mevcut stok ve tanımlanmış standart kişi başı sarfiyat oranlarına göre tahmini yeterlilik.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {SUPPORTED_CALIBERS.map(caliber => {
-            const stock = stockByCaliber[caliber] || 0;
-            const rateEntry = standardConsumptionRates.find(r => r.caliber === caliber);
-            const roundsPerPerson = rateEntry ? rateEntry.roundsPerPerson : 0;
-            const engagementsRemaining = roundsPerPerson > 0 ? Math.floor(stock / roundsPerPerson) : Infinity;
-
-            return (
-              <Card key={caliber} className="bg-background/70 dark:bg-background/50">
-                <CardHeader className="pb-2 pt-3">
-                  <CardTitle className="text-md font-semibold text-foreground">{caliber}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-1 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground" suppressHydrationWarning>Mevcut Stok:</span>
-                    <span className="font-medium">{stock.toLocaleString()} <span className="text-xs text-muted-foreground" suppressHydrationWarning>adet</span></span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground" suppressHydrationWarning>Kişi Başı Sarfiyat:</span>
-                    <span className="font-medium">{roundsPerPerson.toLocaleString()} <span className="text-xs text-muted-foreground" suppressHydrationWarning>adet</span></span>
-                  </div>
-                  <div className="flex justify-between pt-1 border-t border-dashed mt-1">
-                    <span className="text-muted-foreground font-medium" suppressHydrationWarning>Tahmini Kişi Sayısı:</span>
-                    <span className={`font-bold ${engagementsRemaining === Infinity || engagementsRemaining === 0 ? 'text-orange-500' : 'text-green-600 dark:text-green-400'}`}>
-                      {engagementsRemaining === Infinity ? (roundsPerPerson === 0 ? 'Tanımsız' : 'Sınırsız') : engagementsRemaining.toLocaleString()}
-                    </span>
-                  </div>
-                   {engagementsRemaining === Infinity && roundsPerPerson === 0 && (
-                        <p className="text-xs text-orange-500" suppressHydrationWarning>Bu kalibre için kişi başı sarfiyat 0 olarak ayarlanmış.</p>
-                    )}
-                </CardContent>
-              </Card>
-            );
-          })}
-           <div className="sm:col-span-2 lg:col-span-4 mt-2">
-                <Link href="/admin/ammo-consumption-rates">
-                    <Button variant="outline" size="sm" className="w-full sm:w-auto">
-                        <Calculator className="mr-2 h-4 w-4"/> <span suppressHydrationWarning>Standart Sarfiyat Oranlarını Düzenle</span>
-                    </Button>
-                </Link>
-            </div>
-        </CardContent>
-      </Card>
+      {/* Mühimmat Yeterlilik Tahmini Kartı Kaldırıldı */}
 
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
@@ -250,3 +198,4 @@ export default async function DashboardPage() {
     </div>
   );
 }
+
