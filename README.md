@@ -1,4 +1,4 @@
-# Firebase Studio
+# Fatih DEPO TAKİP PROGRAMI 
 
 This is a NextJS starter in Firebase Studio.
 
