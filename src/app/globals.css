@@ -623,53 +623,53 @@ body {
   html[data-color-scheme="neon-sari"],
   html[data-color-scheme="neon-sari"].dark {
     --background: 0 0% 4%; /* Very Black */
-    --foreground: 60 100% 55%; /* Bright Neon Yellow */
+    --foreground: 60 100% 65%; /* Lighter Neon Yellow */
 
     --card: 0 0% 7%; /* Slightly lighter black for cards */
-    --card-foreground: 60 100% 55%; /* Bright Neon Yellow */
+    --card-foreground: 60 100% 65%; /* Lighter Neon Yellow */
 
     --popover: 0 0% 5%; /* Darker for popovers */
-    --popover-foreground: 60 100% 55%; /* Bright Neon Yellow */
+    --popover-foreground: 60 100% 65%; /* Lighter Neon Yellow */
 
-    --primary: 55 100% 50%; /* Vibrant Neon Yellow (slightly greenish) */
+    --primary: 55 100% 60%; /* Lighter Vibrant Neon Yellow */
     --primary-foreground: 0 0% 4%; /* Black for contrast on primary */
 
     --secondary: 0 0% 10%; /* Dark Gray */
-    --secondary-foreground: 55 90% 65%; /* Slightly less intense neon yellow */
+    --secondary-foreground: 55 90% 70%; /* Lighter, less intense neon yellow */
 
     --muted: 0 0% 8%; /* Darker Gray */
-    --muted-foreground: 55 70% 45%; /* Dimmer neon yellow */
+    --muted-foreground: 55 70% 55%; /* Lighter, dimmer neon yellow */
 
-    --accent: 180 100% 50%; /* Neon Cyan */
+    --accent: 180 100% 55%; /* Lighter Neon Cyan */
     --accent-foreground: 0 0% 4%; /* Black for contrast on accent */
 
-    --destructive: 0 100% 50%; /* Neon Red */
+    --destructive: 0 100% 55%; /* Lighter Neon Red */
     --destructive-foreground: 0 0% 95%; /* Light for contrast */
 
-    --success: 120 100% 50%; /* Neon Green */
+    --success: 120 100% 55%; /* Lighter Neon Green */
     --success-foreground: 0 0% 4%; /* Black for contrast */
 
     --border: 0 0% 15%; /* Dark Gray border */
     --input: 0 0% 10%; /* Dark background for input fields */
-    --ring: 55 100% 60%; /* Brighter Neon Yellow for focus rings */
+    --ring: 55 100% 70%; /* Even Lighter Neon Yellow for focus rings */
 
-    --chart-1: 55 100% 55%; /* Neon Yellow */
-    --chart-2: 180 100% 50%; /* Neon Cyan */
-    --chart-3: 300 100% 60%; /* Neon Magenta */
-    --chart-4: 120 100% 50%; /* Neon Green */
-    --chart-5: 0 0% 75%; /* Bright Gray */
+    --chart-1: 55 100% 60%; /* Lighter Neon Yellow */
+    --chart-2: 180 100% 55%; /* Lighter Neon Cyan */
+    --chart-3: 300 100% 65%; /* Lighter Neon Magenta */
+    --chart-4: 120 100% 55%; /* Lighter Neon Green */
+    --chart-5: 0 0% 80%; /* Brighter Gray */
 
     --radius: 0.5rem;
 
     /* Sidebar for Neon Sarı */
     --sidebar-background: 0 0% 6%; 
-    --sidebar-foreground: 60 100% 60%; 
-    --sidebar-primary: 55 100% 50%; 
+    --sidebar-foreground: 60 100% 65%; 
+    --sidebar-primary: 55 100% 60%; 
     --sidebar-primary-foreground: 0 0% 4%; 
     --sidebar-accent: 0 0% 12%; 
-    --sidebar-accent-foreground: 60 90% 65%;
+    --sidebar-accent-foreground: 60 90% 70%;
     --sidebar-border: 0 0% 18%;
-    --sidebar-ring: 55 100% 60%;
+    --sidebar-ring: 55 100% 70%;
   }
 }
 
