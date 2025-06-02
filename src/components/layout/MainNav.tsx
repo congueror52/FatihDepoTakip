@@ -29,8 +29,8 @@ import {
   FileText,
   Palette,
   Package as PackageIcon,
-  Brain,
-  ArrowRightLeft, // Ensured ArrowRightLeft is imported
+  // Brain, // Removed Brain
+  // ArrowRightLeft, // Removed ArrowRightLeft
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import React, { useState, useEffect } from 'react';
@@ -59,14 +59,14 @@ const menuItems: NavItem[] = [
   },
   { href: '/daily-ammo-usage', label: 'Günlük Kullanım', icon: ClipboardList },
   { href: '/maintenance', label: 'Bakım', icon: Wrench },
-  {
-    label: 'AI Analizleri',
-    icon: Brain,
-    isParent: true,
-    children: [
-      { href: '/ai-stock-balancer', label: 'Stok Dengeleme Önerileri', icon: ArrowRightLeft },
-    ],
-  },
+  // { // AI Analizleri section removed
+  //   label: 'AI Analizleri',
+  //   icon: Brain,
+  //   isParent: true,
+  //   children: [
+  //     { href: '/ai-stock-balancer', label: 'Stok Dengeleme Önerileri', icon: ArrowRightLeft },
+  //   ],
+  // },
   { href: '/alerts', label: 'Uyarılar', icon: ShieldAlert },
   {
     label: 'Yönetim Paneli',

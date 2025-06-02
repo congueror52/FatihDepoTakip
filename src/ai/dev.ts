@@ -2,5 +2,5 @@
 import { config } from 'dotenv';
 config();
 
-// Import the new stock balancing flow
-import './flows/stock-balancing-flow';
+// The stock balancing flow has been removed.
+// import './flows/stock-balancing-flow';
