@@ -3,7 +3,7 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
-type ColorScheme = 'default' | 'ocean' | 'forest' | 'desert' | 'twilight' | 'ruby' | 'emerald' | 'sapphire' | 'amethyst' | 'matrix';
+type ColorScheme = 'default' | 'ocean' | 'forest' | 'desert' | 'twilight' | 'ruby' | 'emerald' | 'sapphire' | 'amethyst' | 'matrix' | 'neon-sari';
 
 interface ColorSchemeContextType {
   colorScheme: ColorScheme;
@@ -39,6 +39,25 @@ export function ColorSchemeProvider({
   useEffect(() => {
     if (typeof window !== 'undefined') {
       document.documentElement.setAttribute('data-color-scheme', scheme);
+      // For themes that are inherently dark, force dark mode in next-themes
+      if (scheme === 'neon-sari' || scheme === 'matrix') {
+        document.documentElement.classList.add('dark');
+        // Also, ensure next-themes is aware if it's being used
+        const nextTheme = localStorage.getItem('theme');
+        if (nextTheme !== 'dark') {
+            localStorage.setItem('theme', 'dark'); // Force next-themes to dark
+            // Dispatch event to notify next-themes of change if it doesn't pick up automatically
+            window.dispatchEvent(new StorageEvent('storage', { key: 'theme', newValue: 'dark' }));
+        }
+      } else {
+         // If another theme is selected, remove the forced dark class
+         // to allow next-themes to control light/dark mode normally.
+         // However, don't remove 'dark' if next-themes itself set it.
+         const nextThemePreference = localStorage.getItem('theme');
+         if (nextThemePreference !== 'dark') {
+            document.documentElement.classList.remove('dark');
+         }
+      }
       try {
         window.localStorage.setItem(storageKey, scheme);
       } catch (e) {
@@ -49,7 +68,19 @@ export function ColorSchemeProvider({
 
   const value = {
     colorScheme: scheme,
-    setColorScheme: setScheme,
+    setColorScheme: (newScheme: ColorScheme) => {
+      setScheme(newScheme);
+      // If switching to a theme that is inherently dark, also update next-themes
+      if (newScheme === 'neon-sari' || newScheme === 'matrix') {
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('theme', 'dark');
+             // This might be needed if next-themes doesn't react to localStorage changes directly
+            window.dispatchEvent(new Event('storage'));
+            // Force a class update if next-themes is slow
+            document.documentElement.classList.add('dark');
+        }
+      }
+    },
   };
 
   return (

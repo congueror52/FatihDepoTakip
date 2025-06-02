@@ -10,12 +10,13 @@ import { Label } from '@/components/ui/label';
 import { Moon, Sun, Laptop, Palette } from 'lucide-react';
 
 type ColorSchemeOption = {
-  value: 'default' | 'ocean' | 'forest' | 'desert' | 'twilight' | 'ruby' | 'emerald' | 'sapphire' | 'amethyst' | 'matrix';
+  value: 'default' | 'ocean' | 'forest' | 'desert' | 'twilight' | 'ruby' | 'emerald' | 'sapphire' | 'amethyst' | 'matrix' | 'neon-sari';
   label: string;
 };
 
 const colorSchemes: ColorSchemeOption[] = [
   { value: 'default', label: 'Varsayılan' },
+  { value: 'neon-sari', label: 'Neon Sarı' },
   { value: 'ocean', label: 'Okyanus' },
   { value: 'forest', label: 'Orman' },
   { value: 'desert', label: 'Çöl' },
@@ -81,7 +82,7 @@ export function ThemeSwitcher() {
             variant={!isMounted ? 'outline' : currentMode === 'light' ? 'default' : 'outline'}
             size="sm"
             onClick={() => { if (isMounted) setTheme('light'); }}
-            disabled={!isMounted}
+            disabled={!isMounted || colorScheme === 'neon-sari' || colorScheme === 'matrix'} // Disable light/system for neon-sari & matrix
             className="flex flex-col h-auto py-2 items-center gap-1"
           >
             <Sun className="h-5 w-5" />
@@ -101,13 +102,18 @@ export function ThemeSwitcher() {
             variant={!isMounted ? 'outline' : currentMode === 'system' ? 'default' : 'outline'}
             size="sm"
             onClick={() => { if (isMounted) setTheme('system'); }}
-            disabled={!isMounted}
+            disabled={!isMounted || colorScheme === 'neon-sari' || colorScheme === 'matrix'} // Disable light/system for neon-sari & matrix
             className="flex flex-col h-auto py-2 items-center gap-1"
           >
             <Laptop className="h-5 w-5" />
             <span className="text-xs" suppressHydrationWarning>Sistem</span>
           </Button>
         </div>
+         {(colorScheme === 'neon-sari' || colorScheme === 'matrix') && isMounted && (
+          <p className="text-xs text-muted-foreground pt-1">
+            Bu tema yalnızca koyu modda en iyi şekilde görüntülenir. Görünüm modu "Koyu" olarak ayarlandı.
+          </p>
+        )}
       </div>
     </div>
   );
