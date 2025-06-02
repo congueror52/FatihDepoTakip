@@ -1,2 +1,19 @@
 
-[]
+[
+  {
+    "caliber": "9x19mm",
+    "roundsPerPerson": 0
+  },
+  {
+    "caliber": "5.56x45mm",
+    "roundsPerPerson": 0
+  },
+  {
+    "caliber": "7.62x39mm",
+    "roundsPerPerson": 0
+  },
+  {
+    "caliber": "7.62x51mm",
+    "roundsPerPerson": 0
+  }
+]

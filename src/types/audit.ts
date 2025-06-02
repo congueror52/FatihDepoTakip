@@ -5,15 +5,16 @@ export type LogEntityType =
   | "Firearm"
   | "Magazine"
   | "Ammunition"
-  | "OtherMaterial" // New Entity Type
+  | "OtherMaterial"
   | "Depot"
   | "UsageScenario"
   | "DailyAmmunitionUsage"
   | "Shipment"
   | "ShipmentTypeDefinition"
   | "MaintenanceLog"
-  | "AmmunitionUsage" // General usage, might be deprecated
-  | "AlertDefinition";
+  | "AmmunitionUsage"
+  | "AlertDefinition"
+  | "AmmunitionStandardConsumptionRate"; // New Entity Type
 
 export interface AuditLogEntry {
   id: string;

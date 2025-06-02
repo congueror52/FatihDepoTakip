@@ -5,8 +5,8 @@ export type DepotId = string;
 export type FirearmStatus = 'Depoda' | 'Destekte' | 'Depoda Arızalı' | 'Poligonda' | 'Rapor Bekliyor';
 export type MagazineStatus = 'Depoda' | 'Destekte' | 'Depoda Arızalı' | 'Poligonda' | 'Rapor Bekliyor';
 export type AmmunitionStatus = 'Mevcut' | 'Düşük Stok' | 'Kritik Stok' | 'Tükenmek Üzere';
-export type OtherMaterialStatus = 'Depoda' | 'Kullanımda' | 'Arızalı' | 'Bakımda' | 'Hizmet Dışı'; // New status type
-export type MaintenanceItemStatus = FirearmStatus | MagazineStatus | OtherMaterialStatus; // Added OtherMaterialStatus
+export type OtherMaterialStatus = 'Depoda' | 'Kullanımda' | 'Arızalı' | 'Bakımda' | 'Hizmet Dışı';
+export type MaintenanceItemStatus = FirearmStatus | MagazineStatus | OtherMaterialStatus;
 
 export type InventoryItemType = 'firearm' | 'magazine' | 'ammunition' | 'other';
 
@@ -66,8 +66,8 @@ export interface Ammunition extends BaseItem {
 
 export interface OtherMaterial extends BaseItem {
   itemType: 'other';
-  category?: string; // e.g., "Koruyucu Ekipman", "Eğitim Malzemesi"
-  quantity: number; // Could be 1 for individually tracked items
+  category?: string;
+  quantity: number;
   status: OtherMaterialStatus;
   maintenanceHistory?: MaintenanceLog[];
 }
@@ -227,12 +227,17 @@ export interface ActiveAlert {
   uniqueId: string; // Unique ID for this specific trigger instance (e.g., definition.id + context.itemId)
 }
 
+export interface AmmunitionStandardConsumptionRate {
+  caliber: SupportedCaliber;
+  roundsPerPerson: number;
+}
+
 
 // Schema for individual JSON files
 export type FirearmsDb = Firearm[];
 export type MagazinesDb = Magazine[];
 export type AmmunitionDb = Ammunition[];
-export type OtherMaterialsDb = OtherMaterial[]; // New DB type
+export type OtherMaterialsDb = OtherMaterial[];
 export type ShipmentsDb = Shipment[];
 export type AmmunitionUsageDb = AmmunitionUsageLog[];
 export type FirearmDefinitionsDb = FirearmDefinition[];
@@ -241,3 +246,4 @@ export type UsageScenariosDb = UsageScenario[];
 export type DepotsDb = Depot[];
 export type ShipmentTypeDefinitionsDb = ShipmentTypeDefinition[];
 export type AlertDefinitionsDb = AlertDefinition[];
+export type AmmunitionStandardConsumptionRatesDb = AmmunitionStandardConsumptionRate[]; // New DB type

@@ -9232,5 +9232,97 @@
       "id": "e19ae77b-abc6-4443-a1a2-ca7392a3eed4",
       "lastUpdated": "2025-06-01T19:54:41.179Z"
     }
+  },
+  {
+    "id": "23ee8414-4e70-44c8-85cd-7e42c71ddda0",
+    "timestamp": "2025-06-02T11:56:47.990Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "OtherMaterial",
+    "entityId": "28078558-7836-4541-b854-5f5b3de4c370",
+    "status": "SUCCESS",
+    "details": {
+      "name": "balistik Gözlük",
+      "category": "gözlük",
+      "quantity": 1,
+      "depotId": "depotA",
+      "status": "Depoda",
+      "purchaseDate": "2025-06-01T00:00:00.000Z",
+      "notes": "",
+      "manufacturer": "",
+      "id": "28078558-7836-4541-b854-5f5b3de4c370",
+      "itemType": "other",
+      "lastUpdated": "2025-06-02T11:56:47.984Z",
+      "maintenanceHistory": []
+    }
+  },
+  {
+    "id": "d00352fe-6130-46c8-85b0-a6e4430f9eed",
+    "timestamp": "2025-06-02T11:57:02.696Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "OtherMaterial",
+    "entityId": "b317fe36-73cd-44a5-9860-b929d186f6b0",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "d5d262b6-f925-4e1b-9d23-49f259049d6f",
+    "timestamp": "2025-06-02T12:00:01.872Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "DailyAmmunitionUsage",
+    "entityId": "31f16180-e176-4e13-9d29-c24b145a7e67",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "6f5f9bef-c6af-4b08-b2b0-4dd0af3ebcf4",
+    "timestamp": "2025-06-02T12:00:09.956Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "DailyAmmunitionUsage",
+    "entityId": "c0d9d06e-9f2d-4113-af54-17b4d8774ff5",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "f803e993-0ad2-445f-81b2-c0363995dd1d",
+    "timestamp": "2025-06-02T12:00:12.563Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "DailyAmmunitionUsage",
+    "entityId": "d6afb4d4-e475-4def-867d-38407b412692",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "a4616193-fbcd-41f2-bd17-187da7e7440e",
+    "timestamp": "2025-06-02T12:00:15.679Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "DailyAmmunitionUsage",
+    "entityId": "140e6cff-d90d-4eea-bcfc-48ef0196ab02",
+    "status": "SUCCESS"
   }
 ]

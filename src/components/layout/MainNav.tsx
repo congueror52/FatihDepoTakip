@@ -27,8 +27,9 @@ import {
   ListOrdered,
   BellDot,
   FileText,
-  Palette, // Palette ikonu eklendi
-  Package as PackageIcon
+  Palette,
+  Package as PackageIcon,
+  Calculator, // Added Calculator icon
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import React, { useState, useEffect } from 'react';
@@ -69,8 +70,9 @@ const menuItems: NavItem[] = [
       { href: '/admin/shipment-types', label: 'Malzeme Kayıt Türleri', icon: ListOrdered },
       { href: '/shipments', label: 'Malzeme Kayıt Takibi', icon: Truck },
       { href: '/admin/alert-definitions', label: 'Uyarı Tanımları', icon: BellDot },
+      { href: '/admin/ammo-consumption-rates', label: 'Fişek Sarfiyat Standartları', icon: Calculator }, // New menu item
       { href: '/admin/audit-logs', label: 'Denetim Kayıtları', icon: FileText },
-      { href: '/admin/theme-settings', label: 'Tema Ayarları', icon: Palette }, // Yeni tema ayarları linki
+      { href: '/admin/theme-settings', label: 'Tema Ayarları', icon: Palette },
     ],
   },
 ];

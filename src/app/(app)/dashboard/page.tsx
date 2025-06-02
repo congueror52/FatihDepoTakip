@@ -1,18 +1,19 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Briefcase, Users, ShieldAlert, BarChart3, Activity, Target, ListChecks, BellRing, ListTree, LineChart as LineChartIcon, Box as BoxIcon, Package as PackageIcon } from 'lucide-react'; // Added PackageIcon
+import { Briefcase, Users, ShieldAlert, BarChart3, Activity, Target, ListChecks, BellRing, ListTree, LineChart as LineChartIcon, Box as BoxIcon, Package as PackageIcon, Calculator, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import {
   getFirearms,
   getMagazines,
   getAmmunition,
-  getOtherMaterials, // Added
+  getOtherMaterials,
   getTriggeredAlerts,
   getRecentAuditLogs,
   getAmmunitionDailyUsageLogs,
-  getMonthlyScenarioUsageForChart
+  getMonthlyScenarioUsageForChart,
+  getAmmunitionStandardConsumptionRates // New import
 } from '@/lib/actions/inventory.actions';
-import type { AlertDefinition, SupportedCaliber } from '@/types/inventory';
+import type { AlertDefinition, SupportedCaliber, AmmunitionStandardConsumptionRate } from '@/types/inventory'; // Added AmmunitionStandardConsumptionRate
 import { SUPPORTED_CALIBERS } from '@/types/inventory';
 import { Badge } from '@/components/ui/badge';
 import type { AuditLogEntry } from '@/types/audit';
@@ -24,13 +25,12 @@ export default async function DashboardPage() {
   const firearms = await getFirearms();
   const magazines = await getMagazines();
   const ammunitionStock = await getAmmunition();
-  const otherMaterialsStock = await getOtherMaterials(); // Fetch other materials
+  const otherMaterialsStock = await getOtherMaterials();
   const triggeredAlerts = await getTriggeredAlerts();
   const recentAuditLogs = await getRecentAuditLogs(5);
   const dailyUsageLogs = await getAmmunitionDailyUsageLogs();
   const monthlyScenarioUsageData = await getMonthlyScenarioUsageForChart();
-
-  // Summary cards are removed as per previous request
+  const standardConsumptionRates = await getAmmunitionStandardConsumptionRates(); // Fetch new rates
 
   const getSeverityBadgeClasses = (severity: AlertDefinition['severity']) => {
     switch (severity) {
@@ -55,13 +55,13 @@ export default async function DashboardPage() {
     MaintenanceLog: "Bakım Kaydı",
     AmmunitionUsage: "Mühimmat Kullanımı",
     AlertDefinition: "Uyarı Tanımı",
+    AmmunitionStandardConsumptionRate: "Fişek Sarfiyat Standardı",
   };
 
   const formatLogEntryDescription = (log: AuditLogEntry): string => {
     const translatedEntityType = entityTypeTranslations[log.entityType] || log.entityType;
     
-    let identifier = log.details?.name || log.entityId || log.details?.id || ''; // Fallback to empty string
-
+    let identifier = log.details?.name || log.entityId || log.details?.id || '';
     if (typeof identifier === 'string' && identifier.length > 20) {
       identifier = `${identifier.substring(0, 17)}...`;
     } 
@@ -111,8 +111,6 @@ export default async function DashboardPage() {
     <div className="flex flex-col gap-6">
       <h1 className="text-3xl font-bold tracking-tight" suppressHydrationWarning>ÖZET BİLGİLER</h1>
 
-      {/* Summary cards removed in previous step */}
-
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1">
          <Card className="lg:col-span-1">
           <CardHeader>
@@ -124,6 +122,61 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+      
+      <Card className="bg-sky-50 dark:bg-sky-900/30 border-sky-200 dark:border-sky-700/60">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-sky-800 dark:text-sky-300">
+            <Calculator className="h-6 w-6" />
+            <span suppressHydrationWarning>Mühimmat Yeterlilik Tahmini</span>
+          </CardTitle>
+          <CardDescription className="text-sky-700 dark:text-sky-400" suppressHydrationWarning>
+            Her bir kalibre için mevcut stok ve tanımlanmış standart kişi başı sarfiyat oranlarına göre tahmini yeterlilik.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {SUPPORTED_CALIBERS.map(caliber => {
+            const stock = stockByCaliber[caliber] || 0;
+            const rateEntry = standardConsumptionRates.find(r => r.caliber === caliber);
+            const roundsPerPerson = rateEntry ? rateEntry.roundsPerPerson : 0;
+            const engagementsRemaining = roundsPerPerson > 0 ? Math.floor(stock / roundsPerPerson) : Infinity;
+
+            return (
+              <Card key={caliber} className="bg-background/70 dark:bg-background/50">
+                <CardHeader className="pb-2 pt-3">
+                  <CardTitle className="text-md font-semibold text-foreground">{caliber}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground" suppressHydrationWarning>Mevcut Stok:</span>
+                    <span className="font-medium">{stock.toLocaleString()} <span className="text-xs text-muted-foreground">adet</span></span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground" suppressHydrationWarning>Kişi Başı Sarfiyat:</span>
+                    <span className="font-medium">{roundsPerPerson.toLocaleString()} <span className="text-xs text-muted-foreground">adet</span></span>
+                  </div>
+                  <div className="flex justify-between pt-1 border-t border-dashed mt-1">
+                    <span className="text-muted-foreground font-medium" suppressHydrationWarning>Tahmini Kişi Sayısı:</span>
+                    <span className={`font-bold ${engagementsRemaining === Infinity || engagementsRemaining === 0 ? 'text-orange-500' : 'text-green-600 dark:text-green-400'}`}>
+                      {engagementsRemaining === Infinity ? (roundsPerPerson === 0 ? 'Tanımsız' : 'Sınırsız') : engagementsRemaining.toLocaleString()}
+                    </span>
+                  </div>
+                   {engagementsRemaining === Infinity && roundsPerPerson === 0 && (
+                        <p className="text-xs text-orange-500" suppressHydrationWarning>Bu kalibre için kişi başı sarfiyat 0 olarak ayarlanmış.</p>
+                    )}
+                </CardContent>
+              </Card>
+            );
+          })}
+           <div className="sm:col-span-2 lg:col-span-4 mt-2">
+                <Link href="/admin/ammo-consumption-rates">
+                    <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                        <Calculator className="mr-2 h-4 w-4"/> <span suppressHydrationWarning>Standart Sarfiyat Oranlarını Düzenle</span>
+                    </Button>
+                </Link>
+            </div>
+        </CardContent>
+      </Card>
+
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <Card className="lg:col-span-4">
@@ -177,14 +230,14 @@ export default async function DashboardPage() {
                     <p className="text-muted-foreground"><span suppressHydrationWarning>Dikkate değer son uyarı bulunmamaktadır.</span></p>
                 ) : (
                     triggeredAlerts.slice(0, 5).map(alert => (
-                        <div key={alert.uniqueId} className="flex items-start justify-between p-3 border rounded-md shadow-sm"> {/* Changed key to alert.uniqueId */}
+                        <div key={alert.uniqueId} className="flex items-start justify-between p-3 border rounded-md shadow-sm">
                             <div>
-                                <p className="font-medium text-sm" suppressHydrationWarning>{alert.definition.name}</p> {/* Access name from definition */}
+                                <p className="font-medium text-sm" suppressHydrationWarning>{alert.definition.name}</p>
                                 <p className="text-xs text-muted-foreground" suppressHydrationWarning>
-                                    {alert.definition.messageTemplate.substring(0, 100) + '...'} - <span suppressHydrationWarning>Tanım Güncelleme: {new Date(alert.definition.lastUpdated).toLocaleDateString('tr-TR')}</span> {/* Access lastUpdated from definition */}
+                                    {alert.definition.messageTemplate.substring(0, 100) + '...'} - <span suppressHydrationWarning>Tanım Güncelleme: {new Date(alert.definition.lastUpdated).toLocaleDateString('tr-TR')}</span>
                                 </p>
                             </div>
-                            <Badge className={getSeverityBadgeClasses(alert.definition.severity)}>{alert.definition.severity}</Badge> {/* Access severity from definition */}
+                            <Badge className={getSeverityBadgeClasses(alert.definition.severity)}>{alert.definition.severity}</Badge>
                         </div>
                     ))
                 )}
@@ -196,4 +249,3 @@ export default async function DashboardPage() {
     </div>
   );
 }
-

@@ -14,17 +14,17 @@
     "maintenanceHistory": []
   },
   {
-    "name": "baslistik gözlük",
-    "category": "koruyucu ekipman",
+    "name": "balistik Gözlük",
+    "category": "gözlük",
     "quantity": 1,
     "depotId": "depotA",
     "status": "Depoda",
-    "purchaseDate": "2025-05-30T00:00:00.000Z",
+    "purchaseDate": "2025-06-01T00:00:00.000Z",
     "notes": "",
-    "manufacturer": "mardin silah sanayi",
-    "id": "b317fe36-73cd-44a5-9860-b929d186f6b0",
+    "manufacturer": "",
+    "id": "28078558-7836-4541-b854-5f5b3de4c370",
     "itemType": "other",
-    "lastUpdated": "2025-06-01T16:33:55.341Z",
+    "lastUpdated": "2025-06-02T11:56:47.984Z",
     "maintenanceHistory": []
   }
 ]

@@ -12,17 +12,6 @@
   },
   {
     "date": "2025-05-31T00:00:00.000Z",
-    "personnelCount": 2500,
-    "usageScenarioId": "scenario_1",
-    "used_9x19mm": 187500,
-    "used_5_56x45mm": 62500,
-    "used_7_62x39mm": 0,
-    "used_7_62x51mm": 0,
-    "notes": "",
-    "id": "d6afb4d4-e475-4def-867d-38407b412692"
-  },
-  {
-    "date": "2025-05-31T00:00:00.000Z",
     "personnelCount": 450,
     "usageScenarioId": "scenario_3",
     "used_9x19mm": 72900,
@@ -42,38 +31,5 @@
     "used_7_62x51mm": 0,
     "notes": "",
     "id": "484c7c02-8d7f-4a12-9ad5-00a9f7bc2bf0"
-  },
-  {
-    "date": "2025-05-28T00:00:00.000Z",
-    "personnelCount": 76,
-    "usageScenarioId": "scenario_1",
-    "used_9x19mm": 5700,
-    "used_5_56x45mm": 1900,
-    "used_7_62x39mm": 0,
-    "used_7_62x51mm": 0,
-    "notes": "",
-    "id": "c0d9d06e-9f2d-4113-af54-17b4d8774ff5"
-  },
-  {
-    "date": "2025-05-27T00:00:00.000Z",
-    "personnelCount": 15,
-    "usageScenarioId": "scenario_3",
-    "used_9x19mm": 2430,
-    "used_5_56x45mm": 0,
-    "used_7_62x39mm": 450,
-    "used_7_62x51mm": 450,
-    "notes": "",
-    "id": "31f16180-e176-4e13-9d29-c24b145a7e67"
-  },
-  {
-    "date": "2025-06-01T00:00:00.000Z",
-    "personnelCount": 7777777,
-    "usageScenarioId": "scenario_1",
-    "used_9x19mm": 583333275,
-    "used_5_56x45mm": 194444425,
-    "used_7_62x39mm": 0,
-    "used_7_62x51mm": 0,
-    "notes": "",
-    "id": "140e6cff-d90d-4eea-bcfc-48ef0196ab02"
   }
 ]
