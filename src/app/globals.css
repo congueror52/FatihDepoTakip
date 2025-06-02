@@ -8,103 +8,105 @@ body {
 
 @layer base {
   :root {
-    --background: 240 14% 95%; /* Light Gray with blue tint */
-    --foreground: 231 10% 20%; /* Dark Blue-Gray for text */
+    /* Fenerbahçe Light Theme (Default) */
+    --background: 50 100% 97%; /* Very Pale Yellow */
+    --foreground: 225 73% 12%; /* Very Dark Navy */
 
-    --card: 0 0% 100%;
-    --card-foreground: 231 10% 20%;
+    --card: 0 0% 100%; /* White cards */
+    --card-foreground: 225 73% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 231 10% 20%;
+    --popover-foreground: 225 73% 12%;
 
-    --primary: 231 48% 48%; /* Deep Blue */
-    --primary-foreground: 0 0% 98%; /* White/Very Light Gray */
+    --primary: 225 60% 30%; /* Fenerbahçe Navy for buttons */
+    --primary-foreground: 51 100% 95%; /* Very Light Yellow for text on navy buttons */
 
-    --secondary: 230 40% 90%; /* Lighter blue-gray for secondary elements */
-    --secondary-foreground: 231 48% 48%; /* Deep blue text on secondary */
+    --secondary: 51 100% 90%; /* Light Yellow for secondary elements */
+    --secondary-foreground: 225 60% 30%; /* Navy text on light yellow */
 
-    --muted: 230 20% 85%; /* Muted blue-gray */
-    --muted-foreground: 231 10% 45%;
+    --muted: 220 40% 90%; /* Muted light blue-gray */
+    --muted-foreground: 220 30% 45%; /* Muted navy text */
 
-    --accent: 187 100% 42%; /* Cyan */
-    --accent-foreground: 0 0% 100%; /* White */
+    --accent: 51 100% 50%; /* Fenerbahçe Yellow as main accent */
+    --accent-foreground: 225 73% 10%; /* Very dark navy for text on yellow accent */
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --success: 140 60% 45%; /* Green */
-    --success-foreground: 0 0% 98%; /* White/Very Light Gray */
+    --success: 140 60% 45%; 
+    --success-foreground: 0 0% 98%;
 
-    --border: 230 20% 80%;
-    --input: 230 20% 88%;
-    --ring: 187 100% 42%; /* Cyan for rings */
+    --border: 220 30% 80%; /* Light blue-gray border */
+    --input: 220 30% 92%; /* Very light blue-gray input background */
+    --ring: 51 100% 50%; /* Yellow for rings */
 
-    --chart-1: 231 48% 48%;
-    --chart-2: 140 60% 45%; /* Green for stock */
-    --chart-3: 210 50% 60%;
-    --chart-4: 200 60% 55%;
-    --chart-5: 220 40% 70%;
+    --chart-1: 225 60% 30%; /* Fenerbahçe Navy */
+    --chart-2: 51 100% 50%; /* Fenerbahçe Yellow */
+    --chart-3: 220 50% 50%; /* Mid Blue */
+    --chart-4: 45 90% 60%;  /* Lighter Yellow/Orange */
+    --chart-5: 225 40% 65%; /* Lighter Navy/Blue */
 
     --radius: 0.5rem;
 
-    /* Sidebar specific theme (might be deprecated if full top nav) */
-    --sidebar-background: 231 25% 25%; 
-    --sidebar-foreground: 0 0% 90%; 
-    --sidebar-primary: 187 100% 42%; 
-    --sidebar-primary-foreground: 0 0% 100%; 
-    --sidebar-accent: 231 20% 35%; 
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 231 20% 40%;
-    --sidebar-ring: 187 100% 50%;
+    /* Fenerbahçe Light Sidebar */
+    --sidebar-background: 225 73% 10%; 
+    --sidebar-foreground: 51 100% 80%; 
+    --sidebar-primary: 51 100% 50%; 
+    --sidebar-primary-foreground: 225 73% 8%; 
+    --sidebar-accent: 225 60% 20%; 
+    --sidebar-accent-foreground: 51 100% 85%;
+    --sidebar-border: 225 50% 15%;
+    --sidebar-ring: 51 100% 55%;
   }
 
   html.dark {
-    --background: 231 15% 18%; /* Dark blue-gray */
-    --foreground: 0 0% 90%; /* Light gray text */
+    /* Fenerbahçe Dark Theme (Default Dark) */
+    --background: 225 73% 8%; /* Very Dark Navy, almost black */
+    --foreground: 51 100% 75%; /* Bright Yellow for text */
 
-    --card: 231 15% 22%;
-    --card-foreground: 0 0% 90%;
+    --card: 225 60% 12%; /* Dark Navy for cards */
+    --card-foreground: 51 100% 75%;
 
-    --popover: 231 15% 18%;
-    --popover-foreground: 0 0% 90%;
+    --popover: 225 70% 10%; /* Slightly different dark navy for popovers */
+    --popover-foreground: 51 100% 75%;
 
-    --primary: 231 48% 58%; /* Lighter Deep Blue for dark mode */
-    --primary-foreground: 0 0% 98%;
+    --primary: 51 100% 50%; /* Fenerbahçe Yellow for primary buttons */
+    --primary-foreground: 225 73% 8%; /* Very dark navy for text on yellow buttons */
 
-    --secondary: 231 15% 30%;
-    --secondary-foreground: 0 0% 90%;
+    --secondary: 225 50% 20%; /* Mid-dark navy for secondary elements */
+    --secondary-foreground: 51 100% 70%; /* Slightly dimmer yellow text */
 
-    --muted: 231 15% 25%;
-    --muted-foreground: 0 0% 65%;
+    --muted: 220 30% 15%; /* Muted dark blue-gray */
+    --muted-foreground: 220 20% 60%; /* Muted lighter blue-gray text */
 
-    --accent: 187 100% 52%; /* Lighter Cyan for dark mode */
-    --accent-foreground: 231 10% 10%;
+    --accent: 220 70% 55%; /* A brighter, but still distinctly Fenerbahçe, blue as accent */
+    --accent-foreground: 51 100% 90%; /* Very light yellow text on blue accent */
 
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 98%;
 
-    --success: 140 60% 55%; /* Lighter Green for dark mode */
+    --success: 140 60% 55%;
     --success-foreground: 0 0% 98%;
 
-    --border: 231 15% 35%;
-    --input: 231 15% 30%;
-    --ring: 187 100% 52%;
+    --border: 220 40% 25%;
+    --input: 220 40% 18%;
+    --ring: 51 100% 50%;
 
-    --chart-1: 231 48% 58%;
-    --chart-2: 140 60% 55%; /* Lighter Green for stock in dark mode */
-    --chart-3: 210 50% 70%;
-    --chart-4: 200 60% 65%;
-    --chart-5: 220 40% 80%;
+    --chart-1: 51 100% 50%;    /* Fenerbahçe Yellow */
+    --chart-2: 220 70% 55%; /* Bright Blue */
+    --chart-3: 45 90% 70%;
+    --chart-4: 210 60% 70%;
+    --chart-5: 50 100% 60%;
     
-    /* Dark Sidebar specific theme */
-    --sidebar-background: 231 20% 15%; 
-    --sidebar-foreground: 0 0% 85%; 
-    --sidebar-primary: 187 100% 52%; 
-    --sidebar-primary-foreground: 0 0% 10%; 
-    --sidebar-accent: 231 20% 25%; 
-    --sidebar-accent-foreground: 0 0% 90%;
-    --sidebar-border: 231 15% 20%;
-    --sidebar-ring: 187 100% 60%;
+    /* Fenerbahçe Dark Sidebar */
+    --sidebar-background: 225 73% 6%; 
+    --sidebar-foreground: 51 100% 70%; 
+    --sidebar-primary: 51 100% 50%; 
+    --sidebar-primary-foreground: 225 73% 6%; 
+    --sidebar-accent: 225 60% 15%; 
+    --sidebar-accent-foreground: 51 100% 75%;
+    --sidebar-border: 225 50% 10%;
+    --sidebar-ring: 51 100% 55%;
   }
 
   /* Ocean Theme */
@@ -135,6 +137,15 @@ body {
     --chart-3: 190 65% 50%;
     --chart-4: 220 75% 60%;
     --chart-5: 160 60% 40%;
+     /* Sidebar for Ocean */
+    --sidebar-background: 210 40% 20%; 
+    --sidebar-foreground: 200 30% 90%; 
+    --sidebar-primary: 170 70% 50%; 
+    --sidebar-primary-foreground: 0 0% 100%; 
+    --sidebar-accent: 210 35% 30%; 
+    --sidebar-accent-foreground: 200 30% 95%;
+    --sidebar-border: 210 30% 25%;
+    --sidebar-ring: 170 70% 55%;
   }
 
   html[data-color-scheme="ocean"].dark {
@@ -164,6 +175,15 @@ body {
     --chart-3: 190 65% 60%;
     --chart-4: 220 75% 70%;
     --chart-5: 160 60% 50%;
+    /* Dark Sidebar for Ocean */
+    --sidebar-background: 215 25% 12%; 
+    --sidebar-foreground: 205 25% 80%; 
+    --sidebar-primary: 170 70% 60%; 
+    --sidebar-primary-foreground: 215 30% 5%; 
+    --sidebar-accent: 215 20% 20%; 
+    --sidebar-accent-foreground: 205 25% 85%;
+    --sidebar-border: 215 20% 18%;
+    --sidebar-ring: 170 70% 60%;
   }
 
   /* Forest Theme */
@@ -194,6 +214,15 @@ body {
     --chart-3: 100 50% 42%;
     --chart-4: 140 40% 50%;
     --chart-5: 80 55% 45%;
+    /* Sidebar for Forest */
+    --sidebar-background: 125 30% 22%; 
+    --sidebar-foreground: 115 20% 90%; 
+    --sidebar-primary: 90 60% 55%; 
+    --sidebar-primary-foreground: 120 25% 10%; 
+    --sidebar-accent: 125 25% 30%; 
+    --sidebar-accent-foreground: 115 20% 95%;
+    --sidebar-border: 125 20% 25%;
+    --sidebar-ring: 90 60% 55%;
   }
 
   html[data-color-scheme="forest"].dark {
@@ -223,6 +252,15 @@ body {
     --chart-3: 100 50% 52%;
     --chart-4: 140 40% 60%;
     --chart-5: 80 55% 55%;
+     /* Dark Sidebar for Forest */
+    --sidebar-background: 120 20% 10%; 
+    --sidebar-foreground: 120 10% 80%; 
+    --sidebar-primary: 90 60% 60%; 
+    --sidebar-primary-foreground: 120 20% 5%; 
+    --sidebar-accent: 120 15% 18%; 
+    --sidebar-accent-foreground: 120 10% 85%;
+    --sidebar-border: 120 15% 15%;
+    --sidebar-ring: 90 60% 65%;
   }
 
   /* Desert Theme */
@@ -253,6 +291,15 @@ body {
     --chart-3: 50 70% 48%; /* Sandy Yellow */
     --chart-4: 20 50% 55%; /* Light Brown */
     --chart-5: 190 40% 40%; /* Muted Teal */
+     /* Sidebar for Desert */
+    --sidebar-background: 35 40% 25%; 
+    --sidebar-foreground: 40 50% 90%; 
+    --sidebar-primary: 180 50% 50%; 
+    --sidebar-primary-foreground: 35 30% 10%; 
+    --sidebar-accent: 35 35% 32%; 
+    --sidebar-accent-foreground: 40 50% 95%;
+    --sidebar-border: 35 30% 28%;
+    --sidebar-ring: 180 50% 55%;
   }
 
   html[data-color-scheme="desert"].dark {
@@ -282,6 +329,15 @@ body {
     --chart-3: 50 70% 58%;
     --chart-4: 20 50% 65%;
     --chart-5: 190 40% 50%;
+    /* Dark Sidebar for Desert */
+    --sidebar-background: 30 15% 12%; 
+    --sidebar-foreground: 40 25% 80%; 
+    --sidebar-primary: 180 50% 60%; 
+    --sidebar-primary-foreground: 30 15% 5%; 
+    --sidebar-accent: 30 10% 20%; 
+    --sidebar-accent-foreground: 40 25% 85%;
+    --sidebar-border: 30 10% 18%;
+    --sidebar-ring: 180 50% 65%;
   }
 
   /* Twilight Theme */
@@ -312,6 +368,15 @@ body {
     --chart-3: 240 55% 60%; /* Indigo */
     --chart-4: 300 50% 52%; /* Orchid */
     --chart-5: 280 40% 45%; /* Darker Purple */
+    /* Sidebar for Twilight */
+    --sidebar-background: 265 35% 22%; 
+    --sidebar-foreground: 270 40% 90%; 
+    --sidebar-primary: 330 70% 55%; 
+    --sidebar-primary-foreground: 265 100% 98%; 
+    --sidebar-accent: 265 30% 30%; 
+    --sidebar-accent-foreground: 270 40% 95%;
+    --sidebar-border: 265 25% 28%;
+    --sidebar-ring: 330 70% 60%;
   }
 
   html[data-color-scheme="twilight"].dark {
@@ -341,6 +406,15 @@ body {
     --chart-3: 240 55% 70%;
     --chart-4: 300 50% 62%;
     --chart-5: 280 40% 55%;
+     /* Dark Sidebar for Twilight */
+    --sidebar-background: 255 15% 10%; 
+    --sidebar-foreground: 265 25% 80%; 
+    --sidebar-primary: 330 70% 65%; 
+    --sidebar-primary-foreground: 255 100% 5%; 
+    --sidebar-accent: 255 10% 18%; 
+    --sidebar-accent-foreground: 265 25% 85%;
+    --sidebar-border: 255 10% 14%;
+    --sidebar-ring: 330 70% 70%;
   }
 
   /* Ruby Theme */
@@ -371,6 +445,15 @@ body {
     --chart-3: 350 75% 60%;
     --chart-4: 15 85% 58%;
     --chart-5: 340 70% 50%;
+    /* Sidebar for Ruby */
+    --sidebar-background: 0 70% 20%; 
+    --sidebar-foreground: 0 40% 90%; 
+    --sidebar-primary: 30 90% 65%; 
+    --sidebar-primary-foreground: 0 70% 10%; 
+    --sidebar-accent: 0 60% 28%; 
+    --sidebar-accent-foreground: 0 40% 95%;
+    --sidebar-border: 0 60% 25%;
+    --sidebar-ring: 30 90% 65%;
   }
 
   html[data-color-scheme="ruby"].dark {
@@ -400,6 +483,15 @@ body {
     --chart-3: 350 75% 70%;
     --chart-4: 15 85% 68%;
     --chart-5: 340 70% 60%;
+    /* Dark Sidebar for Ruby */
+    --sidebar-background: 0 60% 12%; 
+    --sidebar-foreground: 0 20% 80%; 
+    --sidebar-primary: 30 90% 75%; 
+    --sidebar-primary-foreground: 0 60% 5%; 
+    --sidebar-accent: 0 50% 20%; 
+    --sidebar-accent-foreground: 0 20% 85%;
+    --sidebar-border: 0 40% 18%;
+    --sidebar-ring: 30 90% 75%;
   }
 
   /* Emerald Theme */
@@ -430,6 +522,15 @@ body {
     --chart-3: 130 60% 42%;
     --chart-4: 170 55% 38%;
     --chart-5: 145 50% 30%;
+     /* Sidebar for Emerald */
+    --sidebar-background: 150 50% 20%; 
+    --sidebar-foreground: 140 30% 90%; 
+    --sidebar-primary: 160 65% 40%; 
+    --sidebar-primary-foreground: 150 0% 100%; 
+    --sidebar-accent: 150 45% 28%; 
+    --sidebar-accent-foreground: 140 30% 95%;
+    --sidebar-border: 150 40% 25%;
+    --sidebar-ring: 160 65% 45%;
   }
 
   html[data-color-scheme="emerald"].dark {
@@ -459,6 +560,15 @@ body {
     --chart-3: 130 60% 52%;
     --chart-4: 170 55% 48%;
     --chart-5: 145 50% 40%;
+    /* Dark Sidebar for Emerald */
+    --sidebar-background: 145 45% 10%; 
+    --sidebar-foreground: 140 30% 80%; 
+    --sidebar-primary: 160 65% 50%; 
+    --sidebar-primary-foreground: 145 45% 5%; 
+    --sidebar-accent: 145 35% 18%; 
+    --sidebar-accent-foreground: 140 30% 85%;
+    --sidebar-border: 145 35% 14%;
+    --sidebar-ring: 160 65% 55%;
   }
 
   /* Sapphire Theme */
@@ -489,6 +599,15 @@ body {
     --chart-3: 240 75% 55%;
     --chart-4: 190 70% 48%;
     --chart-5: 215 60% 40%;
+    /* Sidebar for Sapphire */
+    --sidebar-background: 220 60% 20%; 
+    --sidebar-foreground: 210 40% 90%; 
+    --sidebar-primary: 200 85% 50%; 
+    --sidebar-primary-foreground: 220 70% 10%; 
+    --sidebar-accent: 220 55% 28%; 
+    --sidebar-accent-foreground: 210 40% 95%;
+    --sidebar-border: 220 50% 25%;
+    --sidebar-ring: 200 85% 55%;
   }
 
   html[data-color-scheme="sapphire"].dark {
@@ -518,6 +637,15 @@ body {
     --chart-3: 240 75% 65%;
     --chart-4: 190 70% 58%;
     --chart-5: 215 60% 50%;
+    /* Dark Sidebar for Sapphire */
+    --sidebar-background: 220 55% 10%; 
+    --sidebar-foreground: 210 35% 80%; 
+    --sidebar-primary: 200 85% 60%; 
+    --sidebar-primary-foreground: 220 55% 5%; 
+    --sidebar-accent: 220 45% 18%; 
+    --sidebar-accent-foreground: 210 35% 85%;
+    --sidebar-border: 220 45% 15%;
+    --sidebar-ring: 200 85% 65%;
   }
 
   /* Amethyst Theme */
@@ -548,6 +676,15 @@ body {
     --chart-3: 260 60% 52%;
     --chart-4: 320 50% 58%;
     --chart-5: 270 40% 45%;
+    /* Sidebar for Amethyst */
+    --sidebar-background: 280 40% 22%; 
+    --sidebar-foreground: 275 30% 90%; 
+    --sidebar-primary: 300 55% 55%; 
+    --sidebar-primary-foreground: 280 0% 100%; 
+    --sidebar-accent: 280 35% 30%; 
+    --sidebar-accent-foreground: 275 30% 95%;
+    --sidebar-border: 280 30% 27%;
+    --sidebar-ring: 300 55% 60%;
   }
 
   html[data-color-scheme="amethyst"].dark {
@@ -577,6 +714,15 @@ body {
     --chart-3: 260 60% 62%;
     --chart-4: 320 50% 68%;
     --chart-5: 270 40% 55%;
+     /* Dark Sidebar for Amethyst */
+    --sidebar-background: 280 30% 10%; 
+    --sidebar-foreground: 275 25% 80%; 
+    --sidebar-primary: 300 55% 65%; 
+    --sidebar-primary-foreground: 280 30% 5%; 
+    --sidebar-accent: 280 20% 18%; 
+    --sidebar-accent-foreground: 275 25% 85%;
+    --sidebar-border: 280 20% 15%;
+    --sidebar-ring: 300 55% 70%;
   }
 
   /* Matrix Theme */

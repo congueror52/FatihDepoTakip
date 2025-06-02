@@ -15,7 +15,7 @@ type ColorSchemeOption = {
 };
 
 const colorSchemes: ColorSchemeOption[] = [
-  { value: 'default', label: 'Varsayılan' },
+  { value: 'default', label: 'Fenerbahçe' }, // Varsayılan etiketini Fenerbahçe olarak değiştirdim
   { value: 'neon-sari', label: 'Neon Sarı' },
   { value: 'ocean', label: 'Okyanus' },
   { value: 'forest', label: 'Orman' },
