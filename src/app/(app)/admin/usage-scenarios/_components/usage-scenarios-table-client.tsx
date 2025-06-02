@@ -87,11 +87,12 @@ export function UsageScenariosTableClient({ scenarios: initialScenarios }: Usage
                 {scenario.consumptionRatesPerCaliber.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
                     {scenario.consumptionRatesPerCaliber.map(rate => (
-                      <Badge 
-                        key={rate.caliber} 
-                        className="flex items-center gap-1.5 py-1 px-2.5 border border-primary/50 bg-primary/10 text-primary-foreground dark:border-primary/50 dark:bg-primary/20 dark:text-primary-foreground"
+                      <Badge
+                        key={rate.caliber}
+                        variant="secondary"
+                        className="flex items-center gap-1.5 py-1 px-2.5"
                       >
-                        <BoxIcon className="h-3.5 w-3.5" /> {/* Opacity removed, color will be inherited */}
+                        <BoxIcon className="h-3.5 w-3.5" />
                         <span suppressHydrationWarning>{rate.caliber}: {rate.roundsPerPerson} adet/kişi</span>
                       </Badge>
                     ))}
