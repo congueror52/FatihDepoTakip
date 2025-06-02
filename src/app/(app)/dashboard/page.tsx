@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from "@/components/ui/button";
-import { Briefcase, Users, ShieldAlert, BarChart3, Activity, Target, ListChecks, BellRing, ListTree, LineChart as LineChartIcon, Box as BoxIcon, Package as PackageIcon, Calculator, AlertTriangle } from 'lucide-react';
+import { Briefcase, Users, ShieldAlert, BarChart3, Activity, Target, ListChecks, BellRing, ListTree, LineChart as LineChartIcon, Box as BoxIcon, Package as PackageIcon, Info, AlertTriangle } from 'lucide-react'; // Calculator removed, Info added
 import Link from 'next/link';
 import {
   getFirearms,
@@ -12,9 +12,9 @@ import {
   getRecentAuditLogs,
   getAmmunitionDailyUsageLogs,
   getMonthlyScenarioUsageForChart,
-  getUsageScenarios // Changed from getAmmunitionStandardConsumptionRates
+  getUsageScenarios 
 } from '@/lib/actions/inventory.actions';
-import type { AlertDefinition, SupportedCaliber, UsageScenario, Ammunition, Magazine, Firearm, OtherMaterial } from '@/types/inventory'; // Changed import
+import type { AlertDefinition, SupportedCaliber, UsageScenario, Ammunition, Magazine, Firearm, OtherMaterial } from '@/types/inventory';
 import { SUPPORTED_CALIBERS } from '@/types/inventory';
 import { Badge } from '@/components/ui/badge';
 import type { AuditLogEntry } from '@/types/audit';
@@ -31,7 +31,7 @@ export default async function DashboardPage() {
   const recentAuditLogs = await getRecentAuditLogs(5);
   const dailyUsageLogs = await getAmmunitionDailyUsageLogs();
   const monthlyScenarioUsageData = await getMonthlyScenarioUsageForChart();
-  const usageScenarios = await getUsageScenarios(); // Changed to fetch usage scenarios
+  const usageScenarios = await getUsageScenarios(); 
 
   const getSeverityBadgeClasses = (severity: AlertDefinition['severity']) => {
     switch (severity) {
@@ -56,7 +56,6 @@ export default async function DashboardPage() {
     MaintenanceLog: "Bakım Kaydı",
     AmmunitionUsage: "Mühimmat Kullanımı",
     AlertDefinition: "Uyarı Tanımı",
-    // AmmunitionStandardConsumptionRate: "Fişek Sarfiyat Standardı", // Removed
   };
 
   const formatLogEntryDescription = (log: AuditLogEntry): string => {
@@ -124,7 +123,25 @@ export default async function DashboardPage() {
         </Card>
       </div>
       
-      {/* Mühimmat Yeterlilik Tahmini Kartı Kaldırıldı */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Info className="h-5 w-5 text-muted-foreground" />
+            <span suppressHydrationWarning>Mühimmat Yeterlilik (Senaryo Bazlı)</span>
+          </CardTitle>
+          <CardDescription suppressHydrationWarning>
+            Belirli görev veya eğitimler için mühimmat yeterliliğini değerlendirmek amacıyla, lütfen ilgili Kullanım Senaryolarını inceleyiniz.
+            Bu kart, gelecekte seçili senaryolara göre dinamik yeterlilik bilgileri sunacak şekilde geliştirilecektir.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">
+            <Link href="/admin/usage-scenarios" className="text-primary hover:underline">
+              Kullanım Senaryoları Yönetimi
+            </Link> sayfasından senaryoların mühimmat sarfiyat detaylarını görebilirsiniz.
+          </p>
+        </CardContent>
+      </Card>
 
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
