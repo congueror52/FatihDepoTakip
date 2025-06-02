@@ -29,7 +29,8 @@ import {
   FileText,
   Palette,
   Package as PackageIcon,
-  // Calculator icon removed as the page is being removed
+  Brain,
+  ArrowRightLeft, // Ensured ArrowRightLeft is imported
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import React, { useState, useEffect } from 'react';
@@ -58,6 +59,14 @@ const menuItems: NavItem[] = [
   },
   { href: '/daily-ammo-usage', label: 'Günlük Kullanım', icon: ClipboardList },
   { href: '/maintenance', label: 'Bakım', icon: Wrench },
+  {
+    label: 'AI Analizleri',
+    icon: Brain,
+    isParent: true,
+    children: [
+      { href: '/ai-stock-balancer', label: 'Stok Dengeleme Önerileri', icon: ArrowRightLeft },
+    ],
+  },
   { href: '/alerts', label: 'Uyarılar', icon: ShieldAlert },
   {
     label: 'Yönetim Paneli',
@@ -70,7 +79,6 @@ const menuItems: NavItem[] = [
       { href: '/admin/shipment-types', label: 'Malzeme Kayıt Türleri', icon: ListOrdered },
       { href: '/shipments', label: 'Malzeme Kayıt Takibi', icon: Truck },
       { href: '/admin/alert-definitions', label: 'Uyarı Tanımları', icon: BellDot },
-      // { href: '/admin/ammo-consumption-rates', label: 'Fişek Sarfiyat Standartları', icon: Calculator }, // Removed menu item
       { href: '/admin/audit-logs', label: 'Denetim Kayıtları', icon: FileText },
       { href: '/admin/theme-settings', label: 'Tema Ayarları', icon: Palette },
     ],
@@ -141,7 +149,7 @@ export function MainNav({ isMobile, onLinkClick }: MainNavProps) {
   }
 
   if (!isMounted) {
-    return null; // Or a skeleton loader for desktop nav
+    return null; 
   }
 
   return (
@@ -224,4 +232,3 @@ const ListItem = React.forwardRef<
   )
 })
 ListItem.displayName = "ListItem"
-

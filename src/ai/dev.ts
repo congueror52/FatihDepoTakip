@@ -2,4 +2,5 @@
 import { config } from 'dotenv';
 config();
 
-// Removed import for suggest-rebalancing.ts
+// Import the new stock balancing flow
+import './flows/stock-balancing-flow';
