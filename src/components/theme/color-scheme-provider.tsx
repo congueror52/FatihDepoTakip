@@ -39,8 +39,8 @@ export function ColorSchemeProvider({
   useEffect(() => {
     if (typeof window !== 'undefined') {
       document.documentElement.setAttribute('data-color-scheme', scheme);
-      // For themes that are inherently dark, force dark mode in next-themes
-      if (scheme === 'neon-sari' || scheme === 'matrix') {
+      // For themes that are inherently dark (including default/Fenerbahçe), force dark mode in next-themes
+      if (scheme === 'neon-sari' || scheme === 'matrix' || scheme === 'default') {
         document.documentElement.classList.add('dark');
         // Also, ensure next-themes is aware if it's being used
         const nextTheme = localStorage.getItem('theme');
@@ -70,8 +70,8 @@ export function ColorSchemeProvider({
     colorScheme: scheme,
     setColorScheme: (newScheme: ColorScheme) => {
       setScheme(newScheme);
-      // If switching to a theme that is inherently dark, also update next-themes
-      if (newScheme === 'neon-sari' || newScheme === 'matrix') {
+      // If switching to a theme that is inherently dark (including default/Fenerbahçe), also update next-themes
+      if (newScheme === 'neon-sari' || newScheme === 'matrix' || newScheme === 'default') {
         if (typeof window !== 'undefined') {
             localStorage.setItem('theme', 'dark');
              // This might be needed if next-themes doesn't react to localStorage changes directly
@@ -97,3 +97,4 @@ export const useColorScheme = (): ColorSchemeContextType => {
   }
   return context;
 };
+

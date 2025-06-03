@@ -37,6 +37,8 @@ export function ThemeSwitcher() {
     setIsMounted(true);
   }, []);
 
+  const isDarkModeForced = colorScheme === 'neon-sari' || colorScheme === 'matrix' || colorScheme === 'default';
+
   return (
     <div className="p-4 space-y-6">
       <div className="space-y-2">
@@ -65,7 +67,7 @@ export function ThemeSwitcher() {
       <div className="space-y-2">
         <Label className="flex items-center gap-2 text-sm font-medium">
           {!isMounted ? (
-            <div className="h-4 w-4" /> // Render a placeholder div matching icon size
+            <div className="h-4 w-4" /> 
           ) : currentMode === 'light' ? (
             <Sun className="h-4 w-4" />
           ) : currentMode === 'dark' ? (
@@ -73,16 +75,16 @@ export function ThemeSwitcher() {
           ) : currentMode === 'system' ? (
             <Laptop className="h-4 w-4" />
           ) : (
-            <div className="h-4 w-4" /> // Fallback placeholder
+            <div className="h-4 w-4" /> 
           )}
           <span suppressHydrationWarning>Görünüm Modu</span>
         </Label>
         <div className="grid grid-cols-3 gap-2">
           <Button
-            variant={!isMounted ? 'outline' : currentMode === 'light' ? 'default' : 'outline'}
+            variant={!isMounted ? 'outline' : currentMode === 'light' && !isDarkModeForced ? 'default' : 'outline'}
             size="sm"
-            onClick={() => { if (isMounted) setTheme('light'); }}
-            disabled={!isMounted || colorScheme === 'neon-sari' || colorScheme === 'matrix'} // Disable light/system for neon-sari & matrix
+            onClick={() => { if (isMounted && !isDarkModeForced) setTheme('light'); }}
+            disabled={!isMounted || isDarkModeForced} 
             className="flex flex-col h-auto py-2 items-center gap-1"
           >
             <Sun className="h-5 w-5" />
@@ -99,17 +101,17 @@ export function ThemeSwitcher() {
             <span className="text-xs" suppressHydrationWarning>Koyu</span>
           </Button>
           <Button
-            variant={!isMounted ? 'outline' : currentMode === 'system' ? 'default' : 'outline'}
+            variant={!isMounted ? 'outline' : currentMode === 'system' && !isDarkModeForced ? 'default' : 'outline'}
             size="sm"
-            onClick={() => { if (isMounted) setTheme('system'); }}
-            disabled={!isMounted || colorScheme === 'neon-sari' || colorScheme === 'matrix'} // Disable light/system for neon-sari & matrix
+            onClick={() => { if (isMounted && !isDarkModeForced) setTheme('system'); }}
+            disabled={!isMounted || isDarkModeForced} 
             className="flex flex-col h-auto py-2 items-center gap-1"
           >
             <Laptop className="h-5 w-5" />
             <span className="text-xs" suppressHydrationWarning>Sistem</span>
           </Button>
         </div>
-         {(colorScheme === 'neon-sari' || colorScheme === 'matrix') && isMounted && (
+         {isDarkModeForced && isMounted && (
           <p className="text-xs text-muted-foreground pt-1">
             Bu tema yalnızca koyu modda en iyi şekilde görüntülenir. Görünüm modu "Koyu" olarak ayarlandı.
           </p>
