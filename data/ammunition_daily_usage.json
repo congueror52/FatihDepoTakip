@@ -31,5 +31,16 @@
     "used_7_62x51mm": 0,
     "notes": "",
     "id": "484c7c02-8d7f-4a12-9ad5-00a9f7bc2bf0"
+  },
+  {
+    "date": "2025-06-03T00:00:00.000Z",
+    "personnelCount": 140,
+    "usageScenarioId": "scenario_1",
+    "used_9x19mm": 10500,
+    "used_5_56x45mm": 3500,
+    "used_7_62x39mm": 0,
+    "used_7_62x51mm": 0,
+    "notes": "",
+    "id": "64bb4944-5d78-49e8-8197-515aa0c345be"
   }
 ]

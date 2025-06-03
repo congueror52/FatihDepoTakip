@@ -9360,5 +9360,139 @@
     "entityType": "Depot",
     "entityId": "depoB",
     "status": "SUCCESS"
+  },
+  {
+    "id": "a6fd7b20-8c5c-4982-89d6-f5f9408cb4df",
+    "timestamp": "2025-06-03T10:39:42.440Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "UPDATE",
+    "entityType": "FirearmDefinition",
+    "entityId": "fd_1",
+    "status": "SUCCESS",
+    "details": {
+      "id": "fd_1",
+      "name": "SAR223 P",
+      "model": "SAR 223 P",
+      "manufacturer": "SARSILMAZ",
+      "caliber": "5.56x45mm",
+      "description": "Standart piyade tüfeği, uzun menzilli.",
+      "lastUpdated": "2025-06-03T10:39:42.410Z"
+    }
+  },
+  {
+    "id": "90dd2688-d692-47b0-8d1f-2d64776e577e",
+    "timestamp": "2025-06-03T10:39:53.128Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "UPDATE",
+    "entityType": "FirearmDefinition",
+    "entityId": "fd_1",
+    "status": "SUCCESS",
+    "details": {
+      "id": "fd_1",
+      "name": "SAR 223 P",
+      "model": "SAR 223 P",
+      "manufacturer": "SARSILMAZ",
+      "caliber": "5.56x45mm",
+      "description": "Standart piyade tüfeği, uzun menzilli.",
+      "lastUpdated": "2025-06-03T10:39:53.106Z"
+    }
+  },
+  {
+    "id": "62f83118-02f1-4cdd-bfa3-499a5e620705",
+    "timestamp": "2025-06-03T10:40:10.261Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "UPDATE",
+    "entityType": "FirearmDefinition",
+    "entityId": "03b7b801-1e09-410a-a3e7-1e827415548d",
+    "status": "SUCCESS",
+    "details": {
+      "name": "MPT-76",
+      "model": "MPT-76",
+      "manufacturer": "SARSILMAZ",
+      "caliber": "7.62x51mm",
+      "description": "",
+      "id": "03b7b801-1e09-410a-a3e7-1e827415548d",
+      "lastUpdated": "2025-06-03T10:40:10.244Z"
+    }
+  },
+  {
+    "id": "8a7b52da-6a6b-478f-b872-6f30c1abdfef",
+    "timestamp": "2025-06-03T10:40:21.481Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "UPDATE",
+    "entityType": "FirearmDefinition",
+    "entityId": "ff612aa0-a9aa-4343-9d2b-bbd305d538e1",
+    "status": "SUCCESS",
+    "details": {
+      "name": "SAR 109 T",
+      "model": "SAR 109 T",
+      "manufacturer": "SARSILMAZ",
+      "caliber": "9x19mm",
+      "description": "",
+      "id": "ff612aa0-a9aa-4343-9d2b-bbd305d538e1",
+      "lastUpdated": "2025-06-03T10:40:21.462Z"
+    }
+  },
+  {
+    "id": "435d1966-9963-4cd3-8db5-9f123004f170",
+    "timestamp": "2025-06-03T10:40:40.718Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "UPDATE",
+    "entityType": "FirearmDefinition",
+    "entityId": "fd_3",
+    "status": "SUCCESS",
+    "details": {
+      "id": "fd_3",
+      "name": "AK-47",
+      "model": "AK47",
+      "manufacturer": "",
+      "caliber": "7.62x39mm",
+      "description": "",
+      "lastUpdated": "2025-06-03T10:40:40.692Z"
+    }
+  },
+  {
+    "id": "a3c81725-cc0e-4918-9a5e-ae96ad8b4c47",
+    "timestamp": "2025-06-03T10:42:38.323Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "DailyAmmunitionUsage",
+    "entityId": "64bb4944-5d78-49e8-8197-515aa0c345be",
+    "status": "SUCCESS",
+    "details": {
+      "date": "2025-06-03T00:00:00.000Z",
+      "personnelCount": 140,
+      "usageScenarioId": "scenario_1",
+      "used_9x19mm": 10500,
+      "used_5_56x45mm": 3500,
+      "used_7_62x39mm": 0,
+      "used_7_62x51mm": 0,
+      "notes": "",
+      "id": "64bb4944-5d78-49e8-8197-515aa0c345be"
+    }
   }
 ]
