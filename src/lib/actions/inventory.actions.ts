@@ -992,6 +992,55 @@ export async function getGroupedAmmunitionDailyUsageLogs(): Promise<GroupedDaily
   return groupedResult;
 }
 
+export async function exportGroupedDailyUsageToCsvAction(): Promise<string> {
+  noStore();
+  const groupedLogs = await getGroupedAmmunitionDailyUsageLogs();
+  if (groupedLogs.length === 0) {
+    return "";
+  }
+
+  const headers = [
+    "Senaryo Adı",
+    "Tarih",
+    "Kişi Sayısı",
+    "Kullanılan 9x19mm",
+    "Kullanılan 5.56x45mm",
+    "Kullanılan 7.62x39mm",
+    "Kullanılan 7.62x51mm",
+    "Notlar"
+  ];
+
+  const escapeCsvField = (field: any): string => {
+    if (field === null || field === undefined) return "";
+    let strField = String(field);
+    strField = strField.replace(/"/g, '""'); // Escape double quotes
+    if (strField.includes(';') || strField.includes('"') || strField.includes('\n') || strField.includes('\r')) {
+      return `"${strField}"`;
+    }
+    return strField;
+  };
+
+  const rows: string[] = [];
+  groupedLogs.forEach(group => {
+    group.logs.forEach(log => {
+      rows.push(
+        [
+          escapeCsvField(group.scenarioName),
+          escapeCsvField(format(parseISO(log.date), "dd.MM.yyyy", { locale: tr })),
+          escapeCsvField(log.personnelCount),
+          escapeCsvField(log.used_9x19mm),
+          escapeCsvField(log.used_5_56x45mm),
+          escapeCsvField(log.used_7_62x39mm),
+          escapeCsvField(log.used_7_62x51mm),
+          escapeCsvField(log.notes)
+        ].join(';')
+      );
+    });
+  });
+
+  return [headers.join(';'), ...rows].join('\n');
+}
+
 export interface MonthlyUsageDataPoint {
   month: string;
   [scenarioName: string]: number | string;
@@ -1793,4 +1842,3 @@ export async function getRecentAuditLogs(limit: number = 5): Promise<AuditLogEnt
     return [];
   }
 }
-
