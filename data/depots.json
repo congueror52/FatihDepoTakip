@@ -1,11 +1,11 @@
 [
   {
     "id": "depotA",
-    "name": "Kadro Atışı",
+    "name": "KADRO ATIŞI 1.DÖNEM",
     "address": "BEYKOZ POLİGONU",
     "contactPerson": "Fatih KABAKTEPE",
     "notes": "Ana dağıtım merkezi.",
-    "lastUpdated": "2025-05-28T12:28:01.407Z"
+    "lastUpdated": "2025-06-12T18:51:42.616Z"
   },
   {
     "id": "depotB",
@@ -14,5 +14,21 @@
     "contactPerson": "FATİH KABAKTEPE",
     "notes": "ACİL MÜDAHALE EĞİTİMİNDE KULLANILIYOR",
     "lastUpdated": "2025-05-28T12:29:38.913Z"
+  },
+  {
+    "id": "DepoKadro2",
+    "name": "KADRO ATIŞI 2.DÖNEM",
+    "address": "BEYKOZ POLİGONU",
+    "contactPerson": "Fatih KABAKTEPE",
+    "notes": "",
+    "lastUpdated": "2025-06-12T18:52:50.468Z"
+  },
+  {
+    "id": "DepoKadro3",
+    "name": "KADRO ATIŞI .3DÖNEM",
+    "address": "BEYKOZ POLİGONU",
+    "contactPerson": "Fatih KABAKTEPE",
+    "notes": "",
+    "lastUpdated": "2025-06-12T18:53:25.847Z"
   }
 ]

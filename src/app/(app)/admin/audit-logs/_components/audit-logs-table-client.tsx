@@ -44,6 +44,11 @@ const actionTypeTranslations: Record<AuditLogEntry['actionType'], string> = {
     LOG_MAINTENANCE: "Bakım Kaydı",
 };
 
+const statusTranslations: Record<"SUCCESS" | "FAILURE", string> = {
+  SUCCESS: "BAŞARILI",
+  FAILURE: "BAŞARISIZ",
+};
+
 const FormattedTimestamp = ({ timestamp }: { timestamp: string }) => {
   const [formattedDate, setFormattedDate] = useState(timestamp); // Initial render with ISO string
 
@@ -100,7 +105,7 @@ export function AuditLogsTableClient({ logs: initialLogs }: AuditLogsTableClient
       actionTypeTranslations[log.actionType] || log.actionType,
       entityTypeTranslations[log.entityType] || log.entityType,
       log.entityId || '-',
-      log.status,
+      statusTranslations[log.status] || log.status, // Use Turkish translation for CSV as well
       log.details ? JSON.stringify(log.details) : '-', // Full details for CSV
       log.errorMessage || '-'
     ]);
@@ -161,7 +166,7 @@ export function AuditLogsTableClient({ logs: initialLogs }: AuditLogsTableClient
                 <TableCell>{entityTypeTranslations[log.entityType] || log.entityType}</TableCell>
                 <TableCell className="truncate max-w-[100px]">{log.entityId || '-'}</TableCell>
                 <TableCell>
-                  <Badge className={getStatusBadgeClasses(log.status)}>{log.status}</Badge>
+                  <Badge className={getStatusBadgeClasses(log.status)}>{statusTranslations[log.status] || log.status}</Badge>
                 </TableCell>
                 <TableCell className="max-w-xs truncate" title={log.details ? JSON.stringify(log.details) : ''}>
                     {formatDetails(log.details)}

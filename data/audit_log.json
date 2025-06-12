@@ -9494,5 +9494,161 @@
       "notes": "",
       "id": "64bb4944-5d78-49e8-8197-515aa0c345be"
     }
+  },
+  {
+    "id": "78125bc3-ecc6-4652-b00a-fef7342b475d",
+    "timestamp": "2025-06-12T18:50:27.546Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "UPDATE",
+    "entityType": "FirearmDefinition",
+    "entityId": "f6f5ab56-1f73-4a4a-88ce-1e000446ca39",
+    "status": "SUCCESS",
+    "details": {
+      "name": "MP5",
+      "model": "MP5",
+      "manufacturer": "MKE",
+      "caliber": "9x19mm",
+      "description": "",
+      "id": "f6f5ab56-1f73-4a4a-88ce-1e000446ca39",
+      "lastUpdated": "2025-06-12T18:50:27.525Z"
+    }
+  },
+  {
+    "id": "7d869e04-c044-41ab-9d98-18869494c4fb",
+    "timestamp": "2025-06-12T18:50:39.041Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "UPDATE",
+    "entityType": "FirearmDefinition",
+    "entityId": "fd_3",
+    "status": "SUCCESS",
+    "details": {
+      "id": "fd_3",
+      "name": "AK-47",
+      "model": "AK-47",
+      "manufacturer": "",
+      "caliber": "7.62x39mm",
+      "description": "",
+      "lastUpdated": "2025-06-12T18:50:39.012Z"
+    }
+  },
+  {
+    "id": "793cd3a6-f135-462c-b45d-5c7bb930ba44",
+    "timestamp": "2025-06-12T18:51:42.629Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "UPDATE",
+    "entityType": "Depot",
+    "entityId": "depotA",
+    "status": "SUCCESS",
+    "details": {
+      "id": "depotA",
+      "name": "KADRO ATIŞI 1.DÖNEM",
+      "address": "BEYKOZ POLİGONU",
+      "contactPerson": "Fatih KABAKTEPE",
+      "notes": "Ana dağıtım merkezi.",
+      "lastUpdated": "2025-06-12T18:51:42.616Z"
+    }
+  },
+  {
+    "id": "3ae1fd02-c6fd-479c-b3ca-1799a6dc5c89",
+    "timestamp": "2025-06-12T18:52:33.421Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Depot",
+    "entityId": "DepoKadro2",
+    "status": "SUCCESS",
+    "details": {
+      "id": "DepoKadro2",
+      "name": "KADRO ATIŞI 2.DÖNEM",
+      "address": "",
+      "contactPerson": "Fatih KABAKTEPE",
+      "notes": "",
+      "lastUpdated": "2025-06-12T18:52:33.405Z"
+    }
+  },
+  {
+    "id": "94591216-7fdc-41a7-9840-832035f712b2",
+    "timestamp": "2025-06-12T18:52:50.488Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "UPDATE",
+    "entityType": "Depot",
+    "entityId": "DepoKadro2",
+    "status": "SUCCESS",
+    "details": {
+      "id": "DepoKadro2",
+      "name": "KADRO ATIŞI 2.DÖNEM",
+      "address": "BEYKOZ POLİGONU",
+      "contactPerson": "Fatih KABAKTEPE",
+      "notes": "",
+      "lastUpdated": "2025-06-12T18:52:50.468Z"
+    }
+  },
+  {
+    "id": "67f6ede7-acaf-4c54-9137-0879c0e2452b",
+    "timestamp": "2025-06-12T18:53:25.873Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "Depot",
+    "entityId": "DepoKadro3",
+    "status": "SUCCESS",
+    "details": {
+      "id": "DepoKadro3",
+      "name": "KADRO ATIŞI .3DÖNEM",
+      "address": "BEYKOZ POLİGONU",
+      "contactPerson": "Fatih KABAKTEPE",
+      "notes": "",
+      "lastUpdated": "2025-06-12T18:53:25.847Z"
+    }
+  },
+  {
+    "id": "b4cecda1-3ec9-47b6-b99f-13b091fb0cfb",
+    "timestamp": "2025-06-12T18:53:35.923Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Depot",
+    "entityId": "depotB",
+    "status": "FAILURE",
+    "errorMessage": "Bu depo, silah envanterinde kullanılıyor."
+  },
+  {
+    "id": "e5728b40-ab62-4acd-852c-7728be795223",
+    "timestamp": "2025-06-12T18:53:50.176Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "DELETE",
+    "entityType": "Depot",
+    "entityId": "depotA",
+    "status": "FAILURE",
+    "errorMessage": "Bu depo, silah envanterinde kullanılıyor."
   }
 ]
