@@ -119,17 +119,6 @@ export interface MaintenanceLog {
   partsUsed?: string;
 }
 
-export interface AmmunitionUsageLog {
-  id: string;
-  date: string;
-  ammunitionId: string;
-  quantityUsed: number;
-  depotId: DepotId;
-  purpose?: string;
-  userId?: string;
-  notes?: string;
-}
-
 export interface AmmunitionDailyUsageLog {
   id: string;
   date: string;
@@ -233,11 +222,9 @@ export type MagazinesDb = Magazine[];
 export type AmmunitionDb = Ammunition[];
 export type OtherMaterialsDb = OtherMaterial[];
 export type ShipmentsDb = Shipment[];
-export type AmmunitionUsageDb = AmmunitionUsageLog[];
 export type FirearmDefinitionsDb = FirearmDefinition[];
 export type AmmunitionDailyUsageDb = AmmunitionDailyUsageLog[];
 export type UsageScenariosDb = UsageScenario[];
 export type DepotsDb = Depot[];
 export type ShipmentTypeDefinitionsDb = ShipmentTypeDefinition[];
 export type AlertDefinitionsDb = AlertDefinition[];
-

@@ -3,7 +3,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { unstable_noStore as noStore } from 'next/cache';
-import type { Firearm, Magazine, Ammunition, Shipment, ShipmentItem, AmmunitionUsageLog, FirearmDefinition, AmmunitionDailyUsageLog, UsageScenario, ScenarioCaliberConsumption, SupportedCaliber, MagazineStatus, AmmunitionStatus, Depot, MaintenanceLog, MaintenanceItemStatus, FirearmStatus, InventoryItemType, ShipmentTypeDefinition, AlertDefinition, OtherMaterial, OtherMaterialStatus, ActiveAlert, TriggeredAlertContext, AlertSeverity } from '@/types/inventory';
+import type { Firearm, Magazine, Ammunition, Shipment, ShipmentItem, FirearmDefinition, AmmunitionDailyUsageLog, UsageScenario, ScenarioCaliberConsumption, SupportedCaliber, MagazineStatus, AmmunitionStatus, Depot, MaintenanceLog, MaintenanceItemStatus, FirearmStatus, InventoryItemType, ShipmentTypeDefinition, AlertDefinition, OtherMaterial, OtherMaterialStatus, ActiveAlert, TriggeredAlertContext, AlertSeverity } from '@/types/inventory';
 import { readData, writeData, generateId } from '@/lib/data-utils';
 import { logAction } from '@/lib/log-service';
 import { firearmFormSchema, firearmStatuses as firearmStatusesArray } from '@/app/(app)/inventory/firearms/_components/firearm-form-schema';
@@ -805,34 +805,6 @@ export async function deleteShipmentAction(id: string): Promise<void> {
   }
 }
 
-
-// Ammunition Usage (General Logs - may be deprecated or used differently with daily logs)
-export async function getAmmunitionUsageLogs(): Promise<AmmunitionUsageLog[]> {
-  noStore();
-  return readData<AmmunitionUsageLog>('ammunition_usage.json');
-}
-export async function logAmmunitionUsageAction(data: Omit<AmmunitionUsageLog, 'id'>): Promise<AmmunitionUsageLog> {
-  try {
-    const logs = await getAmmunitionUsageLogs();
-    const newLog: AmmunitionUsageLog = {
-      ...data,
-      id: await generateId(),
-    };
-    logs.push(newLog);
-    await writeData('ammunition_usage.json', logs);
-    await logAction({ actionType: "LOG_USAGE", entityType: "AmmunitionUsage", entityId: newLog.id, status: "SUCCESS", details: newLog });
-
-    revalidatePath('/inventory/ammunition');
-    revalidatePath('/inventory/ammunition', 'layout');
-    revalidatePath('/dashboard');
-    revalidatePath('/daily-ammo-usage');
-    revalidatePath('/daily-ammo-usage', 'layout');
-    return newLog;
-  } catch (error: any) {
-    await logAction({ actionType: "LOG_USAGE", entityType: "AmmunitionUsage", status: "FAILURE", details: data, errorMessage: error.message });
-    throw error;
-  }
-}
 
 // Ammunition Daily Usage Logs
 export async function getAmmunitionDailyUsageLogs(): Promise<AmmunitionDailyUsageLog[]> {

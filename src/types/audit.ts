@@ -12,7 +12,6 @@ export type LogEntityType =
   | "Shipment"
   | "ShipmentTypeDefinition"
   | "MaintenanceLog"
-  | "AmmunitionUsage"
   | "AlertDefinition";
 
 export interface AuditLogEntry {
@@ -31,4 +30,3 @@ export interface AuditLogEntry {
   previousDetails?: any; // For updates, if needed, though can be complex
   errorMessage?: string;
 }
-
