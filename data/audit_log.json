@@ -9650,5 +9650,34 @@
     "entityId": "depotA",
     "status": "FAILURE",
     "errorMessage": "Bu depo, silah envanterinde kullanılıyor."
+  },
+  {
+    "id": "30a044ce-9596-44af-bfdf-8c4b10929d90",
+    "timestamp": "2025-06-12T19:03:17.350Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "UsageScenario",
+    "entityId": "f715a84c-9063-40f3-95db-e855892b4fd4",
+    "status": "SUCCESS",
+    "details": {
+      "name": "KADRO ATIŞI 3.DÖNEM",
+      "description": "KADRO TABANCA EĞİTİMLERİNDE KULLANILAN DURUMDUR",
+      "consumptionRatesPerCaliber": [
+        {
+          "caliber": "9x19mm",
+          "roundsPerPerson": 75
+        },
+        {
+          "caliber": "5.56x45mm",
+          "roundsPerPerson": 25
+        }
+      ],
+      "id": "f715a84c-9063-40f3-95db-e855892b4fd4",
+      "lastUpdated": "2025-06-12T19:03:17.330Z"
+    }
   }
 ]

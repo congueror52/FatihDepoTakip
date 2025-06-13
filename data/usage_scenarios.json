@@ -50,5 +50,21 @@
       }
     ],
     "lastUpdated": "2025-05-27T19:05:40.074Z"
+  },
+  {
+    "name": "KADRO ATIŞI 3.DÖNEM",
+    "description": "KADRO TABANCA EĞİTİMLERİNDE KULLANILAN DURUMDUR",
+    "consumptionRatesPerCaliber": [
+      {
+        "caliber": "9x19mm",
+        "roundsPerPerson": 75
+      },
+      {
+        "caliber": "5.56x45mm",
+        "roundsPerPerson": 25
+      }
+    ],
+    "id": "f715a84c-9063-40f3-95db-e855892b4fd4",
+    "lastUpdated": "2025-06-12T19:03:17.330Z"
   }
 ]

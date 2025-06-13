@@ -3,7 +3,6 @@
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 import { MainNav } from '@/components/layout/MainNav';
-// import { UserNav } from '@/components/layout/UserNav'; // UserNav kaldırıldı
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu, Warehouse } from 'lucide-react';
@@ -50,10 +49,6 @@ export function AppShell({ children }: { children: ReactNode }) {
           <MainNav isMobile={false} />
         </div>
 
-        {/* UserNav bölümü kaldırıldı */}
-        {/* <div className="ml-auto flex items-center gap-4">
-          <UserNav />
-        </div> */}
       </header>
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
         {children}
