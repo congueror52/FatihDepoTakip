@@ -1309,7 +1309,6 @@ export async function addMaintenanceLogToItemAction(
   let parentItemDisplayIdentifier = itemId; // Fallback
 
   try {
-    // Fetch parent item identifier for logging before any other operation
     if (itemType === 'firearm') {
       const firearmsList = await getFirearms();
       const itemForLog = firearmsList.find(f => f.id === itemId);
@@ -1837,4 +1836,3 @@ export async function getRecentAuditLogs(limit: number = 5): Promise<AuditLogEnt
     return [];
   }
 }
-
