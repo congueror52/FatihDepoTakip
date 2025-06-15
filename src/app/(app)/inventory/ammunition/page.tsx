@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlusCircle, Box, Warehouse, List, TrendingUp, TrendingDown, PackageSearch, UsersRound, Box as BoxIcon, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { getAmmunition, getDepots, getAmmunitionDailyUsageLogs, getUsageScenarios } from "@/lib/actions/inventory.actions"; 
-import type { Ammunition, Depot, SupportedCaliber, UsageScenario, CaliberOverallStatus as CaliberOverallStatusType } from "@/types/inventory"; 
+import { getAmmunition, getDepots, getAmmunitionDailyUsageLogs, getUsageScenarios } from "@/lib/actions/inventory.actions";
+import type { Ammunition, Depot, SupportedCaliber, UsageScenario, CaliberOverallStatus as CaliberOverallStatusType } from "@/types/inventory";
 import { SUPPORTED_CALIBERS } from "@/types/inventory";
 import { useEffect, useState, useMemo } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { AmmunitionTableClient } from "./_components/ammunition-table-client"; // Added missing import
 
 interface DepotAmmunitionSummary {
   depotId: string;
@@ -250,3 +251,4 @@ export default function AmmunitionPage() {
     </div>
   );
 }
+
