@@ -9703,5 +9703,44 @@
       "notes": "",
       "id": "cf9400ec-9a07-414f-9208-68bc749e7b84"
     }
+  },
+  {
+    "id": "dd110e22-8af4-412b-9f3d-22b0f4bc078f",
+    "timestamp": "2025-06-13T21:48:49.817Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "UPDATE",
+    "entityType": "Magazine",
+    "entityId": "58d7c32a-9def-4aad-ae58-7d888f5dc52a",
+    "status": "SUCCESS",
+    "details": {
+      "status": "Destekte",
+      "maintenanceLogAdded": "d3e15243-06a6-433e-a391-b14ebc854416"
+    }
+  },
+  {
+    "id": "35a68415-dc0d-4597-a9e1-0c9eed66f4f6",
+    "timestamp": "2025-06-13T21:48:49.838Z",
+    "actor": {
+      "id": "user_admin_01",
+      "name": "Admin Kullanıcısı",
+      "type": "USER"
+    },
+    "actionType": "CREATE",
+    "entityType": "MaintenanceLog",
+    "entityId": "d3e15243-06a6-433e-a391-b14ebc854416",
+    "status": "SUCCESS",
+    "details": {
+      "date": "2025-06-14T00:00:00.000Z",
+      "description": "acm de arızalandı desteğe teslim ettik",
+      "statusChangeFrom": "Poligonda",
+      "statusChangeTo": "Destekte",
+      "technician": "",
+      "partsUsed": "",
+      "id": "d3e15243-06a6-433e-a391-b14ebc854416"
+    }
   }
 ]

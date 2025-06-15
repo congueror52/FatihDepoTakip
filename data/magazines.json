@@ -19,11 +19,11 @@
     "caliber": "5.56x45mm",
     "capacity": 30,
     "depotId": "depotA",
-    "status": "Poligonda",
+    "status": "Destekte",
     "compatibleFirearmDefinitionId": "fd_1",
     "id": "58d7c32a-9def-4aad-ae58-7d888f5dc52a",
     "itemType": "magazine",
-    "lastUpdated": "2025-06-01T14:00:24.082Z",
+    "lastUpdated": "2025-06-13T21:48:49.808Z",
     "maintenanceHistory": [
       {
         "date": "2025-06-01T00:00:00.000Z",
@@ -42,6 +42,15 @@
         "technician": "",
         "partsUsed": "",
         "id": "c13edf5e-128b-4c67-8e2a-8d147eda0ffa"
+      },
+      {
+        "date": "2025-06-14T00:00:00.000Z",
+        "description": "acm de arızalandı desteğe teslim ettik",
+        "statusChangeFrom": "Poligonda",
+        "statusChangeTo": "Destekte",
+        "technician": "",
+        "partsUsed": "",
+        "id": "d3e15243-06a6-433e-a391-b14ebc854416"
       }
     ],
     "serialNumber": "",

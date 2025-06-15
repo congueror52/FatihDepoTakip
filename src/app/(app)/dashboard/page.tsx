@@ -77,34 +77,49 @@ export default async function DashboardPage() {
     Shipment: "Malzeme Kaydı",
     ShipmentTypeDefinition: "Malzeme Kayıt Türü",
     MaintenanceLog: "Bakım Kaydı",
-    AmmunitionUsage: "Mühimmat Kullanımı",
     AlertDefinition: "Uyarı Tanımı",
   };
 
   const formatLogEntryDescription = (log: AuditLogEntry): string => {
     const translatedEntityType = entityTypeTranslations[log.entityType] || log.entityType;
     
-    let identifier = log.details?.name || log.entityId || log.details?.id || '';
-    if (typeof identifier === 'string' && identifier.length > 20) {
-      identifier = `${identifier.substring(0, 17)}...`;
+    let objectIdentifier = "";
+    // Prioritize parentItemIdentifier for MaintenanceLog CREATE actions
+    if (log.entityType === "MaintenanceLog" && log.actionType === "CREATE" && log.details?.parentItemIdentifier) {
+      objectIdentifier = log.details.parentItemIdentifier;
+    } else if (log.entityType === "MaintenanceLog" && log.actionType === "LOG_MAINTENANCE" && log.details?.parentItemIdentifier) { // For failed maintenance log attempts
+      objectIdentifier = log.details.parentItemIdentifier;
+    } else if (log.details?.name) { // General name from details
+      objectIdentifier = log.details.name;
+    } else if (log.entityId) { // Entity ID from the log itself
+      objectIdentifier = log.entityId;
+    } else if (log.details?.id) { // ID from details (e.g., for created items where entityId might be the new ID)
+      objectIdentifier = log.details.id;
     }
-    const identifierText = identifier ? `"${identifier}"` : '';
-
+  
+    // Shorten if it's a long ID-like string, but not if it's a descriptive parentItemIdentifier
+    if (objectIdentifier.length > 20 && 
+        (objectIdentifier.includes('-') || /^[0-9a-fA-F]+$/.test(objectIdentifier)) &&
+        !(log.details?.parentItemIdentifier && objectIdentifier === log.details.parentItemIdentifier) ) {
+        objectIdentifier = `${objectIdentifier.substring(0, 8)}...`;
+    }
+    const identifierText = objectIdentifier ? `"${objectIdentifier}"` : (log.entityType ? `bir ${translatedEntityType.toLowerCase()}` : 'bir öğe');
+  
     switch (log.actionType) {
       case 'CREATE':
+        if (log.entityType === "MaintenanceLog") {
+          return `${identifierText} için ${translatedEntityType.toLowerCase()} oluşturuldu.`;
+        }
         return `${translatedEntityType} ${identifierText} oluşturuldu.`.trim();
       case 'UPDATE':
         if ((log.entityType === 'Firearm' || log.entityType === 'Magazine' || log.entityType === 'OtherMaterial') && log.details?.maintenanceLogAdded && log.details?.status) {
-             return `${translatedEntityType} ${identifierText} için bakım yapıldı, yeni durum: ${log.details.status}.`.trim();
+             return `${identifierText} için bakım yapıldı, yeni durum: ${log.details.status}.`.trim();
         }
         return `${translatedEntityType} ${identifierText} güncellendi.`.trim();
       case 'DELETE':
         return `${translatedEntityType} ${identifierText} silindi.`.trim();
-      case 'LOG_USAGE':
-        const usageIdentifier = log.details?.ammunitionId || identifierText || 'Mühimmat';
-        return `Mühimmat kullanımı kaydedildi: ${usageIdentifier}`.trim();
-      case 'LOG_MAINTENANCE':
-         return `${translatedEntityType} ${identifierText} oluşturuldu.`.trim();
+      case 'LOG_MAINTENANCE': // This is the failure case in addMaintenanceLogToItemAction
+          return `${identifierText} için ${translatedEntityType.toLowerCase()} oluşturma/güncelleme başarısız.`;
       default:
         return `${log.actionType} işlemi ${translatedEntityType} ${identifierText} üzerinde yapıldı.`.trim();
     }
@@ -321,6 +336,7 @@ export default async function DashboardPage() {
         
 
     
+
 
 
 
